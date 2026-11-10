@@ -31,11 +31,11 @@ This repo is Linux only. Entries may rely on Linux system calls and Linux-specif
 
 These are the planned entries in `distilled/`, each a toy version of a real compiler or interpreter.
 
-The JIT column says whether the real design compiles code while the program is running (✅), as opposed to compiling ahead of time or interpreting (❌).
+The JIT column says whether the real design compiles code while the program is running (✅), as opposed to compiling ahead of time or interpreting (❌). It is 🟡 when the answer depends on how the design is used, for example an IR that real systems use in both JIT and ahead-of-time compilers.
 
 | Entry | Mimics | JIT | What it should show |
 |-------|--------|:---:|---------------------|
-| `distilled/sea-of-nodes` | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | ❌ | Graph IR with floating nodes, scheduling, instruction selection |
+| `distilled/sea-of-nodes` | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
 | `distilled/clang` | Clang and LLVM | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
 | `distilled/gcc` | GCC | ❌ | GIMPLE, RTL, and the pass pipeline |
 | `distilled/puc-lua` | The reference Lua interpreter | ❌ | Register bytecode and the dispatch loop |
@@ -47,7 +47,7 @@ Only open-source compilers and interpreters get an entry. The real source code i
 
 ## Research compilers
 
-These are the entries in `research/`. They are new designs that do not have a single real counterpart, so they have no `FIDELITY.md`. Each one has a `README.md` that says what idea it tests and which distilled entries it builds on or differs from. The JIT column means the same as above.
+These are the entries in `research/`. They are new designs that do not have a single real counterpart, so they have no `FIDELITY.md`. Each one has a `README.md` that says what idea it tests and which distilled entries it builds on or differs from. The JIT column uses the same ✅, ❌ and 🟡 as above.
 
 | Entry | Idea | JIT | Builds on |
 |-------|------|:---:|-----------|
