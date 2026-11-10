@@ -1,0 +1,87 @@
+== stage_source: C tokens of call ==
+int fact ( int n ) { if ( n < 2 ) { return 1 ; } return n * fact ( n - 1 ) ; } int main ( void ) { print_int ( fact ( 5 ) ) ; }
+== stage_codegen: each vstack action, with the instructions it emits ==
+  runtime print_int at +0x0000, 68 bytes
+  runtime print_str at +0x0044, 29 bytes
+== function fact at +0x0061 ==
+    +0x006c  48 89 7d f8              mov [rbp-8], rdi
+  vpush local -8
+    vstack: [local -8]
+  vpushi 2
+    vstack: [local -8] [2]
+  gen_op <
+    +0x0070  8b 45 f8                 mov eax, [rbp-8]
+    +0x0073  83 f8 02                 cmp eax, 2
+    vstack: [flags: <]
+  gvtst
+    +0x0076  0f 8d 00 00 00 00        jge <forward, chain +0x0>
+    vstack:
+  vpushi 1
+    vstack: [1]
+  gfunc_return
+    +0x007c  b8 01 00 00 00           mov eax, 1
+    +0x0081  e9 00 00 00 00           jmp <forward, chain +0x0>
+    patch +0x0078: rel32 10, target +0x0086
+  vpush local -8
+    vstack: [local -8]
+  vpush_sym fact
+    vstack: [local -8] [fact]
+  vpush local -8
+    vstack: [local -8] [fact] [local -8]
+  vpushi 1
+    vstack: [local -8] [fact] [local -8] [1]
+  gen_op -
+    +0x0086  8b 45 f8                 mov eax, [rbp-8]
+    +0x0089  83 e8 01                 sub eax, 1
+    vstack: [local -8] [fact] [rax]
+  gfunc_call
+    +0x008c  48 89 c7                 mov rdi, rax
+    +0x008f  e8 cd ff ff ff           call fact
+    vstack: [local -8] [rax]
+  gen_op *
+    +0x0094  8b 4d f8                 mov ecx, [rbp-8]
+    +0x0097  0f af c8                 imul ecx, eax
+    vstack: [rcx]
+  gfunc_return
+    +0x009a  89 c8                    mov eax, ecx
+    patch +0x0082: rel32 22, target +0x009c
+    +0x009c  c9                       leave
+    +0x009d  c3                       ret
+    patch +0x0061: push rbp; mov rbp, rsp; sub rsp, 16
+== function main at +0x009e ==
+  vpush_sym print_int
+    vstack: [print_int]
+  vpush_sym fact
+    vstack: [print_int] [fact]
+  vpushi 5
+    vstack: [print_int] [fact] [5]
+  gfunc_call
+    +0x00a9  b8 05 00 00 00           mov eax, 5
+    +0x00ae  48 89 c7                 mov rdi, rax
+    +0x00b1  e8 ab ff ff ff           call fact
+    vstack: [print_int] [rax]
+  gfunc_call
+    +0x00b6  48 89 c7                 mov rdi, rax
+    +0x00b9  e8 42 ff ff ff           call print_int
+    vstack: [rax]
+  vpushi 0
+    vstack: [0]
+  gfunc_return
+    +0x00be  b8 00 00 00 00           mov eax, 0
+    +0x00c3  c9                       leave
+    +0x00c4  c3                       ret
+    patch +0x009e: push rbp; mov rbp, rsp; sub rsp, 0
+== stage_export: final code, 197 bytes ==
++0x0000: 48 89 f8 48 83 ec 20 48 8d 74 24 20 48 c7 c1 0a
++0x0010: 00 00 00 48 ff ce c6 06 0a 31 d2 48 f7 f1 80 c2
++0x0020: 30 48 ff ce 88 16 48 85 c0 75 ee 48 8d 54 24 20
++0x0030: 48 29 f2 b8 01 00 00 00 bf 01 00 00 00 0f 05 48
++0x0040: 83 c4 20 c3 48 89 fe 31 d2 80 3c 17 00 74 05 48
++0x0050: ff c2 eb f5 b8 01 00 00 00 bf 01 00 00 00 0f 05
++0x0060: c3 55 48 89 e5 48 81 ec 10 00 00 00 48 89 7d f8
++0x0070: 8b 45 f8 83 f8 02 0f 8d 0a 00 00 00 b8 01 00 00
++0x0080: 00 e9 16 00 00 00 8b 45 f8 83 e8 01 48 89 c7 e8
++0x0090: cd ff ff ff 8b 4d f8 0f af c8 89 c8 c9 c3 55 48
++0x00a0: 89 e5 48 81 ec 00 00 00 00 b8 05 00 00 00 48 89
++0x00b0: c7 e8 ab ff ff ff 48 89 c7 e8 42 ff ff ff b8 00
++0x00c0: 00 00 00 c9 c3

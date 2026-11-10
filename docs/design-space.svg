@@ -74,8 +74,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n p" x="454" y="199">Wren</text>
 <polygon class="or" points="162,283 170,291 162,299 154,291"/>
 <text class="n" x="174" y="295">naive</text>
-<circle class="pl" cx="162" cy="319" r="6"/>
-<text class="n p" x="174" y="323">TCC</text>
+<circle class="dn" cx="162" cy="319" r="6"/>
+<text class="n" x="174" y="323">tcc</text>
 <circle class="dn" cx="302" cy="305" r="6"/>
 <text class="n" x="314" y="309">chibicc</text>
 <circle class="dn" cx="582" cy="263" r="6"/>

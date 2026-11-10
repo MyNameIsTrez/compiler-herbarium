@@ -93,6 +93,7 @@ The JIT column says whether the real design compiles code to machine code while 
 | [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | Interpreter | ❌ | Register bytecode and the dispatch loop |
 | [`distilled/qbe`](distilled/qbe/) | 1630 | QBE | Compiler | ❌ | Pruned SSA from an IL with mutable temporaries, the ABI as register copies, backward instruction selection, and a backward register allocator with hints and parallel moves on edges |
 | [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1401 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | Compiler | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
+| [`distilled/tcc`](distilled/tcc/) | 724 | The Tiny C Compiler | Compiler | ❌ | One-pass code generation from a lazy value stack: constants and locals loaded only when needed, comparisons kept in the CPU flags, forward jumps as chains patched later |
 
 Every row is a finished entry. Designs that are planned or still being investigated are leads in [RESEARCH.md](RESEARCH.md), and a lead gets a row here only when its entry passes every example.
 

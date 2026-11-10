@@ -1,0 +1,90 @@
+== stage_source: C tokens of loop ==
+int main ( void ) { int sum = 0 ; int i = 1 ; while ( i < 11 ) { sum = sum + i ; i = i + 1 ; } print_int ( sum ) ; }
+== stage_codegen: each vstack action, with the instructions it emits ==
+  runtime print_int at +0x0000, 68 bytes
+  runtime print_str at +0x0044, 29 bytes
+== function main at +0x0061 ==
+  vpush local -4
+    vstack: [local -4]
+  vpushi 0
+    vstack: [local -4] [0]
+  vstore
+    +0x006c  b8 00 00 00 00           mov eax, 0
+    +0x0071  89 45 fc                 mov [rbp-4], eax
+    vstack: [rax]
+  vpush local -8
+    vstack: [local -8]
+  vpushi 1
+    vstack: [local -8] [1]
+  vstore
+    +0x0074  b8 01 00 00 00           mov eax, 1
+    +0x0079  89 45 f8                 mov [rbp-8], eax
+    vstack: [rax]
+  vpush local -8
+    vstack: [local -8]
+  vpushi 11
+    vstack: [local -8] [11]
+  gen_op <
+    +0x007c  8b 45 f8                 mov eax, [rbp-8]
+    +0x007f  83 f8 0b                 cmp eax, 11
+    vstack: [flags: <]
+  gvtst
+    +0x0082  0f 8d 00 00 00 00        jge <forward, chain +0x0>
+    vstack:
+  vpush local -4
+    vstack: [local -4]
+  vpush local -4
+    vstack: [local -4] [local -4]
+  vpush local -8
+    vstack: [local -4] [local -4] [local -8]
+  gen_op +
+    +0x0088  8b 45 fc                 mov eax, [rbp-4]
+    +0x008b  8b 4d f8                 mov ecx, [rbp-8]
+    +0x008e  01 c8                    add eax, ecx
+    vstack: [local -4] [rax]
+  vstore
+    +0x0090  89 45 fc                 mov [rbp-4], eax
+    vstack: [rax]
+  vpush local -8
+    vstack: [local -8]
+  vpush local -8
+    vstack: [local -8] [local -8]
+  vpushi 1
+    vstack: [local -8] [local -8] [1]
+  gen_op +
+    +0x0093  8b 45 f8                 mov eax, [rbp-8]
+    +0x0096  83 c0 01                 add eax, 1
+    vstack: [local -8] [rax]
+  vstore
+    +0x0099  89 45 f8                 mov [rbp-8], eax
+    vstack: [rax]
+    +0x009c  eb de                    jmp +0x7c
+    patch +0x0084: rel32 22, target +0x009e
+  vpush_sym print_int
+    vstack: [print_int]
+  vpush local -4
+    vstack: [print_int] [local -4]
+  gfunc_call
+    +0x009e  8b 45 fc                 mov eax, [rbp-4]
+    +0x00a1  48 89 c7                 mov rdi, rax
+    +0x00a4  e8 57 ff ff ff           call print_int
+    vstack: [rax]
+  vpushi 0
+    vstack: [0]
+  gfunc_return
+    +0x00a9  b8 00 00 00 00           mov eax, 0
+    +0x00ae  c9                       leave
+    +0x00af  c3                       ret
+    patch +0x0061: push rbp; mov rbp, rsp; sub rsp, 16
+== stage_export: final code, 176 bytes ==
++0x0000: 48 89 f8 48 83 ec 20 48 8d 74 24 20 48 c7 c1 0a
++0x0010: 00 00 00 48 ff ce c6 06 0a 31 d2 48 f7 f1 80 c2
++0x0020: 30 48 ff ce 88 16 48 85 c0 75 ee 48 8d 54 24 20
++0x0030: 48 29 f2 b8 01 00 00 00 bf 01 00 00 00 0f 05 48
++0x0040: 83 c4 20 c3 48 89 fe 31 d2 80 3c 17 00 74 05 48
++0x0050: ff c2 eb f5 b8 01 00 00 00 bf 01 00 00 00 0f 05
++0x0060: c3 55 48 89 e5 48 81 ec 10 00 00 00 b8 00 00 00
++0x0070: 00 89 45 fc b8 01 00 00 00 89 45 f8 8b 45 f8 83
++0x0080: f8 0b 0f 8d 16 00 00 00 8b 45 fc 8b 4d f8 01 c8
++0x0090: 89 45 fc 8b 45 f8 83 c0 01 89 45 f8 eb de 8b 45
++0x00a0: fc 48 89 c7 e8 57 ff ff ff b8 00 00 00 00 c9 c3

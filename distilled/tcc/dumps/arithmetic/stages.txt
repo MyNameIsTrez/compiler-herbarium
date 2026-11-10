@@ -1,0 +1,48 @@
+== stage_source: C tokens of arithmetic ==
+int main ( void ) { print_int ( ( 2 + 3 ) * 4 - 6 ) ; }
+== stage_codegen: each vstack action, with the instructions it emits ==
+  runtime print_int at +0x0000, 68 bytes
+  runtime print_str at +0x0044, 29 bytes
+== function main at +0x0061 ==
+  vpush_sym print_int
+    vstack: [print_int]
+  vpushi 2
+    vstack: [print_int] [2]
+  vpushi 3
+    vstack: [print_int] [2] [3]
+  gen_op +
+    +0x006c  b8 02 00 00 00           mov eax, 2
+    +0x0071  83 c0 03                 add eax, 3
+    vstack: [print_int] [rax]
+  vpushi 4
+    vstack: [print_int] [rax] [4]
+  gen_op *
+    +0x0074  b9 04 00 00 00           mov ecx, 4
+    +0x0079  0f af c1                 imul eax, ecx
+    vstack: [print_int] [rax]
+  vpushi 6
+    vstack: [print_int] [rax] [6]
+  gen_op -
+    +0x007c  83 e8 06                 sub eax, 6
+    vstack: [print_int] [rax]
+  gfunc_call
+    +0x007f  48 89 c7                 mov rdi, rax
+    +0x0082  e8 79 ff ff ff           call print_int
+    vstack: [rax]
+  vpushi 0
+    vstack: [0]
+  gfunc_return
+    +0x0087  b8 00 00 00 00           mov eax, 0
+    +0x008c  c9                       leave
+    +0x008d  c3                       ret
+    patch +0x0061: push rbp; mov rbp, rsp; sub rsp, 0
+== stage_export: final code, 142 bytes ==
++0x0000: 48 89 f8 48 83 ec 20 48 8d 74 24 20 48 c7 c1 0a
++0x0010: 00 00 00 48 ff ce c6 06 0a 31 d2 48 f7 f1 80 c2
++0x0020: 30 48 ff ce 88 16 48 85 c0 75 ee 48 8d 54 24 20
++0x0030: 48 29 f2 b8 01 00 00 00 bf 01 00 00 00 0f 05 48
++0x0040: 83 c4 20 c3 48 89 fe 31 d2 80 3c 17 00 74 05 48
++0x0050: ff c2 eb f5 b8 01 00 00 00 bf 01 00 00 00 0f 05
++0x0060: c3 55 48 89 e5 48 81 ec 00 00 00 00 b8 02 00 00
++0x0070: 00 83 c0 03 b9 04 00 00 00 0f af c1 83 e8 06 48
++0x0080: 89 c7 e8 79 ff ff ff b8 00 00 00 00 c9 c3

@@ -1,0 +1,74 @@
+== stage_source: C tokens of branch ==
+int main ( void ) { int a = 3 ; int b = 5 ; if ( a < b ) print_int ( b ) ; else print_int ( a ) ; }
+== stage_codegen: each vstack action, with the instructions it emits ==
+  runtime print_int at +0x0000, 68 bytes
+  runtime print_str at +0x0044, 29 bytes
+== function main at +0x0061 ==
+  vpush local -4
+    vstack: [local -4]
+  vpushi 3
+    vstack: [local -4] [3]
+  vstore
+    +0x006c  b8 03 00 00 00           mov eax, 3
+    +0x0071  89 45 fc                 mov [rbp-4], eax
+    vstack: [rax]
+  vpush local -8
+    vstack: [local -8]
+  vpushi 5
+    vstack: [local -8] [5]
+  vstore
+    +0x0074  b8 05 00 00 00           mov eax, 5
+    +0x0079  89 45 f8                 mov [rbp-8], eax
+    vstack: [rax]
+  vpush local -4
+    vstack: [local -4]
+  vpush local -8
+    vstack: [local -4] [local -8]
+  gen_op <
+    +0x007c  8b 45 fc                 mov eax, [rbp-4]
+    +0x007f  8b 4d f8                 mov ecx, [rbp-8]
+    +0x0082  39 c8                    cmp eax, ecx
+    vstack: [flags: <]
+  gvtst
+    +0x0084  0f 8d 00 00 00 00        jge <forward, chain +0x0>
+    vstack:
+  vpush_sym print_int
+    vstack: [print_int]
+  vpush local -8
+    vstack: [print_int] [local -8]
+  gfunc_call
+    +0x008a  8b 45 f8                 mov eax, [rbp-8]
+    +0x008d  48 89 c7                 mov rdi, rax
+    +0x0090  e8 6b ff ff ff           call print_int
+    vstack: [rax]
+    +0x0095  e9 00 00 00 00           jmp <forward, chain +0x0>
+    patch +0x0086: rel32 16, target +0x009a
+  vpush_sym print_int
+    vstack: [print_int]
+  vpush local -4
+    vstack: [print_int] [local -4]
+  gfunc_call
+    +0x009a  8b 45 fc                 mov eax, [rbp-4]
+    +0x009d  48 89 c7                 mov rdi, rax
+    +0x00a0  e8 5b ff ff ff           call print_int
+    vstack: [rax]
+    patch +0x0096: rel32 11, target +0x00a5
+  vpushi 0
+    vstack: [0]
+  gfunc_return
+    +0x00a5  b8 00 00 00 00           mov eax, 0
+    +0x00aa  c9                       leave
+    +0x00ab  c3                       ret
+    patch +0x0061: push rbp; mov rbp, rsp; sub rsp, 16
+== stage_export: final code, 172 bytes ==
++0x0000: 48 89 f8 48 83 ec 20 48 8d 74 24 20 48 c7 c1 0a
++0x0010: 00 00 00 48 ff ce c6 06 0a 31 d2 48 f7 f1 80 c2
++0x0020: 30 48 ff ce 88 16 48 85 c0 75 ee 48 8d 54 24 20
++0x0030: 48 29 f2 b8 01 00 00 00 bf 01 00 00 00 0f 05 48
++0x0040: 83 c4 20 c3 48 89 fe 31 d2 80 3c 17 00 74 05 48
++0x0050: ff c2 eb f5 b8 01 00 00 00 bf 01 00 00 00 0f 05
++0x0060: c3 55 48 89 e5 48 81 ec 10 00 00 00 b8 03 00 00
++0x0070: 00 89 45 fc b8 05 00 00 00 89 45 f8 8b 45 fc 8b
++0x0080: 4d f8 39 c8 0f 8d 10 00 00 00 8b 45 f8 48 89 c7
++0x0090: e8 6b ff ff ff e9 0b 00 00 00 8b 45 fc 48 89 c7
++0x00a0: e8 5b ff ff ff b8 00 00 00 00 c9 c3

@@ -1,0 +1,36 @@
+== stage_source: C tokens of hello ==
+int main ( void ) { print_str ( Hello, world!
+ ) ; }
+== stage_codegen: each vstack action, with the instructions it emits ==
+  runtime print_int at +0x0000, 68 bytes
+  runtime print_str at +0x0044, 29 bytes
+== function main at +0x0061 ==
+  vpush_sym print_str
+    vstack: [print_str]
+  vpush_sym .LC3
+    vstack: [print_str] [.LC3]
+  gfunc_call
+    +0x006c  48 8d 05 00 00 00 00     lea rax, [rip+.LC3]
+    +0x0073  48 89 c7                 mov rdi, rax
+    +0x0076  e8 c9 ff ff ff           call print_str
+    vstack: [rax]
+  vpushi 0
+    vstack: [0]
+  gfunc_return
+    +0x007b  b8 00 00 00 00           mov eax, 0
+    +0x0080  c9                       leave
+    +0x0081  c3                       ret
+    patch +0x0061: push rbp; mov rbp, rsp; sub rsp, 0
+== data .LC3 at +0x0082, 15 bytes ==
+    patch +0x006f: rel32 15, target +0x0082
+== stage_export: final code, 145 bytes ==
++0x0000: 48 89 f8 48 83 ec 20 48 8d 74 24 20 48 c7 c1 0a
++0x0010: 00 00 00 48 ff ce c6 06 0a 31 d2 48 f7 f1 80 c2
++0x0020: 30 48 ff ce 88 16 48 85 c0 75 ee 48 8d 54 24 20
++0x0030: 48 29 f2 b8 01 00 00 00 bf 01 00 00 00 0f 05 48
++0x0040: 83 c4 20 c3 48 89 fe 31 d2 80 3c 17 00 74 05 48
++0x0050: ff c2 eb f5 b8 01 00 00 00 bf 01 00 00 00 0f 05
++0x0060: c3 55 48 89 e5 48 81 ec 00 00 00 00 48 8d 05 0f
++0x0070: 00 00 00 48 89 c7 e8 c9 ff ff ff b8 00 00 00 00
++0x0080: c9 c3 48 65 6c 6c 6f 2c 20 77 6f 72 6c 64 21 0a
++0x0090: 00
