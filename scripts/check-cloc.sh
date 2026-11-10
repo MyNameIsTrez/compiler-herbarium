@@ -14,7 +14,7 @@ update=0
 status=0
 tmp=$(mktemp)
 while IFS= read -r line; do
-    if [[ $line =~ ^\|\ (\[)?\`((distilled|research)/[a-z0-9-]+)\` ]]; then
+    if [[ $line =~ ^\|\ (\[)?\`((distilled|original)/[a-z0-9-]+)\` ]]; then
         entry=${BASH_REMATCH[2]}
         if [[ ! -f $entry/main.c ]]; then
             echo "error: the README lists $entry, which has no main.c" >&2

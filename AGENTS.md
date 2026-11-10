@@ -5,7 +5,7 @@ This repo holds heavily cut-down compilers and interpreters. Read `README.md` fi
 ## Constraints
 
 - Every entry is a single, self-contained `main.c` in C17, for Linux only. Do not add shared C files or headers. Duplicate small helpers instead.
-- `gcc distilled/<compiler>/main.c` and `gcc research/<compiler>/main.c` must keep working for every entry.
+- `gcc distilled/<compiler>/main.c` and `gcc original/<compiler>/main.c` must keep working for every entry.
 - Every entry must pass every example in `examples/` and follow the command-line contract in the README (`./a.out <example> [code.bin]`, exit status 2 for a missing or unknown example). When an example is added, add it to every entry.
 - Never edit an example's `expected.txt` by hand. Regenerate it by running `program.lua` with real Lua, so the expected output stays independent of the entries.
 - Only include what makes the design interesting. Leave out the tokenizer and parser, and leave out optimizations that all compilers share, such as generic constant folding, dead code elimination and common subexpression elimination, unless the design is built around them. Ask of each piece whether someone designing a new compiler would learn something from it that they would not from any other entry.

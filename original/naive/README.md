@@ -31,7 +31,7 @@ What differs, and why `naive` is not a distillation of it:
 - **A pre-pass.** `GenerateCode` first walks the bytecode to mark loop headers and exception handlers as jump targets, so the walk is not strictly a single pass. The blog describes it as a single linear pass, and `naive` does the same walk plus a separate patching step.
 - **Feedback.** Sparkplug uses a feedback vector gathered by the interpreter. `naive` has no profiling.
 
-So `naive` shares Sparkplug's central trick, expanding each instruction with no IR in between, but it is a different, smaller thing. It is a research entry for that reason.
+So `naive` shares Sparkplug's central trick, expanding each instruction with no IR in between, but it is a different, smaller thing. It is an original entry for that reason.
 
 ## Stages
 
@@ -55,6 +55,6 @@ Every other design in this repo should produce shorter or faster code than this 
 ## Building
 
 ```
-gcc research/naive/main.c
+gcc original/naive/main.c
 ./a.out call
 ```

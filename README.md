@@ -7,7 +7,7 @@ The repo is meant as a learning resource for people, and as a reference that LLM
 It holds two kinds of entries, kept in separate directories:
 
 - `distilled/` holds toy versions of existing, open-source compilers and interpreters.
-- `research/` holds new compilers produced by this repo that are not purely distilled versions of an existing design, such as a hybrid of two designs or a new idea tried on the same tasks.
+- `original/` holds new compilers produced by this repo that are not purely distilled versions of an existing design, such as a hybrid of two designs or a new idea tried on the same tasks.
 
 ## Why this repo exists
 
@@ -21,7 +21,7 @@ That is useful in a few ways:
 - **Comparison.** Every entry runs the same examples, so the designs can be diffed side by side: what the IR looks like, which stages exist, how many instructions come out.
 - **Grounding for LLMs.** A model asked about a compiler design usually answers from memory, and memory is unreliable for details. Each distilled entry is runnable code that is checked against the real source, so a model can read the real thing instead of guessing.
 - **A map to the real thing.** An entry is a starting point, not a substitute for the compiler it mimics. Each `FIDELITY.md` names the real source at a pinned commit or tag, says which parts were read and which were not, and lists what the entry dropped or simplified. A person or an LLM weighing several designs can compare the entries first, then clone the real compiler at that commit and read the dropped part when one of the designs looks right.
-- **A testbed for new compiler designs.** This is the main reason the repo is shaped the way it is. Once a handful of designs exist in the same small, uniform form, a person or an LLM can invent a new paradigm by combining pieces of them, such as the graph IR of one with the trace recording of another, or by implementing an idea from a recent research paper. The result lives in `research/`, starts from a working baseline, and must pass the same examples, the same sanitizer builds and the same 100% coverage rule as everything else. The cost of an experiment is a few hundred lines of C and a few seconds, and a broken one fails loudly instead of quietly producing wrong output.
+- **A testbed for new compiler designs.** This is the main reason the repo is shaped the way it is. Once a handful of designs exist in the same small, uniform form, a person or an LLM can invent a new paradigm by combining pieces of them, such as the graph IR of one with the trace recording of another, or by implementing an idea from a recent research paper. The result lives in `original/`, starts from a working baseline, and must pass the same examples, the same sanitizer builds and the same 100% coverage rule as everything else. The cost of an experiment is a few hundred lines of C and a few seconds, and a broken one fails loudly instead of quietly producing wrong output.
 
 The repo is a set of specimens and a workbench, not a benchmark and not a production toolchain.
 
@@ -49,7 +49,7 @@ Every entry builds with a single command, and this works for all of them:
 
 ```
 gcc distilled/<compiler>/main.c
-gcc research/<compiler>/main.c
+gcc original/<compiler>/main.c
 ```
 
 This repo is Linux only. Entries may rely on Linux system calls and Linux-specific memory mapping, and no effort is made to support other operating systems.
@@ -89,17 +89,17 @@ Every row is a finished entry. Designs that are planned or still being investiga
 
 Only open-source compilers and interpreters get an entry. The real source code is required to distill a design down to its essence, and it is what each entry's `FIDELITY.md` and review pass are checked against. A design that is only documented, or whose source is closed (like MSVC), is out of scope.
 
-## Research compilers
+## Original compilers
 
-These are the entries in `research/`. They are new designs that do not have a single real counterpart, so they have no `FIDELITY.md`. Each one has a `README.md` that says what idea it tests and which distilled entries it builds on or differs from. The Kind and JIT columns use the same values as above.
+These are the entries in `original/`. They are new designs that do not have a single real counterpart, so they have no `FIDELITY.md`. Each one has a `README.md` that says what idea it tests and which distilled entries it builds on or differs from. The Kind and JIT columns use the same values as above.
 
 | Entry | Lines of C | Idea | Kind | JIT | Builds on |
 |-------|-----------:|------|------|:---:|-----------|
-| `research/naive` | 284 | The simplest possible compiler: a stack machine IR where every instruction expands to a fixed run of x86-64 bytes, with no analysis and no optimization. It is the baseline the other entries are measured against. | Compiler | ❌ | Nothing. Related to V8's Sparkplug, see its README |
+| `original/naive` | 284 | The simplest possible compiler: a stack machine IR where every instruction expands to a fixed run of x86-64 bytes, with no analysis and no optimization. It is the baseline the other entries are measured against. | Compiler | ❌ | Nothing. Related to V8's Sparkplug, see its README |
 
 ## Layout of an entry
 
-Each entry follows the same shape, so the same file names can be opened in different directories and compared. Distilled entries live in `distilled/<entry>/` and research entries in `research/<entry>/`:
+Each entry follows the same shape, so the same file names can be opened in different directories and compared. Distilled entries live in `distilled/<entry>/` and original entries in `original/<entry>/`:
 
 ```
 <entry>/
@@ -127,7 +127,7 @@ scripts/check-entry.sh distilled/<compiler>            # build, run, check outpu
 scripts/check-entry.sh --update distilled/<compiler>   # also regenerate the committed dumps
 ```
 
-The script builds at `-O2` by default, the same level CI uses, because it is the level most likely to expose undefined behavior and flow-based warnings, so a local pass means a CI pass (`OPT=-O1` selects another level). CI runs it for every directory under `distilled/` and `research/`, with both gcc and clang (`CC=clang scripts/check-entry.sh ...`), so a new entry is picked up without editing the workflow. With clang the script adds `-fno-sanitize=function`, because that check crashes on calls into generated machine code. CI also compiles every `main.c` once with plain `gcc main.c` and plain `clang main.c`, with no flags.
+The script builds at `-O2` by default, the same level CI uses, because it is the level most likely to expose undefined behavior and flow-based warnings, so a local pass means a CI pass (`OPT=-O1` selects another level). CI runs it for every directory under `distilled/` and `original/`, with both gcc and clang (`CC=clang scripts/check-entry.sh ...`), so a new entry is picked up without editing the workflow. With clang the script adds `-fno-sanitize=function`, because that check crashes on calls into generated machine code. CI also compiles every `main.c` once with plain `gcc main.c` and plain `clang main.c`, with no flags.
 
 ### Coverage
 
@@ -170,7 +170,7 @@ A distilled entry is a toy version of a real design, so "done" has to mean more 
 
 A reviewer, human or LLM, is given those references and checks specific claims. Asking a model from memory whether a design matches is not enough, because it can misremember how the real compiler works. An LLM is useful for the mechanical checks, such as filling in the stage mapping, spotting missing stages and confirming that the listed deviations match the code. Whether the remaining deviations are acceptable is a human decision.
 
-A research entry has no real counterpart to check against, so it is done when `scripts/check-entry.sh` and `scripts/coverage-entry.sh` pass and its `README.md` states the idea, the distilled entries it builds on and how it differs from them.
+An original entry has no real counterpart to check against, so it is done when `scripts/check-entry.sh` and `scripts/coverage-entry.sh` pass and its `README.md` states the idea, the distilled entries it builds on and how it differs from them.
 
 ## Examples
 
