@@ -13,6 +13,8 @@ It holds two kinds of entries, kept in separate directories:
 
 Real compilers are some of the largest and most carefully engineered programs there are. Clang and GCC are millions of lines. LuaJIT is small by comparison, but dense. The ideas that make each design what it is are buried in that code, which makes them hard to learn and almost impossible to combine. This repo pulls each design down to the part that makes it distinctive, in a single file that takes a second to build, and runs every design on the same programs.
 
+Every entry keeps only what is interesting about its design, and leaves out the rest. That is why there is no tokenizer or parser: the examples are hardcoded in the form the design starts from. It is also why the entries leave out the optimizations that nearly every compiler has, such as generic constant folding, dead code elimination and common subexpression elimination, unless the design is built around them (Sea of Nodes is built around global value numbering and peepholes, so its entry has them). The goal is for each toy compiler to boil down to the essence that makes it worth studying when designing a new compiler.
+
 That is useful in a few ways:
 
 - **Learning.** You can read how a Sea of Nodes graph is built, how GCC lowers from GIMPLE to RTL, or how LuaJIT records a trace, in a few hundred lines. The committed dumps show the program after every stage, so you can follow the transformation without running anything.
@@ -182,5 +184,5 @@ Just started. Two entries exist so far, `research/naive` and `distilled/puc-lua`
 
 - Measuring or optimizing performance. The compilers stay tiny, so speed numbers would say little about the real designs.
 - Competing with the real compilers on coverage.
-- Parsing a real language.
+- Parsing a real language, or including the optimizations that every compiler shares.
 - Being a production tool. These are specimens, not products.

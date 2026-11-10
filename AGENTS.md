@@ -8,7 +8,8 @@ This repo holds heavily cut-down compilers and interpreters. Read `README.md` fi
 - `gcc distilled/<compiler>/main.c` and `gcc research/<compiler>/main.c` must keep working for every entry.
 - Every entry must pass every example in `examples/` and follow the command-line contract in the README (`./a.out <example> [code.bin]`, exit status 2 for a missing or unknown example). When an example is added, add it to every entry.
 - Never edit an example's `expected.txt` by hand. Regenerate it by running `program.lua` with real Lua, so the expected output stays independent of the entries.
-- Keep the full pipeline and simplify each stage. Do not drop a stage that defines the real design, and do not replace it with something trivial. Leave out the advanced parts of a stage instead, such as live-range splitting and coalescing in a graph-coloring register allocator, and list them in `FIDELITY.md`.
+- Only include what makes the design interesting. Leave out the tokenizer and parser, and leave out optimizations that all compilers share, such as generic constant folding, dead code elimination and common subexpression elimination, unless the design is built around them. Ask of each piece whether someone designing a new compiler would learn something from it that they would not from any other entry.
+- Keep the full pipeline and simplify each stage. Do not drop a stage that defines the real design, and do not replace it with something trivial. A stage that is not distinctive (see the previous rule) can go. Leave out the advanced parts of a stage instead, such as live-range splitting and coalescing in a graph-coloring register allocator, and list them in `FIDELITY.md`.
 - Only open-source designs get a `distilled/` entry. Read the real source before claiming that an entry matches it, and do not rely on memory of how the real compiler works.
 
 ## FIDELITY.md
