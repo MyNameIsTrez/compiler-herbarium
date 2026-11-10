@@ -2,15 +2,15 @@
 
 A running list of links to compiler designs, papers, posts and repos that are relevant to this repo. It has three tables:
 
-1. Leads that already have a compiler in this repo.
-2. Leads that do not have one yet, and still need to be investigated.
+1. Leads that already have an entry in this repo.
+2. Leads that do not have an entry yet, and still need to be investigated.
 3. Leads that were considered and declined.
 
 When a lead gets an entry, move its row from the second table to the first. New leads usually arrive as issues, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 The "Read" column says whether the lead has been read in enough depth to rely on, not just listed. ✅ means read, ❌ means not read yet.
 
-## Leads with a compiler
+## Leads with an entry
 
 | Entry | Lead | Read | How it was used |
 |-------|------|:----:|-----------------|
@@ -20,7 +20,7 @@ The "Read" column says whether the lead has been read in enough depth to rely on
 | [`distilled/clang`](distilled/clang/) | [llvm/llvm-project](https://github.com/llvm/llvm-project) at `eb461b1b` | ✅ | Distilled. Read in depth: `PromoteMemoryToRegister.cpp`, `RegAllocBase.cpp`, `RegAllocBasic.cpp`, `PHIElimination.cpp`, the hint and regmask code, clang's `CGStmt.cpp` block names. Skimmed or not read: the SelectionDAG combines and builder, live interval construction, the coalescer, two-address, frame lowering, encoding, which are modeled on the pass names and on `llc` dumps. The IR and the mem2reg result were compared with the real clang 23.1.3. |
 | [`distilled/chibicc`](distilled/chibicc/) | [rui314/chibicc](https://github.com/rui314/chibicc) at `90d1f7f1` | ✅ | Distilled. Read in depth: the parts of `codegen.c` the examples use (`gen_expr`, `gen_stmt`, `assign_lvar_offsets`, `emit_text`), `parse.c` `function`, `funcall` and the naming helpers, and `type.c` `add_type`. Not read: the tokenizer, preprocessor, driver and most of the parser. The real compiler was built and its assembly for all five examples matches the entry's text. `stage_encode` is not chibicc code, since chibicc leaves encoding to `as`. |
 
-## Leads without a compiler yet
+## Leads without an entry yet
 
 | Lead | Link | Read | Why it matters | What it could become |
 |------|------|:----:|----------------|----------------------|

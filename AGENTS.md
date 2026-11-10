@@ -35,7 +35,7 @@ Do not update it for edits that leave all of that alone, such as fixing a commen
 
 ## RESEARCH.md
 
-`RESEARCH.md` lists leads in two tables: leads that have a compiler in the repo, and leads that do not. When you add an entry that comes from a lead, move that lead's row to the first table and say how it was used. Mark a lead as read only if you actually read it, not if you only listed it.
+`RESEARCH.md` lists leads in three tables: leads that have an entry in the repo, leads that do not yet, and leads that were considered and declined. When you add an entry that comes from a lead, move that lead's row to the first table and say how it was used. Mark a lead as read only if you actually read it, not if you only listed it.
 
 ## Coverage
 
