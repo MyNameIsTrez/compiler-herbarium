@@ -96,6 +96,20 @@ gcc -std=c17 -O1 -g -Wall -Wextra -Wpedantic -Werror -Wshadow -Wstrict-prototype
 
 CI runs the script for every directory under `distilled/` and `research/`, at `-O1` and `-O2`, so a new entry is picked up without editing the workflow.
 
+### Coverage
+
+Every entry must have 100% line and branch coverage, so there is as little cruft in the C code as possible. An entry has no input to vary, so one run has to reach every line and take every branch of the compiler. Code that the hello world never needs does not belong in the entry, and neither does a branch whose other side never runs.
+
+```
+scripts/coverage-entry.sh distilled/<compiler>
+```
+
+The script needs `gcc` and [gcovr](https://gcovr.com) (`pipx install gcovr==8.8`). It is a separate build from the one above, at `-O0` and without sanitizers, because the optimizer and the sanitizers add compiler-generated branches that no run can take. CI runs it for every entry.
+
+This also keeps entries honest about what they leave out. A stage that needs a path hello world never takes, such as register spilling, is either dropped and listed under "Dropped or simplified" in `FIDELITY.md`, or exercised by an example that is added to the entry.
+
+Some code can never run, such as the failure path of a failed `mmap`. It may be excluded with a gcovr comment (`// GCOVR_EXCL_LINE`, `// GCOVR_EXCL_BR_LINE`, or a `GCOVR_EXCL_START` to `GCOVR_EXCL_STOP` block), and each exclusion should say why on the same line. Use them sparingly, since every exclusion is cruft the check cannot see.
+
 ## Running generated code
 
 Every entry that generates machine code runs it the same way: the code is copied into an `mmap`ed buffer, the buffer is made executable with `mprotect`, and the entry's own `main.c` calls it in-process. No entry writes an ELF file or invokes an assembler or linker, so the only thing that differs between entries is the compilation design.
@@ -112,13 +126,14 @@ Every entry that generates machine code runs it the same way: the code is copied
 A distilled entry is a toy version of a real design, so "done" has to mean more than "it prints the right text". It is done when all of these hold:
 
 - `scripts/check-entry.sh` passes, which means the output is correct and the committed dumps are up to date.
+- `scripts/coverage-entry.sh` passes, which means 100% line and branch coverage.
 - Every stage that defines the design is present, in the same order as in the real compiler. For example, GCC lowers from GIMPLE to RTL, and LuaJIT records a trace, builds trace IR and then emits machine code.
 - Its `FIDELITY.md` is filled in. Each stage is mapped to the real compiler's stage name and a location in the real source, and every deliberate deviation is listed with a reason.
 - A review pass has been done against the real source and, where the real tool can print its own intermediate forms, against those dumps. Useful tools are `clang -emit-llvm` with `-mllvm -print-after-all`, `gcc -fdump-tree-all` and `-fdump-rtl-all`, `luac -l -l`, and LuaJIT's `-jbc` and `-jdump`. Output will not be identical, but the stages, their order and the shape of the data should match.
 
 A reviewer, human or LLM, is given those references and checks specific claims. Asking a model from memory whether a design matches is not enough, because it can misremember how the real compiler works. An LLM is useful for the mechanical checks, such as filling in the stage mapping, spotting missing stages and confirming that the listed deviations match the code. Whether the remaining deviations are acceptable is a human decision.
 
-A research entry has no real counterpart to check against, so it is done when `scripts/check-entry.sh` passes and its `README.md` states the idea, the distilled entries it builds on and how it differs from them.
+A research entry has no real counterpart to check against, so it is done when `scripts/check-entry.sh` and `scripts/coverage-entry.sh` pass and its `README.md` states the idea, the distilled entries it builds on and how it differs from them.
 
 ## Examples
 

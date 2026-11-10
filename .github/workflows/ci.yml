@@ -31,3 +31,18 @@ jobs:
         run: scripts/check-entry.sh "${{ matrix.entry }}"
         env:
           OPT: ${{ matrix.opt }}
+
+  coverage:
+    needs: discover
+    if: needs.discover.outputs.entries != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        entry: ${{ fromJSON(needs.discover.outputs.entries) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install gcovr
+        run: pipx install gcovr==8.8
+      - name: Require 100% line and branch coverage for ${{ matrix.entry }}
+        run: scripts/coverage-entry.sh "${{ matrix.entry }}"
