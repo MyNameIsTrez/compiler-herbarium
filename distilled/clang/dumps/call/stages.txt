@@ -1,0 +1,412 @@
+== stage_irgen: IR as clang emits it, every local in an alloca ==
+define i64 @fact(i64 %n) {
+entry:
+  %retval = alloca i64
+  %n.addr = alloca i64
+  store i64 %n, ptr %n.addr
+  %0 = load i64, ptr %n.addr
+  %cmp = icmp slt i64 %0, 2
+  br i1 %cmp, label %if.then, label %if.end
+if.then:
+  store i64 1, ptr %retval
+  br label %return
+if.end:
+  %1 = load i64, ptr %n.addr
+  %2 = load i64, ptr %n.addr
+  %sub = sub i64 %2, 1
+  %call = call i64 @fact(i64 %sub)
+  %mul = mul i64 %1, %call
+  store i64 %mul, ptr %retval
+  br label %return
+return:
+  %3 = load i64, ptr %retval
+  ret i64 %3
+}
+define void @main() {
+entry:
+  %call = call i64 @fact(i64 5)
+  call void @print_int(i64 %call)
+  ret void
+}
+== stage_mem2reg: what it did ==
+fact: immediate dominators: entry<-entry if.then<-entry if.end<-entry return<-entry
+%retval: stores in: if.then if.end; frontier: return; live-in: return; phis in: return
+%n.addr: one store, loads replaced by the stored value
+main: immediate dominators: entry<-entry
+== stage_mem2reg: IR after promotion to SSA ==
+define i64 @fact(i64 %n) {
+entry:
+  %cmp = icmp slt i64 %n, 2
+  br i1 %cmp, label %if.then, label %if.end
+if.then:
+  br label %return
+if.end:
+  %sub = sub i64 %n, 1
+  %call = call i64 @fact(i64 %sub)
+  %mul = mul i64 %n, %call
+  br label %return
+return:
+  %retval.0 = phi i64 [ 1, %if.then ], [ %mul, %if.end ]
+  ret i64 %retval.0
+}
+define void @main() {
+entry:
+  %call = call i64 @fact(i64 5)
+  call void @print_int(i64 %call)
+  ret void
+}
+== stage_isel: SelectionDAG per block ==
+fact:
+bb.0.entry:
+  -- DAG as built --
+  t0: i64 = CopyFromReg $rdi   ; result goes to %0
+  t1: ch = CopyToReg t0, %0
+  t2: i64 = CopyFromReg %0
+  t3: i64 = Constant <2>
+  t4: i1 = setcc t2, t3
+  t5: ch = brcond t1, t4, %bb.1
+  t6: ch = br t5, %bb.2
+  -- DAG after selection --
+  t0: i64 = COPY $rdi   ; result goes to %0
+  t1: ch = COPY t0, %0
+  t2: i64 = CopyFromReg %0
+  t3: i64 = MOV64ri32 <2>
+  t4: i1 = CMP64ri8 t2, t3
+  t5: ch = JCC_1 t1, t4, %bb.1
+  t6: ch = JMP_1 t5, %bb.2
+bb.1.if.then:
+  -- DAG as built --
+  t0: i64 = Constant <1>   ; result goes to %3
+  t1: ch = CopyToReg t0, %3
+  t2: ch = br t1, %bb.3
+  -- DAG after selection --
+  t0: i64 = MOV64ri32 <1>   ; result goes to %3
+  t1: ch = COPY t0, %3
+  t2: ch = JMP_1 t1, %bb.3
+bb.2.if.end:
+  -- DAG as built --
+  t0: i64 = CopyFromReg %0
+  t1: i64 = Constant <1>
+  t2: i64 = sub t0, t1
+  t3: ch = CopyToReg t2, $rdi
+  t4: ch = call t3, @fact
+  t5: i64 = CopyFromReg t4, $rax
+  t6: i64 = mul t0, t5   ; result goes to %2
+  t7: ch = CopyToReg t5, t6, %2
+  t8: ch = br t7, %bb.3
+  -- DAG after selection --
+  t0: i64 = CopyFromReg %0
+  t1: i64 = MOV64ri32 <1>
+  t2: i64 = SUB64ri8 t0, t1
+  t3: ch = COPY t2, $rdi
+  t4: ch = CALL64pcrel32 t3, @fact
+  t5: i64 = COPY t4, $rax
+  t6: i64 = IMUL64rr t0, t5   ; result goes to %2
+  t7: ch = COPY t5, t6, %2
+  t8: ch = JMP_1 t7, %bb.3
+bb.3.return:
+  -- DAG as built --
+  t0: i64 = CopyFromReg %1
+  t1: ch = CopyToReg t0, $rax
+  t2: ch = ret t1, $rax
+  -- DAG after selection --
+  t0: i64 = CopyFromReg %1
+  t1: ch = COPY t0, $rax
+  t2: ch = RET64 t1, $rax
+main:
+bb.0.entry:
+  -- DAG as built --
+  t0: i64 = Constant <5>   ; result goes to $rdi
+  t1: ch = CopyToReg t0, $rdi
+  t2: ch = call t1, @fact
+  t3: i64 = CopyFromReg t2, $rax
+  t4: ch = CopyToReg t3, t3, $rdi
+  t5: ch = call t4, @print_int
+  t6: ch = ret t5
+  -- DAG after selection --
+  t0: i64 = MOV64ri32 <5>   ; result goes to $rdi
+  t1: ch = COPY t0, $rdi
+  t2: ch = CALL64pcrel32 t1, @fact
+  t3: i64 = COPY t2, $rax
+  t4: ch = COPY t3, t3, $rdi
+  t5: ch = CALL64pcrel32 t4, @print_int
+  t6: ch = RET64 t5
+== stage_isel: machine IR after scheduling, virtual registers and PHIs ==
+fact:
+bb.0.entry:
+  %0 = COPY $rdi
+  CMP64ri8 %0, 2, implicit-def $eflags
+  JCC_1 %bb.1, 12, implicit $eflags
+  JMP_1 %bb.2
+bb.1.if.then:
+  %3 = MOV64ri32 1
+  JMP_1 %bb.3
+bb.2.if.end:
+  %4 = SUB64ri8 %0, 1
+  $rdi = COPY %4
+  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+  %5 = COPY $rax
+  %2 = IMUL64rr %0, %5
+  JMP_1 %bb.3
+bb.3.return:
+  %1 = PHI %3, %bb.1, %2, %bb.2
+  $rax = COPY %1
+  RET64 implicit $rax
+main:
+bb.0.entry:
+  $rdi = MOV64ri32 5
+  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+  %0 = COPY $rax
+  $rdi = COPY %0
+  CALL64pcrel32 @print_int, implicit $rdi
+  RET64
+== stage_phi_elim: PHIs replaced by copies ==
+fact:
+bb.0.entry:
+  %0 = COPY $rdi
+  CMP64ri8 %0, 2, implicit-def $eflags
+  JCC_1 %bb.1, 12, implicit $eflags
+  JMP_1 %bb.2
+bb.1.if.then:
+  %3 = MOV64ri32 1
+  %6 = COPY %3
+  JMP_1 %bb.3
+bb.2.if.end:
+  %4 = SUB64ri8 %0, 1
+  $rdi = COPY %4
+  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+  %5 = COPY $rax
+  %2 = IMUL64rr %0, %5
+  %6 = COPY %2
+  JMP_1 %bb.3
+bb.3.return:
+  %1 = COPY %6
+  $rax = COPY %1
+  RET64 implicit $rax
+main:
+bb.0.entry:
+  $rdi = MOV64ri32 5
+  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+  %0 = COPY $rax
+  $rdi = COPY %0
+  CALL64pcrel32 @print_int, implicit $rdi
+  RET64
+== stage_two_address: A = op B, C rewritten as A = B; A = op A, C ==
+fact:
+bb.0.entry:
+  %0 = COPY $rdi
+  CMP64ri8 %0, 2, implicit-def $eflags
+  JCC_1 %bb.1, 12, implicit $eflags
+  JMP_1 %bb.2
+bb.1.if.then:
+  %3 = MOV64ri32 1
+  %6 = COPY %3
+  JMP_1 %bb.3
+bb.2.if.end:
+  %4 = COPY %0
+  %4 = SUB64ri8 %4, 1
+  $rdi = COPY %4
+  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+  %5 = COPY $rax
+  %2 = COPY %0
+  %2 = IMUL64rr %2, %5
+  %6 = COPY %2
+  JMP_1 %bb.3
+bb.3.return:
+  %1 = COPY %6
+  $rax = COPY %1
+  RET64 implicit $rax
+main:
+bb.0.entry:
+  $rdi = MOV64ri32 5
+  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+  %0 = COPY $rax
+  $rdi = COPY %0
+  CALL64pcrel32 @print_int, implicit $rdi
+  RET64
+== stage_live_intervals: machine IR with slot indexes ==
+fact:
+bb.0.entry:
+    0  %0 = COPY $rdi
+    2  CMP64ri8 %0, 2, implicit-def $eflags
+    4  JCC_1 %bb.1, 12, implicit $eflags
+    6  JMP_1 %bb.2
+bb.1.if.then:
+    8  %3 = MOV64ri32 1
+   10  %6 = COPY %3
+   12  JMP_1 %bb.3
+bb.2.if.end:
+   14  %4 = COPY %0
+   16  %4 = SUB64ri8 %4, 1
+   18  $rdi = COPY %4
+   20  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+   22  %5 = COPY $rax
+   24  %2 = COPY %0
+   26  %2 = IMUL64rr %2, %5
+   28  %6 = COPY %2
+   30  JMP_1 %bb.3
+bb.3.return:
+   32  %1 = COPY %6
+   34  $rax = COPY %1
+   36  RET64 implicit $rax
+main:
+bb.0.entry:
+    0  $rdi = MOV64ri32 5
+    2  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+    4  %0 = COPY $rax
+    6  $rdi = COPY %0
+    8  CALL64pcrel32 @print_int, implicit $rdi
+   10  RET64
+== stage_live_intervals: intervals ==
+fact:
+  %0 [1,8) [14,25)  weight 166
+  %1 [33,35)  weight 1000
+  %2 [25,29)  weight 1000
+  %3 [9,11)  weight 1000
+  %4 [15,19)  weight 1000
+  %5 [23,27)  weight 500
+  %6 [11,14) [29,33)  weight 136
+  $rax fixed [21,23) [35,37)
+  $rdi fixed [0,1) [19,21)
+  call at slot 21 clobbers every caller-saved register
+main:
+  %0 [5,7)  weight 1000
+  $rax fixed [3,5)
+  $rdi fixed [1,3) [7,9)
+  call at slot 3 clobbers every caller-saved register
+  call at slot 9 clobbers every caller-saved register
+== stage_coalesce: copies joined ==
+fact: joined %3 into %6
+fact: joined %0 into %2
+fact: joined %2 into %6
+fact: joined %6 into %1
+== stage_coalesce: machine IR after coalescing ==
+fact:
+bb.0.entry:
+    0  %1 = COPY $rdi
+    2  CMP64ri8 %1, 2, implicit-def $eflags
+    4  JCC_1 %bb.1, 12, implicit $eflags
+    6  JMP_1 %bb.2
+bb.1.if.then:
+    8  %1 = MOV64ri32 1
+   10  JMP_1 %bb.3
+bb.2.if.end:
+   12  %4 = COPY %1
+   14  %4 = SUB64ri8 %4, 1
+   16  $rdi = COPY %4
+   18  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+   20  %5 = COPY $rax
+   22  %1 = IMUL64rr %1, %5
+   24  JMP_1 %bb.3
+bb.3.return:
+   26  $rax = COPY %1
+   28  RET64 implicit $rax
+main:
+bb.0.entry:
+    0  $rdi = MOV64ri32 5
+    2  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+    4  %0 = COPY $rax
+    6  $rdi = COPY %0
+    8  CALL64pcrel32 @print_int, implicit $rdi
+   10  RET64
+== stage_regalloc: assignments, in the order they were made ==
+fact: %5 weight 1000, 1 hints -> $rax
+fact: %4 weight 1000, 1 hints -> $rdi
+fact: %1 weight 269, 3 hints -> $rbx
+main: %0 weight 1000, 2 hints -> $rax
+== stage_regalloc: machine IR with physical registers ==
+fact:
+bb.0.entry:
+  $rbx = COPY $rdi
+  CMP64ri8 $rbx, 2, implicit-def $eflags
+  JCC_1 %bb.1, 12, implicit $eflags
+  JMP_1 %bb.2
+bb.1.if.then:
+  $rbx = MOV64ri32 1
+  JMP_1 %bb.3
+bb.2.if.end:
+  $rdi = COPY $rbx
+  $rdi = SUB64ri8 $rdi, 1
+  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+  $rbx = IMUL64rr $rbx, $rax
+  JMP_1 %bb.3
+bb.3.return:
+  $rax = COPY $rbx
+  RET64 implicit $rax
+main:
+bb.0.entry:
+  $rdi = MOV64ri32 5
+  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+  $rdi = COPY $rax
+  CALL64pcrel32 @print_int, implicit $rdi
+  RET64
+== stage_prologue_epilogue: callee-saved registers saved and restored ==
+fact:
+bb.0.entry:
+  PUSH64r $rbx
+  $rbx = COPY $rdi
+  CMP64ri8 $rbx, 2, implicit-def $eflags
+  JCC_1 %bb.1, 12, implicit $eflags
+  JMP_1 %bb.2
+bb.1.if.then:
+  $rbx = MOV64ri32 1
+  JMP_1 %bb.3
+bb.2.if.end:
+  $rdi = COPY $rbx
+  $rdi = SUB64ri8 $rdi, 1
+  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+  $rbx = IMUL64rr $rbx, $rax
+  JMP_1 %bb.3
+bb.3.return:
+  $rax = COPY $rbx
+  $rbx = POP64r
+  RET64 implicit $rax
+main:
+bb.0.entry:
+  $rdi = MOV64ri32 5
+  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+  $rdi = COPY $rax
+  CALL64pcrel32 @print_int, implicit $rdi
+  RET64
+== stage_encode: machine code, with the offset of each instruction ==
+fact:
+  +0x0000  PUSH64r $rbx
+  +0x0001  $rbx = COPY $rdi
+  +0x0004  CMP64ri8 $rbx, 2, implicit-def $eflags
+  +0x0008  JCC_1 %bb.1, 12, implicit $eflags
+  +0x000e  JMP_1 %bb.2
+  +0x0013  $rbx = MOV64ri32 1
+  +0x001a  JMP_1 %bb.3
+  +0x001f  $rdi = COPY $rbx
+  +0x0022  $rdi = SUB64ri8 $rdi, 1
+  +0x0026  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+  +0x002b  $rbx = IMUL64rr $rbx, $rax
+  +0x002f  JMP_1 %bb.3
+  +0x002f  $rax = COPY $rbx
+  +0x0032  $rbx = POP64r
+  +0x0033  RET64 implicit $rax
+main:
+  +0x0034  $rdi = MOV64ri32 5
+  +0x003b  CALL64pcrel32 @fact, implicit $rdi, implicit-def $rax
+  +0x0040  $rdi = COPY $rax
+  +0x0043  CALL64pcrel32 @print_int, implicit $rdi
+  +0x0048  RET64
++0x000a  rel32 5 to +0x0013
++0x000f  rel32 12 to +0x001f
++0x001b  rel32 16 to +0x002f
++0x0027  rel32 -43 to +0x0000
++0x003c  rel32 -64 to +0x0000
++0x0044  rel32 1 to +0x0049
+== stage_encode: final code, 176 bytes ==
++0x0000: 53 48 89 fb 48 83 fb 02 0f 8c 05 00 00 00 e9 0c
++0x0010: 00 00 00 48 c7 c3 01 00 00 00 e9 10 00 00 00 48
++0x0020: 89 df 48 83 ef 01 e8 d5 ff ff ff 48 0f af d8 48
++0x0030: 89 d8 5b c3 48 c7 c7 05 00 00 00 e8 c0 ff ff ff
++0x0040: 48 89 c7 e8 01 00 00 00 c3 48 89 f8 48 83 ec 20
++0x0050: 48 8d 74 24 20 48 c7 c1 0a 00 00 00 48 ff ce c6
++0x0060: 06 0a 31 d2 48 f7 f1 80 c2 30 48 ff ce 88 16 48
++0x0070: 85 c0 75 ee 48 8d 54 24 20 48 29 f2 b8 01 00 00
++0x0080: 00 bf 01 00 00 00 0f 05 48 83 c4 20 c3 0f b6 17
++0x0090: 48 8d 77 01 b8 01 00 00 00 bf 01 00 00 00 0f 05
++0x00a0: c3 0e 48 65 6c 6c 6f 2c 20 77 6f 72 6c 64 21 0a
+== stage_export ==

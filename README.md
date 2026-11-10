@@ -62,7 +62,7 @@ The JIT column says whether the real design compiles code while the program is r
 | Entry | Mimics | JIT | What it should show |
 |-------|--------|:---:|---------------------|
 | [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
-| `distilled/clang` | Clang and LLVM | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
+| [`distilled/clang`](distilled/clang/) | Clang and LLVM | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
 | `distilled/gcc` | GCC | ❌ | GIMPLE, RTL, and the pass pipeline |
 | [`distilled/puc-lua`](distilled/puc-lua/) | The reference Lua interpreter | ❌ | Register bytecode and the dispatch loop |
 | `distilled/cpython` | CPython | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The JIT is optional and experimental |
@@ -180,7 +180,7 @@ Examples are checked for correct output, not timed. Designs can still be compare
 
 ## Status
 
-Just started. Three entries exist so far, `research/naive`, `distilled/puc-lua` and `distilled/sea-of-nodes`, and all pass every example. The other distilled entries are still only planned.
+Just started. Four entries exist so far, `research/naive`, `distilled/puc-lua`, `distilled/sea-of-nodes` and `distilled/clang`, and all pass every example. The other distilled entries are still only planned.
 
 ## Non-goals
 

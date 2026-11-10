@@ -1,0 +1,99 @@
+== stage_irgen: IR as clang emits it, every local in an alloca ==
+define void @main() {
+entry:
+  call void @print_str(ptr @.str)
+  ret void
+}
+== stage_mem2reg: what it did ==
+main: immediate dominators: entry<-entry
+== stage_mem2reg: IR after promotion to SSA ==
+define void @main() {
+entry:
+  call void @print_str(ptr @.str)
+  ret void
+}
+== stage_isel: SelectionDAG per block ==
+main:
+bb.0.entry:
+  -- DAG as built --
+  t0: i64 = GlobalAddress @.str
+  t1: ch = CopyToReg t0, $rdi
+  t2: ch = call t1, @print_str
+  t3: ch = ret t2
+  -- DAG after selection --
+  t0: i64 = LEA64r @.str
+  t1: ch = COPY t0, $rdi
+  t2: ch = CALL64pcrel32 t1, @print_str
+  t3: ch = RET64 t2
+== stage_isel: machine IR after scheduling, virtual registers and PHIs ==
+main:
+bb.0.entry:
+  %0 = LEA64r @.str
+  $rdi = COPY %0
+  CALL64pcrel32 @print_str, implicit $rdi
+  RET64
+== stage_phi_elim: PHIs replaced by copies ==
+main:
+bb.0.entry:
+  %0 = LEA64r @.str
+  $rdi = COPY %0
+  CALL64pcrel32 @print_str, implicit $rdi
+  RET64
+== stage_two_address: A = op B, C rewritten as A = B; A = op A, C ==
+main:
+bb.0.entry:
+  %0 = LEA64r @.str
+  $rdi = COPY %0
+  CALL64pcrel32 @print_str, implicit $rdi
+  RET64
+== stage_live_intervals: machine IR with slot indexes ==
+main:
+bb.0.entry:
+    0  %0 = LEA64r @.str
+    2  $rdi = COPY %0
+    4  CALL64pcrel32 @print_str, implicit $rdi
+    6  RET64
+== stage_live_intervals: intervals ==
+main:
+  %0 [1,3)  weight 1000
+  $rdi fixed [3,5)
+  call at slot 5 clobbers every caller-saved register
+== stage_coalesce: copies joined ==
+== stage_coalesce: machine IR after coalescing ==
+main:
+bb.0.entry:
+    0  %0 = LEA64r @.str
+    2  $rdi = COPY %0
+    4  CALL64pcrel32 @print_str, implicit $rdi
+    6  RET64
+== stage_regalloc: assignments, in the order they were made ==
+main: %0 weight 1000, 1 hints -> $rdi
+== stage_regalloc: machine IR with physical registers ==
+main:
+bb.0.entry:
+  $rdi = LEA64r @.str
+  CALL64pcrel32 @print_str, implicit $rdi
+  RET64
+== stage_prologue_epilogue: callee-saved registers saved and restored ==
+main:
+bb.0.entry:
+  $rdi = LEA64r @.str
+  CALL64pcrel32 @print_str, implicit $rdi
+  RET64
+== stage_encode: machine code, with the offset of each instruction ==
+main:
+  +0x0000  $rdi = LEA64r @.str
+  +0x0007  CALL64pcrel32 @print_str, implicit $rdi
+  +0x000c  RET64
++0x0003  rel32 94 to +0x0065
++0x0008  rel32 69 to +0x0051
+== stage_encode: final code, 116 bytes ==
++0x0000: 48 8d 3d 5e 00 00 00 e8 45 00 00 00 c3 48 89 f8
++0x0010: 48 83 ec 20 48 8d 74 24 20 48 c7 c1 0a 00 00 00
++0x0020: 48 ff ce c6 06 0a 31 d2 48 f7 f1 80 c2 30 48 ff
++0x0030: ce 88 16 48 85 c0 75 ee 48 8d 54 24 20 48 29 f2
++0x0040: b8 01 00 00 00 bf 01 00 00 00 0f 05 48 83 c4 20
++0x0050: c3 0f b6 17 48 8d 77 01 b8 01 00 00 00 bf 01 00
++0x0060: 00 00 0f 05 c3 0e 48 65 6c 6c 6f 2c 20 77 6f 72
++0x0070: 6c 64 21 0a
+== stage_export ==
