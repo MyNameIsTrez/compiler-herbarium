@@ -191,10 +191,6 @@ A new example is added to every entry, the same way a Rosetta Code task is. See 
 
 Examples are checked for correct output, not timed. Designs can still be compared with numbers that do not need a stopwatch, such as emitted instruction count, code size in bytes, or the number of IR nodes at each stage.
 
-## Status
-
-Just started. Six entries exist so far, `research/naive`, `distilled/puc-lua`, `distilled/sea-of-nodes`, `distilled/clang`, `distilled/chibicc` and `distilled/cpython`, and all pass every example. Leads for more entries are in [RESEARCH.md](RESEARCH.md).
-
 ## Non-goals
 
 - Measuring or optimizing performance. The compilers stay tiny, so speed numbers would say little about the real designs.
