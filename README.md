@@ -116,7 +116,6 @@ Every entry builds with plain gcc and plain clang, with no flags, for example `g
 - stdout is the program's output, which must equal `examples/<example>/expected.txt`.
 - stderr is the intermediate form after each stage.
 - If a path is given, the final machine code is written there.
-- With no example, or an unknown one, the entry prints a usage message and exits with status 2.
 
 The dumps in each entry's own `dumps/` directory are committed, so the intermediate forms can be read without building anything. They must be deterministic, which means no pointers, timestamps or other run-dependent values in them. `scripts/check-entry.sh` does the work:
 
