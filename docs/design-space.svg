@@ -38,7 +38,7 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="h" x="780" y="42">Graph</text>
 <text class="h" x="780" y="58">(nodes, e-classes)</text>
 <text class="h" x="920" y="42">Functional term</text>
-<text class="h" x="920" y="58">(ANF, STG)</text>
+<text class="h" x="920" y="58">(ANF, CPS, STG)</text>
 <text class="h" x="1060" y="42">Facts, relations,</text>
 <text class="h" x="1060" y="58">schedules</text>
 <line class="g" x1="150" y1="70" x2="150" y2="680"/>
@@ -72,6 +72,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n p" x="454" y="179">Wizard</text>
 <circle class="pl" cx="442" cy="199" r="6"/>
 <text class="n p" x="454" y="203">Wren</text>
+<circle class="pl" cx="442" cy="291" r="6"/>
+<text class="n p" x="454" y="295">Zig</text>
 <polygon class="or" points="162,283 170,291 162,299 154,291"/>
 <text class="n" x="174" y="295">naive</text>
 <circle class="dn" cx="162" cy="319" r="6"/>
@@ -94,6 +96,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n p" x="874" y="295">GHC</text>
 <circle class="pl" cx="862" cy="319" r="6"/>
 <text class="n p" x="874" y="323">Lean 4</text>
+<circle class="pl" cx="862" cy="347" r="6"/>
+<text class="n p" x="874" y="351">Flambda2</text>
 <circle class="pl" cx="1002" cy="291" r="6"/>
 <text class="n p" x="1014" y="295">Halide</text>
 <circle class="pl" cx="1002" cy="319" r="6"/>
