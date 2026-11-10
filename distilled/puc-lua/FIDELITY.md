@@ -6,6 +6,7 @@ Reference material used:
 
 - Source: [lua/lua](https://github.com/lua/lua) at tag `v5.4.7`: `lopcodes.h` (instruction layout and opcode numbers), `lvm.c` (`luaV_execute`, `pushclosure`), `ldo.c` (`luaD_poscall`), `lfunc.c` (`luaF_close`), `ltm.c` (`luaT_adjustvarargs`), `lcode.c` (`luaK_finish`).
 - Output of `luac5.4 -l -l -p` and `string.dump` from the installed Lua 5.4.9, used to copy the bytecode. That repository checkout contains no `luac.c`, so the listing format is modeled on the printed output, not on its source.
+- Not read: `lparser.c` and `lcode.c` in depth, which are the compiler that this entry skips, and the garbage collector (`lgc.c`).
 
 ## Stage mapping
 
