@@ -1,0 +1,103 @@
+== stage_ast ==
+Module
+  Expr(Call(Name(print), [BinOp(BinOp(BinOp(Constant(2), Add, Constant(3)), Mult, Constant(4)), Sub, Constant(6))]))
+== stage_symtable ==
+scope <module> (module)
+  print  GLOBAL_IMPLICIT
+== stage_codegen: <module> ==
+  RESUME 0
+  LOAD_NAME 0 (print)
+  PUSH_NULL
+  LOAD_CONST 0 (2)
+  LOAD_CONST 1 (3)
+  BINARY_OP 0 (+)
+  LOAD_CONST 2 (4)
+  BINARY_OP 5 (*)
+  LOAD_CONST 3 (6)
+  BINARY_OP 10 (-)
+  CALL 1
+  POP_TOP
+  LOAD_CONST 4 (None)
+  RETURN_VALUE
+== stage_cfg: <module> ==
+ B0:
+  RESUME 0
+  LOAD_NAME 0 (print)
+  PUSH_NULL
+  LOAD_CONST 0 (2)
+  LOAD_CONST 1 (3)
+  BINARY_OP 0 (+)
+  LOAD_CONST 2 (4)
+  BINARY_OP 5 (*)
+  LOAD_CONST 3 (6)
+  BINARY_OP 10 (-)
+  CALL 1
+  POP_TOP
+  LOAD_CONST 4 (None)
+  RETURN_VALUE
+== stage_optimize_cfg: <module> ==
+after inline_small_or_no_lineno_blocks:
+ B0:
+  RESUME 0
+  LOAD_NAME 0 (print)
+  PUSH_NULL
+  LOAD_CONST 0 (2)
+  LOAD_CONST 1 (3)
+  BINARY_OP 0 (+)
+  LOAD_CONST 2 (4)
+  BINARY_OP 5 (*)
+  LOAD_CONST 3 (6)
+  BINARY_OP 10 (-)
+  CALL 1
+  POP_TOP
+  LOAD_CONST 4 (None)
+  RETURN_VALUE
+after remove_unreachable:
+ B0:
+  RESUME 0
+  LOAD_NAME 0 (print)
+  PUSH_NULL
+  LOAD_CONST 0 (2)
+  LOAD_CONST 1 (3)
+  BINARY_OP 0 (+)
+  LOAD_CONST 2 (4)
+  BINARY_OP 5 (*)
+  LOAD_CONST 3 (6)
+  BINARY_OP 10 (-)
+  CALL 1
+  POP_TOP
+  LOAD_CONST 4 (None)
+  RETURN_VALUE
+after optimize_load_const, optimize_basic_block, remove_redundant_nops:
+ B0:
+  RESUME 0
+  LOAD_NAME 0 (print)
+  PUSH_NULL
+  LOAD_SMALL_INT 14
+  CALL 1
+  POP_TOP
+  LOAD_COMMON_CONSTANT 7 (None)
+  RETURN_VALUE
+consts: 2
+== stage_assemble: <module> ==
+   0  RESUME 0
+   2  LOAD_NAME 0 (print)
+   3  PUSH_NULL
+   4  LOAD_SMALL_INT 14
+   5  CALL 1
+   9  POP_TOP
+  10  LOAD_COMMON_CONSTANT 7 (None)
+  11  RETURN_VALUE
+stacksize: 3
+consts: 2
+names: print
+code: 80 00 00 00 59 00 1f 00 5a 0e 32 01 00 00 00 00 00 00 1d 00 4d 07 21 00
+== stage_run ==
+  0 RESUME 0  [0]
+  2 LOAD_NAME 0  [0]
+  3 PUSH_NULL 0  [1]
+  4 LOAD_SMALL_INT 14  [2]
+  5 CALL 1  [3]
+  9 POP_TOP 0  [1]
+ 10 LOAD_COMMON_CONSTANT 7  [0]
+ 11 RETURN_VALUE 0  [1]
