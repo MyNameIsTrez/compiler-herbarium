@@ -198,7 +198,6 @@ Just started. Six entries exist so far, `research/naive`, `distilled/puc-lua`, `
 ## Non-goals
 
 - Measuring or optimizing performance. The compilers stay tiny, so speed numbers would say little about the real designs.
-- Competing with the real compilers on coverage.
 - Parsing a real language, or including the optimizations that every compiler shares.
 - Being a production tool. These are specimens, not products.
 - Compilers for languages that add no compiler design, see "What earns an entry".
