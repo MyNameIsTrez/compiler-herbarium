@@ -1,0 +1,169 @@
+== stage_source: lowered program of branch ==
+fn main()
+   0: a = 3
+   1: b = 5
+   2: r2 = &a
+   3: t3 = *r2
+   4: r4 = &b
+   5: t5 = *r4
+   6: if t3 < t5 goto 11
+   7: r6 = &a
+   8: t7 = *r6
+   9: print t7
+  10: goto 14
+  11: r8 = &b
+  12: t9 = *r8
+  13: print t9
+  14: t10 = 0
+  15: return t10
+== stage_facts: input facts of fn main ==
+L0 = &a at main:2, issued into 'L0
+L1 = &b at main:4, issued into 'L1
+L2 = &a at main:7, issued into 'L2
+L3 = &b at main:11, issued into 'L3
+cfg_edge (16)
+   (main:0,main:1) (main:1,main:2) (main:2,main:3) (main:3,main:4)
+   (main:4,main:5) (main:5,main:6) (main:6,main:11) (main:6,main:7)
+   (main:7,main:8) (main:8,main:9) (main:9,main:10) (main:10,main:14)
+   (main:11,main:12) (main:12,main:13) (main:13,main:14) (main:14,main:15)
+loan_issued_at (4)
+   ('L0,L0,main:2) ('L1,L1,main:4) ('L2,L2,main:7) ('L3,L3,main:11)
+loan_killed_at (4)
+   (L0,main:0) (L2,main:0) (L1,main:1) (L3,main:1)
+loan_invalidated_at (4)
+   (L0,main:0) (L2,main:0) (L1,main:1) (L3,main:1)
+subset_base (4)
+   ('L0,'r2,main:2) ('L1,'r4,main:4) ('L2,'r6,main:7) ('L3,'r8,main:11)
+placeholder (0)
+var_used_at (9)
+   (r2,main:3) (r4,main:5) (t3,main:6) (t5,main:6)
+   (r6,main:8) (t7,main:9) (r8,main:12) (t9,main:13)
+   (t10,main:15)
+var_defined_at (11)
+   (a,main:0) (b,main:1) (r2,main:2) (t3,main:3)
+   (r4,main:4) (t5,main:5) (r6,main:7) (t7,main:8)
+   (r8,main:11) (t9,main:12) (t10,main:14)
+use_of_var_derefs_origin (4)
+   (r2,'r2) (r4,'r4) (r6,'r6) (r8,'r8)
+point (16)
+== stage_liveness: liveness of fn main ==
+  var_live_on_entry(V, P) :- var_used_at(V, P).
+  var_live_on_entry(V, P) :- var_live_on_entry(V, Q), cfg_edge(P, Q), !var_defined_at(V, P).
+  origin_live_on_entry(O1, P) :- var_live_on_entry(V, P), use_of_var_derefs_origin(V, O1).
+  origin_live_on_entry(O1, P) :- placeholder(O1), point(P).
+  round 1: var_live_on_entry +9
+  round 2: var_live_on_entry +1 origin_live_on_entry +4
+  round 3: var_live_on_entry +1
+  round 4: nothing new
+var_live_on_entry (11)
+   (r2,main:3) (r4,main:5) (t3,main:6) (t5,main:6)
+   (r6,main:8) (t7,main:9) (r8,main:12) (t9,main:13)
+   (t10,main:15) (t3,main:5) (t3,main:4)
+origin_live_on_entry (4)
+   ('r2,main:3) ('r4,main:5) ('r6,main:8) ('r8,main:12)
+== stage_loans: loan analysis of fn main ==
+  R1 subset(O1, O2, P) :- subset_base(O1, O2, P).
+  R2 subset(O1, O3, P) :- subset(O1, O2, P), subset(O2, O3, P).
+  R3 subset(O1, O2, Q) :- subset(O1, O2, P), cfg_edge(P, Q), origin_live_on_entry(O1, Q), origin_live_on_entry(O2, Q).
+  R4 origin_contains_loan_on_entry(O1, L, P) :- loan_issued_at(O1, L, P).
+  R5 origin_contains_loan_on_entry(O2, L, P) :- origin_contains_loan_on_entry(O1, L, P), subset(O1, O2, P).
+  R6 origin_contains_loan_on_entry(O1, L, Q) :- origin_contains_loan_on_entry(O1, L, P), !loan_killed_at(L, P), cfg_edge(P, Q), origin_live_on_entry(O1, Q).
+  R7 loan_live_at(L, P) :- origin_contains_loan_on_entry(O1, L, P), origin_live_on_entry(O1, P).
+  R8 errors(L, P) :- loan_invalidated_at(L, P), loan_live_at(L, P).
+  round 1: subset +4 origin_contains_loan_on_entry +4
+  round 2: origin_contains_loan_on_entry +4
+  round 3: origin_contains_loan_on_entry +4
+  round 4: loan_live_at +4
+  round 5: nothing new
+subset (4)
+   ('L0,'r2,main:2) ('L1,'r4,main:4) ('L2,'r6,main:7) ('L3,'r8,main:11)
+origin_contains_loan_on_entry (12)
+   ('L0,L0,main:2) ('L1,L1,main:4) ('L2,L2,main:7) ('L3,L3,main:11)
+   ('r2,L0,main:2) ('r4,L1,main:4) ('r6,L2,main:7) ('r8,L3,main:11)
+   ('r2,L0,main:3) ('r4,L1,main:5) ('r6,L2,main:8) ('r8,L3,main:12)
+  L0 (&a at main:2); live at main:3; invalidated at main:0
+  L1 (&b at main:4); live at main:5; invalidated at main:1
+  L2 (&a at main:7); live at main:8; invalidated at main:0
+  L3 (&b at main:11); live at main:12; invalidated at main:1
+errors (0)
+borrow check passed
+== stage_run ==
+  12 statements executed
+
+== a program the borrow checker rejects ==
+fn main()
+   0: x = 1
+   1: r = &x
+   2: s = r
+   3: t3 = *r
+   4: x = 2
+   5: t4 = *s
+   6: print t4
+   7: t5 = 0
+   8: return t5
+== stage_facts: input facts of fn main ==
+L0 = &x at main:1, issued into 'L0
+cfg_edge (8)
+   (main:0,main:1) (main:1,main:2) (main:2,main:3) (main:3,main:4)
+   (main:4,main:5) (main:5,main:6) (main:6,main:7) (main:7,main:8)
+loan_issued_at (1)
+   ('L0,L0,main:1)
+loan_killed_at (2)
+   (L0,main:0) (L0,main:4)
+loan_invalidated_at (2)
+   (L0,main:0) (L0,main:4)
+subset_base (2)
+   ('L0,'r,main:1) ('r,'s,main:2)
+placeholder (0)
+var_used_at (5)
+   (r,main:2) (r,main:3) (s,main:5) (t4,main:6)
+   (t5,main:8)
+var_defined_at (7)
+   (x,main:0) (r,main:1) (s,main:2) (t3,main:3)
+   (x,main:4) (t4,main:5) (t5,main:7)
+use_of_var_derefs_origin (2)
+   (r,'r) (s,'s)
+point (9)
+== stage_liveness: liveness of fn main ==
+  var_live_on_entry(V, P) :- var_used_at(V, P).
+  var_live_on_entry(V, P) :- var_live_on_entry(V, Q), cfg_edge(P, Q), !var_defined_at(V, P).
+  origin_live_on_entry(O1, P) :- var_live_on_entry(V, P), use_of_var_derefs_origin(V, O1).
+  origin_live_on_entry(O1, P) :- placeholder(O1), point(P).
+  round 1: var_live_on_entry +5
+  round 2: var_live_on_entry +1 origin_live_on_entry +3
+  round 3: var_live_on_entry +1 origin_live_on_entry +1
+  round 4: origin_live_on_entry +1
+  round 5: nothing new
+var_live_on_entry (7)
+   (r,main:2) (r,main:3) (s,main:5) (t4,main:6)
+   (t5,main:8) (s,main:4) (s,main:3)
+origin_live_on_entry (5)
+   ('r,main:2) ('r,main:3) ('s,main:5) ('s,main:4)
+   ('s,main:3)
+== stage_loans: loan analysis of fn main ==
+  R1 subset(O1, O2, P) :- subset_base(O1, O2, P).
+  R2 subset(O1, O3, P) :- subset(O1, O2, P), subset(O2, O3, P).
+  R3 subset(O1, O2, Q) :- subset(O1, O2, P), cfg_edge(P, Q), origin_live_on_entry(O1, Q), origin_live_on_entry(O2, Q).
+  R4 origin_contains_loan_on_entry(O1, L, P) :- loan_issued_at(O1, L, P).
+  R5 origin_contains_loan_on_entry(O2, L, P) :- origin_contains_loan_on_entry(O1, L, P), subset(O1, O2, P).
+  R6 origin_contains_loan_on_entry(O1, L, Q) :- origin_contains_loan_on_entry(O1, L, P), !loan_killed_at(L, P), cfg_edge(P, Q), origin_live_on_entry(O1, Q).
+  R7 loan_live_at(L, P) :- origin_contains_loan_on_entry(O1, L, P), origin_live_on_entry(O1, P).
+  R8 errors(L, P) :- loan_invalidated_at(L, P), loan_live_at(L, P).
+  round 1: subset +2 origin_contains_loan_on_entry +1
+  round 2: subset +1 origin_contains_loan_on_entry +1
+  round 3: origin_contains_loan_on_entry +1
+  round 4: origin_contains_loan_on_entry +2 loan_live_at +1
+  round 5: origin_contains_loan_on_entry +1 loan_live_at +1
+  round 6: origin_contains_loan_on_entry +1
+  round 7: loan_live_at +1
+  round 8: errors +1
+  round 9: nothing new
+subset (3)
+   ('L0,'r,main:1) ('r,'s,main:2) ('r,'s,main:3)
+origin_contains_loan_on_entry (7)
+   ('L0,L0,main:1) ('r,L0,main:1) ('r,L0,main:2) ('s,L0,main:2)
+   ('r,L0,main:3) ('s,L0,main:3) ('s,L0,main:4)
+  L0 (&x at main:1); live at main:2, main:3, main:4; invalidated at main:0, main:4; error at main:4
+errors (1)
+   (L0,main:4)
+borrow check failed with 1 error(s), the program is not run

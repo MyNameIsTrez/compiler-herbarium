@@ -84,7 +84,7 @@ These are the entries in `distilled/`, each a toy version of a real compiler or 
 
 The Lines of C column is `cloc`'s count of code lines in the entry's `main.c`, without blanks and comments. `scripts/check-cloc.sh` checks it and `scripts/check-cloc.sh --update` rewrites it.
 
-The Kind column says whether the real design is a compiler or an interpreter. A design that compiles to bytecode and then runs it, like CPython, is an interpreter.
+The Kind column says whether the real design is a compiler, an interpreter or an analysis (a tool that produces facts about a program and no program). A design that compiles to bytecode and then runs it, like CPython, is an interpreter.
 
 The JIT column says whether the real design compiles code to machine code while the program is running (✅), as opposed to doing so ahead of time or never (❌). It is 🟡 when the answer depends on how the design is used, for example an IR that real systems use in both JIT and ahead-of-time compilers.
 
@@ -100,6 +100,7 @@ The JIT column says whether the real design compiles code to machine code while 
 | [`distilled/luajit`](distilled/luajit/) | 756 | LuaJIT | Interpreter | ✅ | A tracing JIT: a hot loop is recorded into SSA IR with guards and snapshots, unrolled by copy-substitution with PHIs, and assembled backwards with register allocation. Only the `loop` example makes a trace. |
 | [`distilled/luajit-interpreter`](distilled/luajit-interpreter/) | 948 | LuaJIT | Interpreter | ✅ | The assembler interpreter as x86-64 machine code generated at startup: pinned registers, dispatch at the end of every handler, tables as the mode switch, hot counters, a recording hook, and an exit handler. The hot loop of `loop` gets a template trace. |
 | [`distilled/luajit-remake`](distilled/luajit-remake/) | 407 | LuaJIT Remake and Deegen | Interpreter | ✅ | A copy-and-patch baseline JIT: stencils with holes, copied and patched per bytecode, with the jump to the next bytecode cut off. The entry has only the JIT, not the interpreter that the real VM tiers up from |
+| [`distilled/polonius`](distilled/polonius/) | 809 | Polonius, the Rust borrow checker as Datalog | Analysis | ❌ | A program analysis as rules over tables of facts: the front end writes facts, a semi-naive engine derives liveness, the loans each origin holds and the borrow errors |
 | [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | Interpreter | ❌ | Register bytecode and the dispatch loop |
 | [`distilled/qbe`](distilled/qbe/) | 1630 | QBE | Compiler | ❌ | Pruned SSA from an IL with mutable temporaries, the ABI as register copies, backward instruction selection, and a backward register allocator with hints and parallel moves on edges |
 | [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1401 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | Compiler | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |

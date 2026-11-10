@@ -116,8 +116,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n p" x="594" y="487">Julia</text>
 <circle class="pl" cx="722" cy="605" r="6"/>
 <text class="n p" x="734" y="609">egglog</text>
-<circle class="pl" cx="1002" cy="605" r="6"/>
-<text class="n p" x="1014" y="609">Polonius</text>
+<circle class="dn" cx="1002" cy="605" r="6"/>
+<text class="n" x="1014" y="609">polonius</text>
 <circle class="dn" cx="30" cy="718" r="6"/><text class="n" x="42" y="722">finished distilled entry</text>
 <circle class="pl" cx="170" cy="718" r="6"/><text class="n p" x="182" y="722">planned distilled entry (a lead in RESEARCH.md)</text>
 <polygon class="or" points="470,710 478,718 470,726 462,718"/><text class="n" x="486" y="722">original entry (not one existing design)</text>
