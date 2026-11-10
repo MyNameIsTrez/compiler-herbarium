@@ -150,6 +150,7 @@ A distilled entry is a toy version of a real design, so "done" has to mean more 
 - `scripts/coverage-entry.sh` passes, which means 100% line and branch coverage.
 - `scripts/check-fidelity.sh` passes, which means every `stage_*` function in `main.c` is in the `FIDELITY.md` mapping table and the other way around.
 - Every stage that defines the design is present, in the same order as in the real compiler. For example, GCC lowers from GIMPLE to RTL, and LuaJIT records a trace, builds trace IR and then emits machine code.
+- Every stage is simplified, never dropped. A toy keeps the full pipeline and shrinks each stage, for example a register allocator that colors an interference graph but does no live-range splitting or coalescing, instead of leaving out register allocation or replacing it with a stack slot per value.
 - Its `FIDELITY.md` is filled in. Each stage is mapped to the real compiler's stage name and a location in the real source, and every deliberate deviation is listed with a reason.
 - A review pass has been done against the real source and, where the real tool can print its own intermediate forms, against those dumps. Useful tools are `clang -emit-llvm` with `-mllvm -print-after-all`, `gcc -fdump-tree-all` and `-fdump-rtl-all`, `luac -l -l`, and LuaJIT's `-jbc` and `-jdump`. Output will not be identical, but the stages, their order and the shape of the data should match.
 
