@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      entries: ${{ steps.find.outputs.entries }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: find
+        run: |
+          entries=$(find distilled research -mindepth 2 -maxdepth 2 -name main.c -printf '%h\n' 2>/dev/null | sort | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "entries=${entries:-[]}" >> "$GITHUB_OUTPUT"
+
+  check:
+    needs: discover
+    if: needs.discover.outputs.entries != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        entry: ${{ fromJSON(needs.discover.outputs.entries) }}
+        opt: ["-O1", "-O2"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build, run and check ${{ matrix.entry }} at ${{ matrix.opt }}
+        run: scripts/check-entry.sh "${{ matrix.entry }}"
+        env:
+          OPT: ${{ matrix.opt }}
