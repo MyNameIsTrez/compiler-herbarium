@@ -11,6 +11,7 @@ This repo holds heavily cut-down compilers and interpreters. Read `README.md` fi
 - Only include what makes the design interesting. Leave out the tokenizer and parser, and leave out optimizations that all compilers share, such as generic constant folding, dead code elimination and common subexpression elimination, unless the design is built around them. Ask of each piece whether someone designing a new compiler would learn something from it that they would not from any other entry.
 - Keep the full pipeline and simplify each stage. Do not drop a stage that defines the real design, and do not replace it with something trivial. A stage that is not distinctive (see the previous rule) can go. Leave out the advanced parts of a stage instead, such as live-range splitting and coalescing in a graph-coloring register allocator, and list them in `FIDELITY.md`.
 - Only open-source designs get a `distilled/` entry. Read the real source before claiming that an entry matches it, and do not rely on memory of how the real compiler works.
+- Only add an entry for a design that passes "What earns an entry" in `README.md`. A language with trivial semantics, or a front end over an existing back end, does not. Record such a lead as declined in `RESEARCH.md` instead.
 
 ## FIDELITY.md
 

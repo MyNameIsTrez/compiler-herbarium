@@ -21,6 +21,8 @@ A good issue has:
 2. One or two sentences on why it is interesting, and what makes the design different from the entries that already exist.
 3. If you know it, which existing entry it relates to, or which part of a design the idea would replace.
 
+Please check "What earns an entry" in the [README](README.md) first. A language with trivial semantics, or a compiler that only wraps an existing back end, will be recorded as declined.
+
 It does not need to be polished. A link and a sentence is enough.
 
 Bug reports are welcome as issues too. Please include the entry, the example and the command you ran.

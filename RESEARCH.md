@@ -1,9 +1,10 @@
 # Research dump
 
-A running list of links to compiler designs, papers, posts and repos that are relevant to this repo. It has two tables:
+A running list of links to compiler designs, papers, posts and repos that are relevant to this repo. It has three tables:
 
 1. Leads that already have a compiler in this repo.
 2. Leads that do not have one yet, and still need to be investigated.
+3. Leads that were considered and declined.
 
 When a lead gets an entry, move its row from the second table to the first. New leads usually arrive as issues, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -40,3 +41,12 @@ The "Read" column says whether the lead has been read in enough depth to rely on
 | A Bestiary of Single-File Implementations of Programming Languages | [marcpaq/b1fipl](https://github.com/marcpaq/b1fipl) | ❌ | A catalogue of single-file language implementations. Source of candidate designs. | Candidate designs, layout reference |
 | Rosetta Code compiler tasks | [Compiler/Sample programs](https://rosettacode.org/wiki/Compiler/Sample_programs) | ❌ | The same tiny-language pipeline implemented in many programming languages, with shared sample programs. | Ideas for later `examples/` |
 | Nanopass and incremental compiler construction | [Ghuloum, An Incremental Approach to Compiler Construction](https://www.schemeworkshop.org/2006/11-ghuloum.pdf) | ❌ | One pipeline of many small passes with an IR per pass. | Possible `research/` entry on many tiny passes |
+
+## Considered and declined
+
+These do not pass "What earns an entry" in the [README](README.md).
+
+| Lead | Why declined |
+|------|--------------|
+| Brainfuck compilers | Eight commands map nearly one-to-one onto machine code. There is no IR, scoping or type system, so the compiler is a table. `research/naive` already shows expanding code with no IR in between. |
+| A language that only lowers to LLVM IR | The back end would repeat `distilled/clang`. The front end, a language-specific lowering, is the part this repo leaves out. A design whose middle IR is the interesting part, such as MIR in rustc, is judged on that IR instead. |

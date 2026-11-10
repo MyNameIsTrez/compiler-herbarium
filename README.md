@@ -53,6 +53,16 @@ gcc research/<compiler>/main.c
 
 This repo is Linux only. Entries may rely on Linux system calls and Linux-specific memory mapping, and no effort is made to support other operating systems.
 
+## What earns an entry
+
+An entry is a compiler design, not a language. It needs at least one of these:
+
+- a distinct IR or program representation (Sea of Nodes, a CFG of basic blocks, a typed AST walked directly),
+- a distinct execution model (a trace JIT, copy-and-patch, a stack machine with no register allocator), or
+- semantic machinery that the compiler itself carries out (compile-time evaluation, borrow checking, lazy evaluation).
+
+A language that only differs in surface syntax does not qualify, such as brainfuck, whose compiler is a table. Nor does a compiler that is a thin layer over an existing back end: its back end would repeat `distilled/clang`, and its front end is the part this repo leaves out. A design whose middle IR is the interesting part does qualify, even if LLVM comes last. Declined leads are recorded in [RESEARCH.md](RESEARCH.md).
+
 ## Real compilers
 
 These are the planned entries in `distilled/`, each a toy version of a real compiler or interpreter.
@@ -188,4 +198,5 @@ Just started. Five entries exist so far, `research/naive`, `distilled/puc-lua`, 
 - Competing with the real compilers on coverage.
 - Parsing a real language, or including the optimizations that every compiler shares.
 - Being a production tool. These are specimens, not products.
+- Compilers for languages that add no compiler design, see "What earns an entry".
 - GPU compilers. They mostly add a different target and runtime rather than a new compiler design, and they would need their own examples and a CI that can run GPU code.
