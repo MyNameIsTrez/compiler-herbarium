@@ -10,7 +10,7 @@ jobs:
     outputs:
       entries: ${{ steps.find.outputs.entries }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: find
         run: |
           entries=$(find distilled research -mindepth 2 -maxdepth 2 -name main.c -printf '%h\n' 2>/dev/null | sort | jq -R -s -c 'split("\n") | map(select(length > 0))')
@@ -27,7 +27,7 @@ jobs:
         cc: [gcc, clang]
         opt: ["-O1", "-O2"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build, run and check ${{ matrix.entry }} with ${{ matrix.cc }} at ${{ matrix.opt }}
         run: scripts/check-entry.sh "${{ matrix.entry }}"
         env:
@@ -49,7 +49,7 @@ jobs:
       matrix:
         entry: ${{ fromJSON(needs.discover.outputs.entries) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install gcovr
         run: pipx install gcovr==8.8
       - name: Require 100% line and branch coverage for ${{ matrix.entry }}
