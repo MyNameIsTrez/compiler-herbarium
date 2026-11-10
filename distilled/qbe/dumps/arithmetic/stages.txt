@@ -1,0 +1,89 @@
+== stage_il: the IL as a frontend writes it, temporaries are mutable ==
+function $main() {
+@start
+	%a.1 =w add 2, 3
+	%a.1 =w mul %a.1, 4
+	%a.1 =w sub %a.1, 6
+	arg %a.1
+	call $print_int
+	ret
+}
+== stage_ssa: dominators, frontiers, pruned phi insertion, renaming ==
+$main: dominator tree and dominance frontiers
+	@start  idom -      frontier
+function $main() {
+@start
+	%a.1.2 =w add 2, 3
+	%a.1.3 =w mul %a.1.2, 4
+	%a.1.4 =w sub %a.1.3, 6
+	arg %a.1.4
+	call $print_int
+	ret
+}
+== stage_abi: parameters, arguments and results become copies to and from registers ==
+function $main() {
+@start
+	%a.1.2 =w add 2, 3
+	%a.1.3 =w mul %a.1.2, 4
+	%a.1.4 =w sub %a.1.3, 6
+	%rdi =w copy %a.1.4
+	call $print_int, call(args 1, result 1)
+	copy %rax
+	ret
+}
+== stage_isel: compare-and-branch fusion, address constants become lea ==
+function $main() {
+@start
+	%a.1.2 =w add 2, 3
+	%a.1.3 =w mul %a.1.2, 4
+	%a.1.4 =w sub %a.1.3, 6
+	%rdi =w copy %a.1.4
+	call $print_int, call(args 1, result 1)
+	copy %rax
+	ret
+}
+== stage_live: liveness, loop depth and the cost of every temporary ==
+$main:
+	@start  weight 1   live in { } out { }
+	costs: a.1.2=2 a.1.3=2 a.1.4=2
+== stage_spill: temporaries that live across a call must avoid caller-save registers ==
+$main:
+== stage_rega: hints, backward allocation, parallel moves, edge blocks ==
+$main: register maps at the start and the end of every block
+	@start
+		begins with
+		ends with  
+function $main() {
+@start
+	%rax =w add 2, 3
+	%rax =w mul %rax, 4
+	%rdi =w sub %rax, 6
+	call $print_int, call(args 1, result 1)
+	ret
+}
+== stage_emit: jump threading, frame layout, two-address instructions, bytes ==
+main:
+  +0x0000  pushq %rbp
+  +0x0001  movq %rsp, %rbp
+.bb0: # @start
+  +0x0004  movl $2, %eax
+  +0x0009  addl $3, %eax
+  +0x000c  imull $4, %eax, %eax
+  +0x000f  movl %eax, %edi
+  +0x0011  subl $6, %edi
+  +0x0014  call print_int
+.bb1: # @ret
+  +0x0019  leave
+  +0x001a  ret
+== stage_export: link the runtime, patch the jumps, write the code and run it ==
++0x0015  rel32 2 to +0x001b
+final code, 130 bytes:
++0x0000: 55 48 89 e5 b8 02 00 00 00 83 c0 03 6b c0 04 89
++0x0010: c7 83 ef 06 e8 02 00 00 00 c9 c3 48 89 f8 48 83
++0x0020: ec 20 48 8d 74 24 20 48 c7 c1 0a 00 00 00 48 ff
++0x0030: ce c6 06 0a 31 d2 48 f7 f1 80 c2 30 48 ff ce 88
++0x0040: 16 48 85 c0 75 ee 48 8d 54 24 20 48 29 f2 b8 01
++0x0050: 00 00 00 bf 01 00 00 00 0f 05 48 83 c4 20 c3 0f
++0x0060: b6 17 48 8d 77 01 b8 01 00 00 00 bf 01 00 00 00
++0x0070: 0f 05 c3 0e 48 65 6c 6c 6f 2c 20 77 6f 72 6c 64
++0x0080: 21 0a

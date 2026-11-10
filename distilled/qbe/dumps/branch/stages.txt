@@ -1,0 +1,164 @@
+== stage_il: the IL as a frontend writes it, temporaries are mutable ==
+function $main() {
+@start
+	%a.1 =w copy 3
+	%b.2 =w copy 5
+	%c.3 =w csltw %a.1, %b.2
+	jnz %c.3, @then, @else
+@else
+	arg %a.1
+	call $print_int
+	jmp @end
+@then
+	arg %b.2
+	call $print_int
+	jmp @end
+@end
+	ret
+}
+== stage_ssa: dominators, frontiers, pruned phi insertion, renaming ==
+$main: dominator tree and dominance frontiers
+	@start  idom -      frontier
+	@else   idom start  frontier @end
+	@then   idom start  frontier @end
+	@end    idom start  frontier
+function $main() {
+@start
+	%a.1 =w copy 3
+	%b.2 =w copy 5
+	%c.3 =w csltw %a.1, %b.2
+	jnz %c.3, @then, @else
+@else
+	arg %a.1
+	call $print_int
+	jmp @end
+@then
+	arg %b.2
+	call $print_int
+	jmp @end
+@end
+	ret
+}
+== stage_abi: parameters, arguments and results become copies to and from registers ==
+function $main() {
+@start
+	%a.1 =w copy 3
+	%b.2 =w copy 5
+	%c.3 =w csltw %a.1, %b.2
+	jnz %c.3, @then, @else
+@else
+	%rdi =w copy %a.1
+	call $print_int, call(args 1, result 1)
+	copy %rax
+	jmp @end
+@then
+	%rdi =w copy %b.2
+	call $print_int, call(args 1, result 1)
+	copy %rax
+	jmp @end
+@end
+	ret
+}
+== stage_isel: compare-and-branch fusion, address constants become lea ==
+function $main() {
+@start
+	%a.1 =w copy 3
+	%b.2 =w copy 5
+	xcmp %a.1, %b.2
+	jlt @then, @else
+@else
+	%rdi =w copy %a.1
+	call $print_int, call(args 1, result 1)
+	copy %rax
+	jmp @end
+@then
+	%rdi =w copy %b.2
+	call $print_int, call(args 1, result 1)
+	copy %rax
+	jmp @end
+@end
+	ret
+}
+== stage_live: liveness, loop depth and the cost of every temporary ==
+$main:
+	@start  weight 1   live in { } out { a.1 b.2 }
+	@else   weight 1   live in { a.1 } out { }
+	@then   weight 1   live in { b.2 } out { }
+	@end    weight 1   live in { } out { }
+	costs: a.1=3 b.2=3
+== stage_spill: temporaries that live across a call must avoid caller-save registers ==
+$main:
+== stage_rega: hints, backward allocation, parallel moves, edge blocks ==
+$main: register maps at the start and the end of every block
+	@start
+		begins with
+		ends with   a.1:rdi b.2:rax
+	@else
+		begins with a.1:rdi
+		ends with  
+	@then
+		begins with b.2:rdi
+		ends with  
+	@end
+		begins with
+		ends with  
+function $main() {
+@start
+	%rdi =w copy 3
+	%rax =w copy 5
+	xcmp %rdi, %rax
+	jlt @start_then, @else
+@else
+	call $print_int, call(args 1, result 1)
+	jmp @end
+@then
+	call $print_int, call(args 1, result 1)
+	jmp @end
+@end
+	ret
+@start_then
+	%rdi =w copy %rax
+	jmp @then
+}
+== stage_emit: jump threading, frame layout, two-address instructions, bytes ==
+main:
+  +0x0000  pushq %rbp
+  +0x0001  movq %rsp, %rbp
+.bb0: # @start
+  +0x0004  movl $3, %edi
+  +0x0009  movl $5, %eax
+  +0x000e  cmpl %eax, %edi
+  +0x0010  jl .bb4
+.bb1: # @else
+  +0x0016  call print_int
+  +0x001b  jmp .bb5
+.bb2: # @then
+  +0x0020  call print_int
+  +0x0025  jmp .bb5
+.bb3: # @end
+  +0x002a  jmp .bb5
+.bb4: # @start_then
+  +0x002f  movl %eax, %edi
+  +0x0031  jmp .bb2
+.bb5: # @ret
+  +0x0036  leave
+  +0x0037  ret
+== stage_export: link the runtime, patch the jumps, write the code and run it ==
++0x0012  rel32 25 to +0x002f
++0x0017  rel32 29 to +0x0038
++0x001c  rel32 22 to +0x0036
++0x0021  rel32 19 to +0x0038
++0x0026  rel32 12 to +0x0036
++0x002b  rel32 7 to +0x0036
++0x0032  rel32 -22 to +0x0020
+final code, 159 bytes:
++0x0000: 55 48 89 e5 bf 03 00 00 00 b8 05 00 00 00 39 c7
++0x0010: 0f 8c 19 00 00 00 e8 1d 00 00 00 e9 16 00 00 00
++0x0020: e8 13 00 00 00 e9 0c 00 00 00 e9 07 00 00 00 89
++0x0030: c7 e9 ea ff ff ff c9 c3 48 89 f8 48 83 ec 20 48
++0x0040: 8d 74 24 20 48 c7 c1 0a 00 00 00 48 ff ce c6 06
++0x0050: 0a 31 d2 48 f7 f1 80 c2 30 48 ff ce 88 16 48 85
++0x0060: c0 75 ee 48 8d 54 24 20 48 29 f2 b8 01 00 00 00
++0x0070: bf 01 00 00 00 0f 05 48 83 c4 20 c3 0f b6 17 48
++0x0080: 8d 77 01 b8 01 00 00 00 bf 01 00 00 00 0f 05 c3
++0x0090: 0e 48 65 6c 6c 6f 2c 20 77 6f 72 6c 64 21 0a

@@ -1,0 +1,248 @@
+== stage_il: the IL as a frontend writes it, temporaries are mutable ==
+function $fact() {
+@start
+	%n.1 =w par
+	%one.2 =w par
+	%c.3 =w csltw %n.1, 2
+	jnz %c.3, @base, @rec
+@rec
+	%m.5 =w sub %n.1, 1
+	arg %m.5
+	arg %one.2
+	%f.6 =w call $fact
+	%r.4 =w mul %n.1, %f.6
+	jmp @end
+@base
+	%r.4 =w copy %one.2
+	jmp @end
+@end
+	ret %r.4
+}
+function $main() {
+@start
+	arg 5
+	arg 1
+	%x.7 =w call $fact
+	arg %x.7
+	call $print_int
+	ret
+}
+== stage_ssa: dominators, frontiers, pruned phi insertion, renaming ==
+$fact: dominator tree and dominance frontiers
+	@start  idom -      frontier
+	@rec    idom start  frontier @end
+	@base   idom start  frontier @end
+	@end    idom start  frontier
+function $fact() {
+@start
+	%n.1 =w par
+	%one.2 =w par
+	%c.3 =w csltw %n.1, 2
+	jnz %c.3, @base, @rec
+@rec
+	%m.5 =w sub %n.1, 1
+	arg %m.5
+	arg %one.2
+	%f.6 =w call $fact
+	%r.4.10 =w mul %n.1, %f.6
+	jmp @end
+@base
+	%r.4.9 =w copy %one.2
+	jmp @end
+@end
+	%r.4.8 =w phi @base %r.4.9, @rec %r.4.10
+	ret %r.4.8
+}
+$main: dominator tree and dominance frontiers
+	@start  idom -      frontier
+function $main() {
+@start
+	arg 5
+	arg 1
+	%x.7 =w call $fact
+	arg %x.7
+	call $print_int
+	ret
+}
+== stage_abi: parameters, arguments and results become copies to and from registers ==
+function $fact() {
+@start
+	%n.1 =w copy %rdi
+	%one.2 =w copy %rsi
+	%c.3 =w csltw %n.1, 2
+	jnz %c.3, @base, @rec
+@rec
+	%m.5 =w sub %n.1, 1
+	%rdi =w copy %m.5
+	%rsi =w copy %one.2
+	call $fact, call(args 2, result 1)
+	%f.6 =w copy %rax
+	%r.4.10 =w mul %n.1, %f.6
+	jmp @end
+@base
+	%r.4.9 =w copy %one.2
+	jmp @end
+@end
+	%r.4.8 =w phi @base %r.4.9, @rec %r.4.10
+	%rax =w copy %r.4.8
+	ret call(args 0, result 1)
+}
+function $main() {
+@start
+	%rdi =w copy 5
+	%rsi =w copy 1
+	call $fact, call(args 2, result 1)
+	%x.7 =w copy %rax
+	%rdi =w copy %x.7
+	call $print_int, call(args 1, result 1)
+	copy %rax
+	ret
+}
+== stage_isel: compare-and-branch fusion, address constants become lea ==
+function $fact() {
+@start
+	%n.1 =w copy %rdi
+	%one.2 =w copy %rsi
+	xcmp %n.1, 2
+	jlt @base, @rec
+@rec
+	%m.5 =w sub %n.1, 1
+	%rdi =w copy %m.5
+	%rsi =w copy %one.2
+	call $fact, call(args 2, result 1)
+	%f.6 =w copy %rax
+	%r.4.10 =w mul %n.1, %f.6
+	jmp @end
+@base
+	%r.4.9 =w copy %one.2
+	jmp @end
+@end
+	%r.4.8 =w phi @base %r.4.9, @rec %r.4.10
+	%rax =w copy %r.4.8
+	ret call(args 0, result 1)
+}
+function $main() {
+@start
+	%rdi =w copy 5
+	%rsi =w copy 1
+	call $fact, call(args 2, result 1)
+	%x.7 =w copy %rax
+	%rdi =w copy %x.7
+	call $print_int, call(args 1, result 1)
+	copy %rax
+	ret
+}
+== stage_live: liveness, loop depth and the cost of every temporary ==
+$fact:
+	@start  weight 1   live in { } out { n.1 one.2 }
+	@rec    weight 1   live in { n.1 one.2 } out { r.4.10 }
+	@base   weight 1   live in { one.2 } out { r.4.9 }
+	@end    weight 1   live in { r.4.8 } out { }
+	costs: n.1=4 one.2=3 m.5=2 f.6=2 r.4.8=1 r.4.9=1 r.4.10=1
+$main:
+	@start  weight 1   live in { } out { }
+	costs: x.7=2
+== stage_spill: temporaries that live across a call must avoid caller-save registers ==
+$fact: n.1
+$main:
+== stage_rega: hints, backward allocation, parallel moves, edge blocks ==
+$fact: register maps at the start and the end of every block
+	@start
+		begins with
+		ends with   n.1:rbx one.2:rsi
+	@rec
+		begins with n.1:rbx one.2:rsi
+		ends with   r.4.10:rax
+	@base
+		begins with one.2:rsi
+		ends with   r.4.9:rax
+	@end
+		begins with r.4.8:rax
+		ends with  
+function $fact() {
+@start
+	%rbx =w copy %rdi
+	xcmp %rbx, 2
+	jlt @base, @rec
+@rec
+	%rdi =w sub %rbx, 1
+	call $fact, call(args 2, result 1)
+	%rdi =w copy %rbx
+	%rax =w mul %rdi, %rax
+	jmp @end
+@base
+	%rax =w copy %rsi
+	jmp @end
+@end
+	ret call(args 0, result 1)
+}
+$main: register maps at the start and the end of every block
+	@start
+		begins with
+		ends with  
+function $main() {
+@start
+	%rdi =w copy 5
+	%rsi =w copy 1
+	call $fact, call(args 2, result 1)
+	%rdi =w copy %rax
+	call $print_int, call(args 1, result 1)
+	ret
+}
+== stage_emit: jump threading, frame layout, two-address instructions, bytes ==
+fact:
+  +0x0000  pushq %rbp
+  +0x0001  movq %rsp, %rbp
+  +0x0004  subq $8, %rsp
+  +0x0008  pushq %rbx
+.bb0: # @start
+  +0x0009  movl %edi, %ebx
+  +0x000b  cmpl $2, %ebx
+  +0x000e  jl .bb2
+.bb1: # @rec
+  +0x0014  movl %ebx, %edi
+  +0x0016  subl $1, %edi
+  +0x0019  call fact
+  +0x001e  movl %ebx, %edi
+  +0x0020  imull %edi, %eax
+  +0x0023  jmp .bb4
+.bb2: # @base
+  +0x0028  movl %esi, %eax
+  +0x002a  jmp .bb4
+.bb3: # @end
+.bb4: # @ret
+  +0x002f  popq %rbx
+  +0x0030  leave
+  +0x0031  ret
+main:
+  +0x0032  pushq %rbp
+  +0x0033  movq %rsp, %rbp
+.bb0: # @start
+  +0x0036  movl $5, %edi
+  +0x003b  movl $1, %esi
+  +0x0040  call fact
+  +0x0045  movl %eax, %edi
+  +0x0047  call print_int
+.bb1: # @ret
+  +0x004c  leave
+  +0x004d  ret
+== stage_export: link the runtime, patch the jumps, write the code and run it ==
++0x0010  rel32 20 to +0x0028
++0x001a  rel32 -30 to +0x0000
++0x0024  rel32 7 to +0x002f
++0x002b  rel32 0 to +0x002f
++0x0041  rel32 -69 to +0x0000
++0x0048  rel32 2 to +0x004e
+final code, 181 bytes:
++0x0000: 55 48 89 e5 48 83 ec 08 53 89 fb 83 fb 02 0f 8c
++0x0010: 14 00 00 00 89 df 83 ef 01 e8 e2 ff ff ff 89 df
++0x0020: 0f af c7 e9 07 00 00 00 89 f0 e9 00 00 00 00 5b
++0x0030: c9 c3 55 48 89 e5 bf 05 00 00 00 be 01 00 00 00
++0x0040: e8 bb ff ff ff 89 c7 e8 02 00 00 00 c9 c3 48 89
++0x0050: f8 48 83 ec 20 48 8d 74 24 20 48 c7 c1 0a 00 00
++0x0060: 00 48 ff ce c6 06 0a 31 d2 48 f7 f1 80 c2 30 48
++0x0070: ff ce 88 16 48 85 c0 75 ee 48 8d 54 24 20 48 29
++0x0080: f2 b8 01 00 00 00 bf 01 00 00 00 0f 05 48 83 c4
++0x0090: 20 c3 0f b6 17 48 8d 77 01 b8 01 00 00 00 bf 01
++0x00a0: 00 00 00 0f 05 c3 0e 48 65 6c 6c 6f 2c 20 77 6f
++0x00b0: 72 6c 64 21 0a

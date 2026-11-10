@@ -1,0 +1,176 @@
+== stage_il: the IL as a frontend writes it, temporaries are mutable ==
+function $main() {
+@start
+	%s.1 =w copy 0
+	%i.2 =w copy 1
+	jmp @loop
+@loop
+	%last.3 =w copy %s.1
+	%c.4 =w csltw %i.2, 11
+	jnz %c.4, @body, @end
+@end
+	arg %last.3
+	call $print_int
+	ret
+@body
+	%s.1 =w add %s.1, %i.2
+	%i.2 =w add %i.2, 1
+	jmp @loop
+}
+== stage_ssa: dominators, frontiers, pruned phi insertion, renaming ==
+$main: dominator tree and dominance frontiers
+	@start  idom -      frontier
+	@loop   idom start  frontier @loop
+	@end    idom loop   frontier
+	@body   idom loop   frontier @loop
+function $main() {
+@start
+	%s.1.5 =w copy 0
+	%i.2.6 =w copy 1
+	jmp @loop
+@loop
+	%i.2.7 =w phi @start %i.2.6, @body %i.2.11
+	%s.1.8 =w phi @start %s.1.5, @body %s.1.10
+	%last.3.9 =w copy %s.1.8
+	%c.4 =w csltw %i.2.7, 11
+	jnz %c.4, @body, @end
+@end
+	arg %last.3.9
+	call $print_int
+	ret
+@body
+	%s.1.10 =w add %s.1.8, %i.2.7
+	%i.2.11 =w add %i.2.7, 1
+	jmp @loop
+}
+== stage_abi: parameters, arguments and results become copies to and from registers ==
+function $main() {
+@start
+	%s.1.5 =w copy 0
+	%i.2.6 =w copy 1
+	jmp @loop
+@loop
+	%i.2.7 =w phi @start %i.2.6, @body %i.2.11
+	%s.1.8 =w phi @start %s.1.5, @body %s.1.10
+	%last.3.9 =w copy %s.1.8
+	%c.4 =w csltw %i.2.7, 11
+	jnz %c.4, @body, @end
+@end
+	%rdi =w copy %last.3.9
+	call $print_int, call(args 1, result 1)
+	copy %rax
+	ret
+@body
+	%s.1.10 =w add %s.1.8, %i.2.7
+	%i.2.11 =w add %i.2.7, 1
+	jmp @loop
+}
+== stage_isel: compare-and-branch fusion, address constants become lea ==
+function $main() {
+@start
+	%s.1.5 =w copy 0
+	%i.2.6 =w copy 1
+	jmp @loop
+@loop
+	%i.2.7 =w phi @start %i.2.6, @body %i.2.11
+	%s.1.8 =w phi @start %s.1.5, @body %s.1.10
+	%last.3.9 =w copy %s.1.8
+	xcmp %i.2.7, 11
+	jlt @body, @end
+@end
+	%rdi =w copy %last.3.9
+	call $print_int, call(args 1, result 1)
+	copy %rax
+	ret
+@body
+	%s.1.10 =w add %s.1.8, %i.2.7
+	%i.2.11 =w add %i.2.7, 1
+	jmp @loop
+}
+== stage_live: liveness, loop depth and the cost of every temporary ==
+$main:
+	@start  weight 1   live in { } out { s.1.5 i.2.6 }
+	@loop   weight 10  live in { i.2.7 s.1.8 } out { i.2.7 s.1.8 last.3.9 }
+	@end    weight 1   live in { last.3.9 } out { }
+	@body   weight 10  live in { i.2.7 s.1.8 } out { s.1.10 i.2.11 }
+	costs: s.1.5=1 i.2.6=1 i.2.7=30 s.1.8=20 last.3.9=11 s.1.10=10 i.2.11=10
+== stage_spill: temporaries that live across a call must avoid caller-save registers ==
+$main:
+== stage_rega: hints, backward allocation, parallel moves, edge blocks ==
+$main: register maps at the start and the end of every block
+	@start
+		begins with
+		ends with   s.1.5:rax i.2.6:rcx
+	@loop
+		begins with i.2.7:rcx s.1.8:rax
+		ends with   i.2.7:rcx s.1.8:rax last.3.9:rdx
+	@end
+		begins with last.3.9:rdi
+		ends with  
+	@body
+		begins with i.2.7:rcx s.1.8:rax
+		ends with   s.1.10:rax i.2.11:rcx
+function $main() {
+@start
+	%rax =w copy 0
+	%rcx =w copy 1
+	jmp @loop
+@loop
+	%rdx =w copy %rax
+	xcmp %rcx, 11
+	jlt @body, @loop_end
+@end
+	call $print_int, call(args 1, result 1)
+	ret
+@body
+	%rax =w add %rax, %rcx
+	%rcx =w add %rcx, 1
+	jmp @loop
+@loop_end
+	%rdi =w copy %rdx
+	jmp @end
+}
+== stage_emit: jump threading, frame layout, two-address instructions, bytes ==
+main:
+  +0x0000  pushq %rbp
+  +0x0001  movq %rsp, %rbp
+.bb0: # @start
+  +0x0004  movl $0, %eax
+  +0x0009  movl $1, %ecx
+.bb1: # @loop
+  +0x000e  movl %eax, %edx
+  +0x0010  cmpl $11, %ecx
+  +0x0013  jge .bb4
+  +0x0019  jmp .bb3
+.bb2: # @end
+  +0x001e  call print_int
+  +0x0023  jmp .bb5
+.bb3: # @body
+  +0x0028  addl %ecx, %eax
+  +0x002a  addl $1, %ecx
+  +0x002d  jmp .bb1
+.bb4: # @loop_end
+  +0x0032  movl %edx, %edi
+  +0x0034  jmp .bb2
+.bb5: # @ret
+  +0x0039  leave
+  +0x003a  ret
+== stage_export: link the runtime, patch the jumps, write the code and run it ==
++0x0015  rel32 25 to +0x0032
++0x001a  rel32 10 to +0x0028
++0x001f  rel32 24 to +0x003b
++0x0024  rel32 17 to +0x0039
++0x002e  rel32 -36 to +0x000e
++0x0035  rel32 -27 to +0x001e
+final code, 162 bytes:
++0x0000: 55 48 89 e5 b8 00 00 00 00 b9 01 00 00 00 89 c2
++0x0010: 83 f9 0b 0f 8d 19 00 00 00 e9 0a 00 00 00 e8 18
++0x0020: 00 00 00 e9 11 00 00 00 01 c8 83 c1 01 e9 dc ff
++0x0030: ff ff 89 d7 e9 e5 ff ff ff c9 c3 48 89 f8 48 83
++0x0040: ec 20 48 8d 74 24 20 48 c7 c1 0a 00 00 00 48 ff
++0x0050: ce c6 06 0a 31 d2 48 f7 f1 80 c2 30 48 ff ce 88
++0x0060: 16 48 85 c0 75 ee 48 8d 54 24 20 48 29 f2 b8 01
++0x0070: 00 00 00 bf 01 00 00 00 0f 05 48 83 c4 20 c3 0f
++0x0080: b6 17 48 8d 77 01 b8 01 00 00 00 bf 01 00 00 00
++0x0090: 0f 05 c3 0e 48 65 6c 6c 6f 2c 20 77 6f 72 6c 64
++0x00a0: 21 0a
