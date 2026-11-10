@@ -1,0 +1,17 @@
+== stage_source: Lox tokens of hello ==
+print Hello, world! ;
+== stage_compile: bytecode, each function printed when it is finished ==
+== <script> ==
+0000 OP_CONSTANT         0 'Hello, world!'
+0002 OP_PRINT
+0003 OP_NIL
+0004 OP_RETURN
+== stage_run: value stack, then the instruction about to run ==
+          [ <script> ]
+0000 OP_CONSTANT         0 'Hello, world!'
+          [ <script> ][ Hello, world! ]
+0002 OP_PRINT
+          [ <script> ]
+0003 OP_NIL
+          [ <script> ][ nil ]
+0004 OP_RETURN

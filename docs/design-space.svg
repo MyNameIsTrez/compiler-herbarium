@@ -68,8 +68,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n" x="454" y="115">puc-lua</text>
 <circle class="dn" cx="442" cy="139" r="6"/>
 <text class="n" x="454" y="143">cpython</text>
-<circle class="pl" cx="442" cy="167" r="6"/>
-<text class="n p" x="454" y="171">clox</text>
+<circle class="dn" cx="442" cy="167" r="6"/>
+<text class="n" x="454" y="171">clox</text>
 <circle class="pl" cx="442" cy="195" r="6"/>
 <text class="n p" x="454" y="199">Wren</text>
 <polygon class="or" points="162,283 170,291 162,299 154,291"/>
