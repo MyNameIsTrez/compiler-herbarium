@@ -1,0 +1,60 @@
+== stage_select: prototypes of call ==
+== stage_list: luac-style listing, instruction numbers start at 1 ==
+function <call> (8 instructions)
+   1  0x00000051  VARARGPREP 0
+   2  0x0000004f  CLOSURE    0 0
+   3  0x0000008b  GETTABUP   1 0 0 ; _ENV "print"
+   4  0x00000100  MOVE       2 0
+   5  0x80020181  LOADI      3 5
+   6  0x00020144  CALL       2 2 0
+   7  0x010000c4  CALL       1 0 1
+   8  0x010180c6  RETURN     1 1 1k
+function <fact> (12 instructions)
+   1  0x0081003e  LTI        0 2 0
+   2  0x800000b8  JMP        2 ; to 5
+   3  0x80000081  LOADI      1 1
+   4  0x000200c8  RETURN1    1
+   5  0x00000089  GETUPVAL   1 0 ; fact
+   6  0x7e000115  ADDI       2 0 -1
+   7  0x0780002f  MMBINI     0 1 7 0 ; __sub
+   8  0x020200c4  CALL       1 2 2
+   9  0x010000a4  MUL        1 0 1
+  10  0x0801002e  MMBIN      0 1 8 ; __mul
+  11  0x000200c8  RETURN1    1
+  12  0x000100c7  RETURN0
+== stage_run: executed instructions, indented by call depth ==
+call:1  VARARGPREP 0
+call:2  CLOSURE    0 0
+call:3  GETTABUP   1 0 0 ; _ENV "print"
+call:4  MOVE       2 0
+call:5  LOADI      3 5
+call:6  CALL       2 2 0
+  fact:1  LTI        0 2 0
+  fact:5  GETUPVAL   1 0 ; fact
+  fact:6  ADDI       2 0 -1
+  fact:8  CALL       1 2 2
+    fact:1  LTI        0 2 0
+    fact:5  GETUPVAL   1 0 ; fact
+    fact:6  ADDI       2 0 -1
+    fact:8  CALL       1 2 2
+      fact:1  LTI        0 2 0
+      fact:5  GETUPVAL   1 0 ; fact
+      fact:6  ADDI       2 0 -1
+      fact:8  CALL       1 2 2
+        fact:1  LTI        0 2 0
+        fact:5  GETUPVAL   1 0 ; fact
+        fact:6  ADDI       2 0 -1
+        fact:8  CALL       1 2 2
+          fact:1  LTI        0 2 0
+          fact:3  LOADI      1 1
+          fact:4  RETURN1    1
+        fact:9  MUL        1 0 1
+        fact:11  RETURN1    1
+      fact:9  MUL        1 0 1
+      fact:11  RETURN1    1
+    fact:9  MUL        1 0 1
+    fact:11  RETURN1    1
+  fact:9  MUL        1 0 1
+  fact:11  RETURN1    1
+call:7  CALL       1 0 1
+call:8  RETURN     1 1 1k

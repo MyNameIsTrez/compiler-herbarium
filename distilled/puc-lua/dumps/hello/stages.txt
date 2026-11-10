@@ -1,0 +1,14 @@
+== stage_select: prototypes of hello ==
+== stage_list: luac-style listing, instruction numbers start at 1 ==
+function <hello> (5 instructions)
+   1  0x00000051  VARARGPREP 0
+   2  0x0000000b  GETTABUP   0 0 0 ; _ENV "print"
+   3  0x00008083  LOADK      1 1 ; "Hello, world!"
+   4  0x01020044  CALL       0 2 1
+   5  0x01010046  RETURN     0 1 1
+== stage_run: executed instructions, indented by call depth ==
+hello:1  VARARGPREP 0
+hello:2  GETTABUP   0 0 0 ; _ENV "print"
+hello:3  LOADK      1 1 ; "Hello, world!"
+hello:4  CALL       0 2 1
+hello:5  RETURN     0 1 1

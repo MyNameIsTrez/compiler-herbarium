@@ -1,0 +1,66 @@
+== stage_select: prototypes of loop ==
+== stage_list: luac-style listing, instruction numbers start at 1 ==
+function <loop> (14 instructions)
+   1  0x00000051  VARARGPREP 0
+   2  0x7fff8001  LOADI      0 0
+   3  0x80000081  LOADI      1 1
+   4  0x008a00be  LTI        1 11 0
+   5  0x80000238  JMP        5 ; to 11
+   6  0x01000022  ADD        0 0 1
+   7  0x0601002e  MMBIN      0 1 6 ; __add
+   8  0x80010095  ADDI       1 1 1
+   9  0x068000af  MMBINI     1 1 6 0 ; __add
+  10  0x7ffffc38  JMP        -7 ; to 4
+  11  0x0000010b  GETTABUP   2 0 0 ; _ENV "print"
+  12  0x00000180  MOVE       3 0
+  13  0x01020144  CALL       2 2 1
+  14  0x01010146  RETURN     2 1 1
+== stage_run: executed instructions, indented by call depth ==
+loop:1  VARARGPREP 0
+loop:2  LOADI      0 0
+loop:3  LOADI      1 1
+loop:4  LTI        1 11 0
+loop:6  ADD        0 0 1
+loop:8  ADDI       1 1 1
+loop:10  JMP        -7 ; to 4
+loop:4  LTI        1 11 0
+loop:6  ADD        0 0 1
+loop:8  ADDI       1 1 1
+loop:10  JMP        -7 ; to 4
+loop:4  LTI        1 11 0
+loop:6  ADD        0 0 1
+loop:8  ADDI       1 1 1
+loop:10  JMP        -7 ; to 4
+loop:4  LTI        1 11 0
+loop:6  ADD        0 0 1
+loop:8  ADDI       1 1 1
+loop:10  JMP        -7 ; to 4
+loop:4  LTI        1 11 0
+loop:6  ADD        0 0 1
+loop:8  ADDI       1 1 1
+loop:10  JMP        -7 ; to 4
+loop:4  LTI        1 11 0
+loop:6  ADD        0 0 1
+loop:8  ADDI       1 1 1
+loop:10  JMP        -7 ; to 4
+loop:4  LTI        1 11 0
+loop:6  ADD        0 0 1
+loop:8  ADDI       1 1 1
+loop:10  JMP        -7 ; to 4
+loop:4  LTI        1 11 0
+loop:6  ADD        0 0 1
+loop:8  ADDI       1 1 1
+loop:10  JMP        -7 ; to 4
+loop:4  LTI        1 11 0
+loop:6  ADD        0 0 1
+loop:8  ADDI       1 1 1
+loop:10  JMP        -7 ; to 4
+loop:4  LTI        1 11 0
+loop:6  ADD        0 0 1
+loop:8  ADDI       1 1 1
+loop:10  JMP        -7 ; to 4
+loop:4  LTI        1 11 0
+loop:11  GETTABUP   2 0 0 ; _ENV "print"
+loop:12  MOVE       3 0
+loop:13  CALL       2 2 1
+loop:14  RETURN     2 1 1

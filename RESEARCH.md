@@ -14,6 +14,7 @@ The "Read" column says whether the lead has been read in enough depth to rely on
 | Entry | Lead | Read | How it was used |
 |-------|------|:----:|-----------------|
 | [`research/naive`](research/naive/) | [Sparkplug blog post](https://v8.dev/blog/sparkplug) and V8's [`baseline-compiler.cc`](https://github.com/v8/v8/blob/main/src/baseline/baseline-compiler.cc) | ✅ | Compared against, not distilled. `naive` shares Sparkplug's central trick of expanding each instruction with no IR in between, and its README lists what matches and what differs. |
+| [`distilled/puc-lua`](distilled/puc-lua/) | [lua/lua](https://github.com/lua/lua) at `v5.4.7`: `lopcodes.h`, `lvm.c`, `ldo.c`, `lfunc.c` | ✅ | Distilled. The bytecode is copied from the real `luac -l -l`, and a dispatch loop with only the executed opcodes follows `luaV_execute`. The compiler (`lparser.c`, `lcode.c`) was not read in depth and is not mimicked. |
 
 ## Leads without a compiler yet
 
@@ -24,7 +25,6 @@ The "Read" column says whether the lead has been read in enough depth to rely on
 | Turboshaft | [V8 source, `src/compiler/turboshaft`](https://github.com/v8/v8/tree/main/src/compiler/turboshaft) | ❌ | V8's CFG-based replacement for Sea of Nodes. The post above says a follow-up post will describe its design. | `distilled/turboshaft` |
 | Clang and LLVM | [llvm/llvm-project](https://github.com/llvm/llvm-project) | ❌ | Planned. SSA IR, mem2reg, instruction selection, register allocation. | `distilled/clang` |
 | GCC | [gcc.gnu.org](https://gcc.gnu.org/) | ❌ | Planned. GIMPLE, RTL and the pass pipeline. | `distilled/gcc` |
-| PUC Lua | [lua/lua](https://github.com/lua/lua) | ❌ | Planned. Register bytecode and the dispatch loop. | `distilled/puc-lua` |
 | LuaJIT | [LuaJIT/LuaJIT](https://github.com/LuaJIT/LuaJIT) | ❌ | Planned. Trace recording, trace IR and machine code. | `distilled/luajit` |
 | Cranelift | [bytecodealliance/wasmtime, `cranelift`](https://github.com/bytecodealliance/wasmtime/tree/main/cranelift) | ❌ | A production code generator that is smaller than LLVM. Worth checking how its mid-end differs from the other designs here. | `distilled/cranelift`, or ideas for a research entry |
 | QBE | [QBE mirror](https://github.com/omenos/mirror-qbe) (upstream: c9x.me/git/qbe.git) | ❌ | A small SSA backend, so a candidate for a minimal Clang-like back end. | Reference for `distilled/clang` |
