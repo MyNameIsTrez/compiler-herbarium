@@ -31,12 +31,34 @@ fi
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 cp "$entry/main.c" "$work/main.c"
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+
+shopt -s nullglob
+examples=("$root"/examples/*/)
+if [[ ${#examples[@]} -eq 0 ]]; then
+    echo "error: no examples found in $root/examples" >&2
+    exit 2
+fi
 
 (
     cd "$work"
     gcc -std=c17 -O0 -g -Wall -Wextra -Wpedantic -Werror -Wshadow -Wstrict-prototypes \
         --coverage main.c -o entry
-    ./entry code.bin >/dev/null 2>&1
+
+    # Coverage accumulates over runs. Every example is run once with a code.bin path, as
+    # scripts/check-entry.sh does, and the first one once more without it.
+    for example_dir in "${examples[@]}"; do
+        ./entry "$(basename "$example_dir")" code.bin >/dev/null 2>&1
+    done
+    ./entry "$(basename "${examples[0]}")" >/dev/null 2>&1
+
+    # A missing or unknown example is rejected with status 2.
+    for args in "" "no-such-example"; do
+        set +e
+        # shellcheck disable=SC2086
+        ./entry $args >/dev/null 2>&1
+        set -e
+    done
 )
 
 gcovr --root "$work" --object-directory "$work" --filter "$work/main.c" \

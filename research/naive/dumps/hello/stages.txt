@@ -1,0 +1,19 @@
+== stage_select: IR of hello ==
+  0  FUNC 1
+  1  PRINT_STR 0
+  2  PUSH 0
+  3  RET 0
+== stage_emit: bytes per IR instruction, offsets still blank ==
+  0  +0x0000  FUNC       1   55 48 89 e5 48 81 ec 08 00 00 00 48 89 7d f8
+  1  +0x000f  PRINT_STR  0   b8 01 00 00 00 bf 01 00 00 00 48 8d 35 00 00 00 00 ba 0e 00 00 00 0f 05
+  2  +0x0027  PUSH       0   68 00 00 00 00
+  3  +0x002c  RET        0   58 c9 c3
+== stage_patch: resolved offsets ==
++0x001c  rel32 15  to IR 4 at +0x002f
+== stage_patch: final code, 61 bytes ==
++0x0000: 55 48 89 e5 48 81 ec 08 00 00 00 48 89 7d f8 b8
++0x0010: 01 00 00 00 bf 01 00 00 00 48 8d 35 0f 00 00 00
++0x0020: ba 0e 00 00 00 0f 05 68 00 00 00 00 58 c9 c3 48
++0x0030: 65 6c 6c 6f 2c 20 77 6f 72 6c 64 21 0a
+== stage_run ==
+returned 0

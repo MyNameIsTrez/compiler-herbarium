@@ -6,6 +6,8 @@ This repo holds heavily cut-down compilers and interpreters. Read `README.md` fi
 
 - Every entry is a single, self-contained `main.c` in C17, for Linux only. Do not add shared C files or headers. Duplicate small helpers instead.
 - `gcc distilled/<compiler>/main.c` and `gcc research/<compiler>/main.c` must keep working for every entry.
+- Every entry must pass every example in `examples/` and follow the command-line contract in the README (`./a.out <example> [code.bin]`, exit status 2 for a missing or unknown example). When an example is added, add it to every entry.
+- Never edit an example's `expected.txt` by hand. Regenerate it by running `program.lua` with real Lua, so the expected output stays independent of the entries.
 - Only open-source designs get a `distilled/` entry. Read the real source before claiming that an entry matches it, and do not rely on memory of how the real compiler works.
 
 ## FIDELITY.md
@@ -34,4 +36,4 @@ Line and branch coverage must stay at 100%. Prefer deleting code that is never r
 
 ## Dumps
 
-The dumps in each entry's `dumps/` directory are committed and must be deterministic: no pointers, timestamps or other run-dependent values.
+The dumps in each entry's `dumps/<example>/` directories are committed and must be deterministic: no pointers, timestamps or other run-dependent values.

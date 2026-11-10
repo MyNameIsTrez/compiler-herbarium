@@ -1,0 +1,36 @@
+== stage_select: IR of arithmetic ==
+  0  FUNC 1
+  1  PUSH 2
+  2  PUSH 3
+  3  ADD 0
+  4  PUSH 4
+  5  MUL 0
+  6  PUSH 6
+  7  SUB 0
+  8  PRINT_INT 0
+  9  PUSH 0
+ 10  RET 0
+== stage_emit: bytes per IR instruction, offsets still blank ==
+  0  +0x0000  FUNC       1   55 48 89 e5 48 81 ec 08 00 00 00 48 89 7d f8
+  1  +0x000f  PUSH       2   68 02 00 00 00
+  2  +0x0014  PUSH       3   68 03 00 00 00
+  3  +0x0019  ADD        0   59 58 48 01 c8 50
+  4  +0x001f  PUSH       4   68 04 00 00 00
+  5  +0x0024  MUL        0   59 58 48 0f af c1 50
+  6  +0x002b  PUSH       6   68 06 00 00 00
+  7  +0x0030  SUB        0   59 58 48 29 c8 50
+  8  +0x0036  PRINT_INT  0   58 48 83 ec 20 48 8d 74 24 20 48 c7 c1 0a 00 00 00 48 ff ce c6 06 0a 31 d2 48 f7 f1 80 c2 30 48 ff ce 88 16 48 85 c0 75 ee 48 8d 54 24 20 48 29 f2 b8 01 00 00 00 bf 01 00 00 00 0f 05 48 83 c4 20
+  9  +0x0077  PUSH       0   68 00 00 00 00
+ 10  +0x007c  RET        0   58 c9 c3
+== stage_patch: resolved offsets ==
+== stage_patch: final code, 127 bytes ==
++0x0000: 55 48 89 e5 48 81 ec 08 00 00 00 48 89 7d f8 68
++0x0010: 02 00 00 00 68 03 00 00 00 59 58 48 01 c8 50 68
++0x0020: 04 00 00 00 59 58 48 0f af c1 50 68 06 00 00 00
++0x0030: 59 58 48 29 c8 50 58 48 83 ec 20 48 8d 74 24 20
++0x0040: 48 c7 c1 0a 00 00 00 48 ff ce c6 06 0a 31 d2 48
++0x0050: f7 f1 80 c2 30 48 ff ce 88 16 48 85 c0 75 ee 48
++0x0060: 8d 54 24 20 48 29 f2 b8 01 00 00 00 bf 01 00 00
++0x0070: 00 0f 05 48 83 c4 20 68 00 00 00 00 58 c9 c3
+== stage_run ==
+returned 0

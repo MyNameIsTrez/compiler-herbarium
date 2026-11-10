@@ -9,9 +9,22 @@ It holds two kinds of entries, kept in separate directories:
 - `distilled/` holds toy versions of existing, open-source compilers and interpreters.
 - `research/` holds new compilers produced by this repo that are not purely distilled versions of an existing design, such as a hybrid of two designs or a new idea tried on the same tasks.
 
+## Why this repo exists
+
+Real compilers are some of the largest and most carefully engineered programs there are. Clang and GCC are millions of lines. LuaJIT is small by comparison, but dense. The ideas that make each design what it is are buried in that code, which makes them hard to learn and almost impossible to combine. This repo pulls each design down to the part that makes it distinctive, in a single file that takes a second to build, and runs every design on the same programs.
+
+That is useful in a few ways:
+
+- **Learning.** You can read how a Sea of Nodes graph is built, how GCC lowers from GIMPLE to RTL, or how LuaJIT records a trace, in a few hundred lines. The committed dumps show the program after every stage, so you can follow the transformation without running anything.
+- **Comparison.** Every entry runs the same examples, so the designs can be diffed side by side: what the IR looks like, which stages exist, how many instructions come out.
+- **Grounding for LLMs.** A model asked about a compiler design usually answers from memory, and memory is unreliable for details. Each distilled entry is runnable code that is checked against the real source, so a model can read the real thing instead of guessing.
+- **A testbed for new compiler designs.** This is the main reason the repo is shaped the way it is. Once a handful of designs exist in the same small, uniform form, a person or an LLM can invent a new paradigm by combining pieces of them, such as the graph IR of one with the trace recording of another, or by implementing an idea from a recent research paper. The result lives in `research/`, starts from a working baseline, and must pass the same examples, the same sanitizer builds and the same 100% coverage rule as everything else. The cost of an experiment is a few hundred lines of C and a few seconds, and a broken one fails loudly instead of quietly producing wrong output.
+
+The repo is a set of specimens and a workbench, not a benchmark and not a production toolchain.
+
 ## The idea
 
-Every entry compiles (or interprets) the same tiny program, effectively:
+Every entry compiles (or interprets) the same set of tiny programs, listed in [`examples/`](examples/). They go from hello world up to a recursive function. Each is defined by a short Lua program and its exact expected output, for example:
 
 ```lua
 print("Hello, world!")
@@ -60,7 +73,7 @@ These are the entries in `research/`. They are new designs that do not have a si
 
 | Entry | Idea | JIT | Builds on |
 |-------|------|:---:|-----------|
-| None yet | | | |
+| `research/naive` | The simplest possible compiler: a stack machine IR where every instruction expands to a fixed run of x86-64 bytes, with no analysis and no optimization. It is the baseline the other entries are measured against. | ❌ | Nothing |
 
 ## Layout of an entry
 
@@ -71,15 +84,20 @@ Each entry follows the same shape, so the same file names can be opened in diffe
   main.c            the whole compiler: the hardcoded input, then one clearly marked section per stage
   README.md         what the design is, what this version leaves out
   FIDELITY.md       how each stage maps to the real compiler (distilled entries only, see templates/FIDELITY.md)
-  dumps/stages.txt  the intermediate form after each stage
-  dumps/code.bin    the final machine code, for entries that generate any
+  dumps/<example>/stages.txt  the intermediate form after each stage, for each example
+  dumps/<example>/code.bin    the final machine code for each example, for entries that generate any
 ```
 
 Entries keep the same section order and the same `stage_*` function naming, so two `main.c` files can be diffed against each other.
 
 ## Building, running and checking
 
-Running `./a.out` prints `Hello, world!` on stdout and the intermediate form after each stage on stderr. If it is given a path as its first argument, it also writes its final machine code there.
+Every entry is run as `./a.out <example> [code.bin]`, where `<example>` is the name of a directory in `examples/`:
+
+- stdout is the program's output, which must equal `examples/<example>/expected.txt`.
+- stderr is the intermediate form after each stage.
+- If a path is given, the final machine code is written there.
+- With no example, or an unknown one, the entry prints a usage message and exits with status 2.
 
 The dumps in each entry's own `dumps/` directory are committed, so the intermediate forms can be read without building anything. They must be deterministic, which means no pointers, timestamps or other run-dependent values in them. `scripts/check-entry.sh` does the work:
 
@@ -98,7 +116,7 @@ CI runs the script for every directory under `distilled/` and `research/`, at `-
 
 ### Coverage
 
-Every entry must have 100% line and branch coverage, so there is as little cruft in the C code as possible. An entry has no input to vary, so one run has to reach every line and take every branch of the compiler. Code that the hello world never needs does not belong in the entry, and neither does a branch whose other side never runs.
+Every entry must have 100% line and branch coverage, so there is as little cruft in the C code as possible. An entry's only inputs are the examples, so running all of them has to reach every line and take every branch of the compiler. Code that no example needs does not belong in the entry, and neither does a branch whose other side never runs. The script also runs the entry with no arguments and with an unknown example, and once without a `code.bin` path, so the usage and optional-argument branches count too.
 
 ```
 scripts/coverage-entry.sh distilled/<compiler>
@@ -106,7 +124,7 @@ scripts/coverage-entry.sh distilled/<compiler>
 
 The script needs `gcc` and [gcovr](https://gcovr.com) (`pipx install gcovr==8.8`). It is a separate build from the one above, at `-O0` and without sanitizers, because the optimizer and the sanitizers add compiler-generated branches that no run can take. CI runs it for every entry.
 
-This also keeps entries honest about what they leave out. A stage that needs a path hello world never takes, such as register spilling, is either dropped and listed under "Dropped or simplified" in `FIDELITY.md`, or exercised by an example that is added to the entry.
+This also keeps entries honest about what they leave out. A stage that needs a path no example takes, such as register spilling, is either dropped and listed under "Dropped or simplified" in `FIDELITY.md`, or exercised by a new example that is added to every entry.
 
 Some code can never run, such as the failure path of a failed `mmap`. It may be excluded with a gcovr comment (`// GCOVR_EXCL_LINE`, `// GCOVR_EXCL_BR_LINE`, or a `GCOVR_EXCL_START` to `GCOVR_EXCL_STOP` block), and each exclusion should say why on the same line. Use them sparingly, since every exclusion is cruft the check cannot see.
 
@@ -114,10 +132,11 @@ Some code can never run, such as the failure path of a failed `mmap`. It may be 
 
 Every entry that generates machine code runs it the same way: the code is copied into an `mmap`ed buffer, the buffer is made executable with `mprotect`, and the entry's own `main.c` calls it in-process. No entry writes an ELF file or invokes an assembler or linker, so the only thing that differs between entries is the compilation design.
 
-- The generated hello world is raw `write` syscalls followed by `ret`, with no libc calls. It returns to `main` instead of exiting.
-- The string lives in the same buffer as the code and is reached with a RIP-relative `lea`, so there is no data section or relocation to model.
+- The generated code is a function that takes one integer argument and returns an integer. It returns to `main` instead of exiting.
+- It prints with raw `write` syscalls and makes no libc calls. Printing an integer therefore includes converting it to decimal in the generated code.
+- A string lives in the same buffer as the code and is reached with a RIP-relative `lea`, so there is no data section or relocation to model.
 - ISO C forbids casting the `mmap` result straight to a function pointer, and `-Wpedantic` rejects it, so entries `memcpy` the pointer into a function-pointer variable instead. They also define `_DEFAULT_SOURCE` at the top, because strict `-std=c17` hides `mmap`.
-- Each entry that generates machine code writes its final code bytes to the path it is given, which ends up as `dumps/code.bin`. It can be disassembled with `objdump -D -b binary -m i386:x86-64`. This replaces the object file you would get from a conventional toolchain.
+- Each entry that generates machine code writes its final code bytes to the path it is given, which ends up as `dumps/<example>/code.bin`. It can be disassembled with `objdump -D -b binary -m i386:x86-64`. This replaces the object file you would get from a conventional toolchain.
 
 `puc-lua` is an interpreter and generates no machine code, so it runs its bytecode in its own dispatch loop instead and has no `code.bin`.
 
@@ -138,13 +157,23 @@ A research entry has no real counterpart to check against, so it is done when `s
 
 ## Examples
 
-Hello world will make most designs look alike, because the differences show up with control flow and with values that live across instructions. Later examples can form a ladder: arithmetic, a loop, a branch, a function call. Each rung is added to every entry, the same way a Rosetta Code task is.
+Hello world alone makes most designs look alike, because the differences show up with control flow and with values that live across instructions. The examples in [`examples/`](examples/) are a ladder, and every entry has to pass every rung:
+
+| Example | What it adds |
+|---------|--------------|
+| `hello` | Printing a string |
+| `arithmetic` | Integer `+`, `-` and `*` with constants |
+| `branch` | Locals, a comparison and an `if` with an `else` |
+| `loop` | A `while` loop that updates locals |
+| `call` | A recursive function with an argument and a return value |
+
+A new example is added to every entry, the same way a Rosetta Code task is. See [`examples/README.md`](examples/README.md) for the exact subset of Lua that the programs use.
 
 Examples are checked for correct output, not timed. Designs can still be compared with numbers that do not need a stopwatch, such as emitted instruction count, code size in bytes, or the number of IR nodes at each stage.
 
 ## Status
 
-Just started. Nothing here runs yet.
+Just started. One entry exists so far, `research/naive`, and it passes every example. The distilled entries are still only planned.
 
 ## Non-goals
 

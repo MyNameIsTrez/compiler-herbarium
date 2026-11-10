@@ -1,0 +1,61 @@
+== stage_select: IR of call ==
+  0  FUNC 1
+  1  PUSH 5
+  2  CALL 6
+  3  PRINT_INT 0
+  4  PUSH 0
+  5  RET 0
+  6  FUNC 1
+  7  LOAD 0
+  8  PUSH 2
+  9  LT 0
+ 10  JZ 13
+ 11  PUSH 1
+ 12  RET 0
+ 13  LOAD 0
+ 14  LOAD 0
+ 15  PUSH 1
+ 16  SUB 0
+ 17  CALL 6
+ 18  MUL 0
+ 19  RET 0
+== stage_emit: bytes per IR instruction, offsets still blank ==
+  0  +0x0000  FUNC       1   55 48 89 e5 48 81 ec 08 00 00 00 48 89 7d f8
+  1  +0x000f  PUSH       5   68 05 00 00 00
+  2  +0x0014  CALL       6   5f e8 00 00 00 00 50
+  3  +0x001b  PRINT_INT  0   58 48 83 ec 20 48 8d 74 24 20 48 c7 c1 0a 00 00 00 48 ff ce c6 06 0a 31 d2 48 f7 f1 80 c2 30 48 ff ce 88 16 48 85 c0 75 ee 48 8d 54 24 20 48 29 f2 b8 01 00 00 00 bf 01 00 00 00 0f 05 48 83 c4 20
+  4  +0x005c  PUSH       0   68 00 00 00 00
+  5  +0x0061  RET        0   58 c9 c3
+  6  +0x0064  FUNC       1   55 48 89 e5 48 81 ec 08 00 00 00 48 89 7d f8
+  7  +0x0073  LOAD       0   ff 75 f8
+  8  +0x0076  PUSH       2   68 02 00 00 00
+  9  +0x007b  LT         0   59 58 48 39 c8 0f 9c c0 0f b6 c0 50
+ 10  +0x0087  JZ        13   58 48 85 c0 0f 84 00 00 00 00
+ 11  +0x0091  PUSH       1   68 01 00 00 00
+ 12  +0x0096  RET        0   58 c9 c3
+ 13  +0x0099  LOAD       0   ff 75 f8
+ 14  +0x009c  LOAD       0   ff 75 f8
+ 15  +0x009f  PUSH       1   68 01 00 00 00
+ 16  +0x00a4  SUB        0   59 58 48 29 c8 50
+ 17  +0x00aa  CALL       6   5f e8 00 00 00 00 50
+ 18  +0x00b1  MUL        0   59 58 48 0f af c1 50
+ 19  +0x00b8  RET        0   58 c9 c3
+== stage_patch: resolved offsets ==
++0x0016  rel32 74  to IR 6 at +0x0064
++0x008d  rel32 8  to IR 13 at +0x0099
++0x00ac  rel32 -76  to IR 6 at +0x0064
+== stage_patch: final code, 187 bytes ==
++0x0000: 55 48 89 e5 48 81 ec 08 00 00 00 48 89 7d f8 68
++0x0010: 05 00 00 00 5f e8 4a 00 00 00 50 58 48 83 ec 20
++0x0020: 48 8d 74 24 20 48 c7 c1 0a 00 00 00 48 ff ce c6
++0x0030: 06 0a 31 d2 48 f7 f1 80 c2 30 48 ff ce 88 16 48
++0x0040: 85 c0 75 ee 48 8d 54 24 20 48 29 f2 b8 01 00 00
++0x0050: 00 bf 01 00 00 00 0f 05 48 83 c4 20 68 00 00 00
++0x0060: 00 58 c9 c3 55 48 89 e5 48 81 ec 08 00 00 00 48
++0x0070: 89 7d f8 ff 75 f8 68 02 00 00 00 59 58 48 39 c8
++0x0080: 0f 9c c0 0f b6 c0 50 58 48 85 c0 0f 84 08 00 00
++0x0090: 00 68 01 00 00 00 58 c9 c3 ff 75 f8 ff 75 f8 68
++0x00a0: 01 00 00 00 59 58 48 29 c8 50 5f e8 b4 ff ff ff
++0x00b0: 50 59 58 48 0f af c1 50 58 c9 c3
+== stage_run ==
+returned 0
