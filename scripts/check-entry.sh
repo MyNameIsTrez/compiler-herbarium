@@ -6,7 +6,7 @@
 #
 # Environment:
 #   CC   C compiler, default gcc
-#   OPT  optimization flag, default -O1
+#   OPT  optimization flag, default -O2
 #
 # An entry is run as: ./entry <example> [code.bin]
 #   stdout          must equal examples/<example>/expected.txt
@@ -36,7 +36,7 @@ if [[ ! -f $source_file ]]; then
 fi
 
 cc=${CC:-gcc}
-opt=${OPT:--O1}
+opt=${OPT:--O2}
 
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT

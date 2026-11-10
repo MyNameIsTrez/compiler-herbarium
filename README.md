@@ -124,7 +124,7 @@ scripts/check-entry.sh distilled/<compiler>            # build, run, check outpu
 scripts/check-entry.sh --update distilled/<compiler>   # also regenerate the committed dumps
 ```
 
-CI runs the script for every directory under `distilled/` and `research/`, with both gcc and clang (`CC=clang scripts/check-entry.sh ...`), at `-O2`, which is the level most likely to expose undefined behavior and flow-based warnings (`-O1` stays the local default, and `OPT=-O2` selects the other), so a new entry is picked up without editing the workflow. With clang the script adds `-fno-sanitize=function`, because that check crashes on calls into generated machine code. CI also compiles every `main.c` once with plain `gcc main.c` and plain `clang main.c`, with no flags.
+The script builds at `-O2` by default, the same level CI uses, because it is the level most likely to expose undefined behavior and flow-based warnings, so a local pass means a CI pass (`OPT=-O1` selects another level). CI runs it for every directory under `distilled/` and `research/`, with both gcc and clang (`CC=clang scripts/check-entry.sh ...`), so a new entry is picked up without editing the workflow. With clang the script adds `-fno-sanitize=function`, because that check crashes on calls into generated machine code. CI also compiles every `main.c` once with plain `gcc main.c` and plain `clang main.c`, with no flags.
 
 ### Coverage
 
