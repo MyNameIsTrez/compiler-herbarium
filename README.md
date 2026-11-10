@@ -69,15 +69,17 @@ These are the entries in `distilled/`, each a toy version of a real compiler or 
 
 The Lines of C column is `cloc`'s count of code lines in the entry's `main.c`, without blanks and comments. `scripts/check-cloc.sh` checks it and `scripts/check-cloc.sh --update` rewrites it.
 
-The JIT column says whether the real design compiles code while the program is running (✅), as opposed to compiling ahead of time or interpreting (❌). It is 🟡 when the answer depends on how the design is used, for example an IR that real systems use in both JIT and ahead-of-time compilers.
+The Kind column says whether the real design is a compiler or an interpreter. A design that compiles to bytecode and then runs it, like CPython, is an interpreter.
 
-| Entry | Lines of C | Mimics | JIT | What it shows |
-|-------|-----------:|--------|:---:|---------------------|
-| [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1401 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
-| [`distilled/clang`](distilled/clang/) | 1745 | Clang and LLVM | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
-| [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | ❌ | Register bytecode and the dispatch loop |
-| [`distilled/cpython`](distilled/cpython/) | 1158 | CPython | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The JIT is optional and experimental |
-| [`distilled/chibicc`](distilled/chibicc/) | 987 | chibicc, a small C compiler | ❌ | An AST walked by a code generator that emits assembly per node with a stack machine, the opposite end of the design space from the IR-based entries |
+The JIT column says whether the real design compiles code to machine code while the program is running (✅), as opposed to doing so ahead of time or never (❌). It is 🟡 when the answer depends on how the design is used, for example an IR that real systems use in both JIT and ahead-of-time compilers.
+
+| Entry | Lines of C | Mimics | Kind | JIT | What it shows |
+|-------|-----------:|--------|------|:---:|---------------------|
+| [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1401 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | Compiler | Compiler | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
+| [`distilled/clang`](distilled/clang/) | 1745 | Clang and LLVM | Compiler | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
+| [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | Interpreter | ❌ | Register bytecode and the dispatch loop |
+| [`distilled/cpython`](distilled/cpython/) | 1158 | CPython | Interpreter | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The JIT is optional and experimental |
+| [`distilled/chibicc`](distilled/chibicc/) | 987 | chibicc, a small C compiler | Compiler | ❌ | An AST walked by a code generator that emits assembly per node with a stack machine, the opposite end of the design space from the IR-based entries |
 
 Every row is a finished entry. Designs that are planned or still being investigated are leads in [RESEARCH.md](RESEARCH.md), and a lead gets a row here only when its entry passes every example.
 
@@ -85,11 +87,11 @@ Only open-source compilers and interpreters get an entry. The real source code i
 
 ## Research compilers
 
-These are the entries in `research/`. They are new designs that do not have a single real counterpart, so they have no `FIDELITY.md`. Each one has a `README.md` that says what idea it tests and which distilled entries it builds on or differs from. The JIT column uses the same ✅, ❌ and 🟡 as above.
+These are the entries in `research/`. They are new designs that do not have a single real counterpart, so they have no `FIDELITY.md`. Each one has a `README.md` that says what idea it tests and which distilled entries it builds on or differs from. The Kind and JIT columns use the same values as above.
 
-| Entry | Lines of C | Idea | JIT | Builds on |
-|-------|-----------:|------|:---:|-----------|
-| `research/naive` | 284 | The simplest possible compiler: a stack machine IR where every instruction expands to a fixed run of x86-64 bytes, with no analysis and no optimization. It is the baseline the other entries are measured against. | ❌ | Nothing. Related to V8's Sparkplug, see its README |
+| Entry | Lines of C | Idea | Kind | JIT | Builds on |
+|-------|-----------:|------|------|:---:|-----------|
+| `research/naive` | 284 | The simplest possible compiler: a stack machine IR where every instruction expands to a fixed run of x86-64 bytes, with no analysis and no optimization. It is the baseline the other entries are measured against. | Compiler | ❌ | Nothing. Related to V8's Sparkplug, see its README |
 
 ## Layout of an entry
 
