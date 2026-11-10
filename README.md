@@ -150,7 +150,7 @@ Every entry that generates machine code runs it the same way: the code is copied
 - A string lives in the same buffer as the code and is reached with a RIP-relative `lea`, so there is no data section or relocation to model.
 - ISO C forbids casting the `mmap` result straight to a function pointer, and `-Wpedantic` rejects it, so entries `memcpy` the pointer into a function-pointer variable instead. They also define `_DEFAULT_SOURCE` at the top, because strict `-std=c17` hides `mmap`.
 - Each entry that generates machine code writes its final code bytes to the path it is given, which ends up as `dumps/<example>/code.bin`. It can be disassembled with `objdump -D -b binary -m i386:x86-64`. This replaces the object file you would get from a conventional toolchain.
-- An interpreter generates no machine code, so it runs its bytecode in its own dispatch loop instead and has no `code.bin`. `puc-lua` is an example.
+- An interpreter generates no machine code, so it runs its bytecode in its own dispatch loop instead and has no `code.bin`.
 
 ## When is an entry done
 
