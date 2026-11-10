@@ -31,10 +31,11 @@ Reference material used:
 
 ## Comparison with the real tool
 
-The real clox was not built or run for this entry, so no output was compared.
+Real clox was built from the same commit with `gcc -O1 c/*.c -lm`, in a scratch clone since removed. `common.h` was edited in the copy (the four `#undef DEBUG_*` lines and the two GC debug defines removed) so that `DEBUG_PRINT_CODE` and `DEBUG_TRACE_EXECUTION` stay on. Each example was translated by hand to Lox: the same program as in `examples/`, wrapped in a block for `branch`, `loop` and `call`, so that its variables are locals as here.
 
-- Matches: the opcode names and the disassembly format follow `debug.c`, the stack trace format follows `DEBUG_TRACE_EXECUTION`, and the code generation order follows `compiler.c` (jump patching, `OP_POP` after `OP_JUMP_IF_FALSE`, `OP_NIL` and `OP_RETURN` at the end of every function) as read from the source.
-- Differs: see the deviations. Real clox adds line numbers to the disassembly and `isLocal` flags to `OP_CLOSURE`.
+- Command: `./clox <example>.lox`
+- Matches: all five examples print exactly `expected.txt`. After the differences below are normalized away, the disassembly of every function and every line of the stack trace are identical to the stage dumps of this entry, for all five examples.
+- Differs: real clox prints a source line column in the disassembly (`0000    1 OP_CONSTANT`, then `|`), and names a function `== fact ==` where this entry writes `== <fn fact> ==`. `OP_CLOSURE` is followed in real clox by two bytes per upvalue (an `isLocal` flag and the index), so the offsets after it are one larger there. Real clox prints the program's output between the trace lines, and this entry sends it to stdout and the dump to stderr.
 
 ## Review
 
