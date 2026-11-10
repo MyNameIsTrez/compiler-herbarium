@@ -58,20 +58,20 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <line class="l" x1="722" y1="319" x2="722" y2="605"/>
 <line class="l" x1="1002" y1="319" x2="1002" y2="605"/>
 <line class="l" x1="162" y1="291" x2="162" y2="319"/>
-<circle class="pl" cx="162" cy="155" r="6"/>
-<text class="n p" x="174" y="159">Wizard</text>
 <circle class="pl" cx="302" cy="155" r="6"/>
 <text class="n p" x="314" y="159">jlox</text>
 <circle class="pl" cx="162" cy="455" r="6"/>
 <text class="n p" x="174" y="459">Winch</text>
-<circle class="dn" cx="442" cy="111" r="6"/>
-<text class="n" x="454" y="115">puc-lua</text>
-<circle class="dn" cx="442" cy="139" r="6"/>
-<text class="n" x="454" y="143">cpython</text>
-<circle class="dn" cx="442" cy="167" r="6"/>
-<text class="n" x="454" y="171">clox</text>
-<circle class="pl" cx="442" cy="195" r="6"/>
-<text class="n p" x="454" y="199">Wren</text>
+<circle class="dn" cx="442" cy="103" r="6"/>
+<text class="n" x="454" y="107">puc-lua</text>
+<circle class="dn" cx="442" cy="127" r="6"/>
+<text class="n" x="454" y="131">cpython</text>
+<circle class="dn" cx="442" cy="151" r="6"/>
+<text class="n" x="454" y="155">clox</text>
+<circle class="pl" cx="442" cy="175" r="6"/>
+<text class="n p" x="454" y="179">Wizard</text>
+<circle class="pl" cx="442" cy="199" r="6"/>
+<text class="n p" x="454" y="203">Wren</text>
 <polygon class="or" points="162,283 170,291 162,299 154,291"/>
 <text class="n" x="174" y="295">naive</text>
 <circle class="dn" cx="162" cy="319" r="6"/>

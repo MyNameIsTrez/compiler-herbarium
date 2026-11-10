@@ -8,6 +8,14 @@ The repo is meant as a learning resource for people, and as a reference that LLM
 
 The map shows where each design sits, and where nothing sits yet. Finished entries are filled dots. Planned entries, which are leads in [RESEARCH.md](RESEARCH.md) that look worth an entry, are dashed dots, and they are not in the tables below until they pass every example. The placement is a judgement call, and `scripts/check-map.sh` checks only that every entry is on it. A crossed cell is one this repo has ruled out for good.
 
+**What the map does not show.** It places a design by its pipeline, so some properties are invisible on it:
+
+- *Compilers derived from an interpreter.* `luajit-remake`, PyPy and Truffle get their compiler from an interpreter (stencils, meta-tracing, partial evaluation), and sit next to designs that were written by hand.
+- *Memory management.* The reference counting of Lean 4 is part of its IR, but no axis shows it.
+- *Specialization and compile-time execution.* Julia's type specialization and Zig's comptime are not a point on the when-is-machine-code-made axis.
+- *Several IRs at once.* `gcc` and MLIR pass through more than one IR, and sit where their middle IR does.
+- *Tools about compilers.* Verifiers and superoptimizers of rewrite rules analyze the compiler, not a program, so they have no cell (see the declined table in [RESEARCH.md](RESEARCH.md)).
+
 **One goal of this repository is to fill out this map.** Think of it as a bingo board: each cell is a combination of what sits between the source and execution and when machine code is made, and the aim is for every cell that a real compiler occupies to hold a distilled entry. A distilled entry comes first, because it is checked against real source. Where a cell is empty and a search finds no open-source compiler or interpreter that sits there, the repo adds an `original/` entry instead, shown as an amber diamond, so the board is covered by designs that are at least tried out. A few cells will stay empty because the cell cannot hold a design or holds only front-end work. They are crossed out on the map, and [RESEARCH.md](RESEARCH.md) gives the one-line reason for each.
 
 It holds two kinds of entries, kept in separate directories:
