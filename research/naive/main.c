@@ -78,6 +78,7 @@ struct program {
     const char *string; /* The text for PRINT_STR, or NULL if the program has none. */
 };
 
+/* print("Hello, world!") */
 static const struct ins hello_code[] = {
     {OP_FUNC, 1},
     {OP_PRINT_STR, 0},
@@ -85,6 +86,7 @@ static const struct ins hello_code[] = {
     {OP_RET, 0},
 };
 
+/* print((2 + 3) * 4 - 6) */
 static const struct ins arithmetic_code[] = {
     {OP_FUNC, 1},
     {OP_PUSH, 2}, {OP_PUSH, 3}, {OP_ADD, 0},
@@ -95,6 +97,15 @@ static const struct ins arithmetic_code[] = {
     {OP_RET, 0},
 };
 
+/*
+ * local a = 3
+ * local b = 5
+ * if a < b then
+ *   print(b)
+ * else
+ *   print(a)
+ * end
+ */
 static const struct ins branch_code[] = {
     {OP_FUNC, 3},
     {OP_PUSH, 3}, {OP_STORE, 1},           /*  1 */
@@ -107,6 +118,15 @@ static const struct ins branch_code[] = {
     {OP_PUSH, 0}, {OP_RET, 0},             /* 14 */
 };
 
+/*
+ * local sum = 0
+ * local i = 1
+ * while i < 11 do
+ *   sum = sum + i
+ *   i = i + 1
+ * end
+ * print(sum)
+ */
 static const struct ins loop_code[] = {
     {OP_FUNC, 3},
     {OP_PUSH, 0}, {OP_STORE, 1},                          /*  1 */
@@ -119,6 +139,15 @@ static const struct ins loop_code[] = {
     {OP_PUSH, 0}, {OP_RET, 0},                            /* 20 */
 };
 
+/*
+ * local function fact(n)
+ *   if n < 2 then
+ *     return 1
+ *   end
+ *   return n * fact(n - 1)
+ * end
+ * print(fact(5))
+ */
 static const struct ins call_code[] = {
     {OP_FUNC, 1},
     {OP_PUSH, 5}, {OP_CALL, 6}, {OP_PRINT_INT, 0},        /*  1 */
