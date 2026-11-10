@@ -110,7 +110,7 @@ Entries keep the same section order and the same `stage_*` function naming, so t
 
 ## Building, running and checking
 
-Every entry is run as `./a.out <example> [code.bin]`, where `<example>` is the name of a directory in `examples/`:
+Every entry builds with plain gcc and plain clang, with no flags, for example `gcc distilled/cpython/main.c`, and is then run as `./a.out <example> [code.bin]`, where `<example>` is the name of a directory in `examples/`:
 
 - stdout is the program's output, which must equal `examples/<example>/expected.txt`.
 - stderr is the intermediate form after each stage.
@@ -122,12 +122,6 @@ The dumps in each entry's own `dumps/` directory are committed, so the intermedi
 ```
 scripts/check-entry.sh distilled/<compiler>            # build, run, check output, check dumps are up to date
 scripts/check-entry.sh --update distilled/<compiler>   # also regenerate the committed dumps
-```
-
-Every `main.c` builds with plain gcc and plain clang, with no flags, for example `gcc distilled/cpython/main.c`. The script is stricter, and builds with:
-
-```
-gcc -std=c17 -O1 -g -Wall -Wextra -Wpedantic -Werror -Wshadow -Wstrict-prototypes -fsanitize=address,undefined
 ```
 
 CI runs the script for every directory under `distilled/` and `research/`, with both gcc and clang (`CC=clang scripts/check-entry.sh ...`), at `-O2`, which is the level most likely to expose undefined behavior and flow-based warnings (`-O1` stays the local default, and `OPT=-O2` selects the other), so a new entry is picked up without editing the workflow. With clang the script adds `-fno-sanitize=function`, because that check crashes on calls into generated machine code. CI also compiles every `main.c` once with plain `gcc main.c` and plain `clang main.c`, with no flags.
