@@ -1,0 +1,248 @@
+== stage_source: STG program of loop ==
+main =
+    let {
+      sum0 = \  [] ->
+          I# [0#]
+      i0 = \  [] ->
+          I# [1#]
+    } in
+      let-no-escape {
+        loop = \  [sum i] ->
+            case i of _ {
+              I# i1 ->
+                case <# [i1 11#] of _ {
+                  1# ->
+                    let {
+                      sum2 = \  [] ->
+                          case sum of _ {
+                            I# x ->
+                              case i of _ {
+                                I# i2 ->
+                                  case +# [x i2] of r1 {
+                                    DEFAULT ->
+                                      I# [r1]
+                                  }
+                              }
+                          }
+                      inext = \  [] ->
+                          case i of _ {
+                            I# i3 ->
+                              case +# [i3 1#] of r2 {
+                                DEFAULT ->
+                                  I# [r2]
+                              }
+                          }
+                    } in
+                      loop sum2 inext
+                  DEFAULT ->
+                    case sum of _ {
+                      I# y ->
+                        putInt# [y]
+                    }
+                }
+            }
+      } in
+        loop sum0 i0
+== stage_flags: update flags and constructor closures ==
+main =
+    let {
+      sum0 = I# [0#]
+      i0 = I# [1#]
+    } in
+      let-no-escape {
+        loop = \j [sum i] ->
+            case i of _ {
+              I# i1 ->
+                case <# [i1 11#] of _ {
+                  1# ->
+                    let {
+                      sum2 = \u [] ->
+                          case sum of _ {
+                            I# x ->
+                              case i of _ {
+                                I# i2 ->
+                                  case +# [x i2] of r1 {
+                                    DEFAULT ->
+                                      I# [r1]
+                                  }
+                              }
+                          }
+                      inext = \u [] ->
+                          case i of _ {
+                            I# i3 ->
+                              case +# [i3 1#] of r2 {
+                                DEFAULT ->
+                                  I# [r2]
+                              }
+                          }
+                    } in
+                      loop sum2 inext
+                  DEFAULT ->
+                    case sum of _ {
+                      I# y ->
+                        putInt# [y]
+                    }
+                }
+            }
+      } in
+        loop sum0 i0
+== stage_fvs: variables captured by every closure ==
+main =
+    let {
+      sum0 = I# [0#]
+      i0 = I# [1#]
+    } in
+      let-no-escape {
+        loop = \j [sum i] ->
+            case i of _ {
+              I# i1 ->
+                case <# [i1 11#] of _ {
+                  1# ->
+                    let {
+                      sum2 = \u {sum i} [] ->
+                          case sum of _ {
+                            I# x ->
+                              case i of _ {
+                                I# i2 ->
+                                  case +# [x i2] of r1 {
+                                    DEFAULT ->
+                                      I# [r1]
+                                  }
+                              }
+                          }
+                      inext = \u {i} [] ->
+                          case i of _ {
+                            I# i3 ->
+                              case +# [i3 1#] of r2 {
+                                DEFAULT ->
+                                  I# [r2]
+                              }
+                          }
+                    } in
+                      loop sum2 inext
+                  DEFAULT ->
+                    case sum of _ {
+                      I# y ->
+                        putInt# [y]
+                    }
+                }
+            }
+      } in
+        loop sum0 i0
+== stage_run: allocations, calls, jumps, thunk entries and updates ==
+  alloc #1 = I# 0#
+  alloc #2 = I# 1#
+  join point loop, no closure
+  jump loop, stack 0
+  enter #2, already a value
+  alloc #3 = THUNK sum2 {sum=#1 i=#2}
+  alloc #4 = THUNK inext {i=#2}
+  jump loop, stack 0
+  enter thunk #4, push an update frame, stack 2
+  enter #2, already a value
+  alloc #5 = I# 2#
+  update #4 := indirection to #5, stack 1
+  alloc #6 = THUNK sum2 {sum=#3 i=#4}
+  alloc #7 = THUNK inext {i=#4}
+  jump loop, stack 0
+  enter thunk #7, push an update frame, stack 2
+  enter #5, already a value
+  alloc #8 = I# 3#
+  update #7 := indirection to #8, stack 1
+  alloc #9 = THUNK sum2 {sum=#6 i=#7}
+  alloc #10 = THUNK inext {i=#7}
+  jump loop, stack 0
+  enter thunk #10, push an update frame, stack 2
+  enter #8, already a value
+  alloc #11 = I# 4#
+  update #10 := indirection to #11, stack 1
+  alloc #12 = THUNK sum2 {sum=#9 i=#10}
+  alloc #13 = THUNK inext {i=#10}
+  jump loop, stack 0
+  enter thunk #13, push an update frame, stack 2
+  enter #11, already a value
+  alloc #14 = I# 5#
+  update #13 := indirection to #14, stack 1
+  alloc #15 = THUNK sum2 {sum=#12 i=#13}
+  alloc #16 = THUNK inext {i=#13}
+  jump loop, stack 0
+  enter thunk #16, push an update frame, stack 2
+  enter #14, already a value
+  alloc #17 = I# 6#
+  update #16 := indirection to #17, stack 1
+  alloc #18 = THUNK sum2 {sum=#15 i=#16}
+  alloc #19 = THUNK inext {i=#16}
+  jump loop, stack 0
+  enter thunk #19, push an update frame, stack 2
+  enter #17, already a value
+  alloc #20 = I# 7#
+  update #19 := indirection to #20, stack 1
+  alloc #21 = THUNK sum2 {sum=#18 i=#19}
+  alloc #22 = THUNK inext {i=#19}
+  jump loop, stack 0
+  enter thunk #22, push an update frame, stack 2
+  enter #20, already a value
+  alloc #23 = I# 8#
+  update #22 := indirection to #23, stack 1
+  alloc #24 = THUNK sum2 {sum=#21 i=#22}
+  alloc #25 = THUNK inext {i=#22}
+  jump loop, stack 0
+  enter thunk #25, push an update frame, stack 2
+  enter #23, already a value
+  alloc #26 = I# 9#
+  update #25 := indirection to #26, stack 1
+  alloc #27 = THUNK sum2 {sum=#24 i=#25}
+  alloc #28 = THUNK inext {i=#25}
+  jump loop, stack 0
+  enter thunk #28, push an update frame, stack 2
+  enter #26, already a value
+  alloc #29 = I# 10#
+  update #28 := indirection to #29, stack 1
+  alloc #30 = THUNK sum2 {sum=#27 i=#28}
+  alloc #31 = THUNK inext {i=#28}
+  jump loop, stack 0
+  enter thunk #31, push an update frame, stack 2
+  enter #29, already a value
+  alloc #32 = I# 11#
+  update #31 := indirection to #32, stack 1
+  enter thunk #30, push an update frame, stack 2
+  enter thunk #27, push an update frame, stack 4
+  enter thunk #24, push an update frame, stack 6
+  enter thunk #21, push an update frame, stack 8
+  enter thunk #18, push an update frame, stack 10
+  enter thunk #15, push an update frame, stack 12
+  enter thunk #12, push an update frame, stack 14
+  enter thunk #9, push an update frame, stack 16
+  enter thunk #6, push an update frame, stack 18
+  enter thunk #3, push an update frame, stack 20
+  enter #1, already a value
+  enter #2, already a value
+  alloc #33 = I# 1#
+  update #3 := indirection to #33, stack 19
+  enter #5, already a value
+  alloc #34 = I# 3#
+  update #6 := indirection to #34, stack 17
+  enter #8, already a value
+  alloc #35 = I# 6#
+  update #9 := indirection to #35, stack 15
+  enter #11, already a value
+  alloc #36 = I# 10#
+  update #12 := indirection to #36, stack 13
+  enter #14, already a value
+  alloc #37 = I# 15#
+  update #15 := indirection to #37, stack 11
+  enter #17, already a value
+  alloc #38 = I# 21#
+  update #18 := indirection to #38, stack 9
+  enter #20, already a value
+  alloc #39 = I# 28#
+  update #21 := indirection to #39, stack 7
+  enter #23, already a value
+  alloc #40 = I# 36#
+  update #24 := indirection to #40, stack 5
+  enter #26, already a value
+  alloc #41 = I# 45#
+  update #27 := indirection to #41, stack 3
+  enter #29, already a value
+  alloc #42 = I# 55#
+  update #30 := indirection to #42, stack 1

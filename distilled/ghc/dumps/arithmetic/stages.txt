@@ -1,0 +1,112 @@
+== stage_source: STG program of arithmetic ==
+main =
+    let {
+      t1 = \  [] ->
+          case +# [2# 3#] of s {
+            DEFAULT ->
+              I# [s]
+          }
+    } in
+      let {
+        t2 = \  [] ->
+            case t1 of _ {
+              I# a ->
+                case *# [a 4#] of m {
+                  DEFAULT ->
+                    I# [m]
+                }
+            }
+      } in
+        let {
+          t3 = \  [] ->
+              case t2 of _ {
+                I# b ->
+                  case -# [b 6#] of d {
+                    DEFAULT ->
+                      I# [d]
+                  }
+              }
+        } in
+          case t3 of _ {
+            I# r ->
+              putInt# [r]
+          }
+== stage_flags: update flags and constructor closures ==
+main =
+    let {
+      t1 = \u [] ->
+          case +# [2# 3#] of s {
+            DEFAULT ->
+              I# [s]
+          }
+    } in
+      let {
+        t2 = \u [] ->
+            case t1 of _ {
+              I# a ->
+                case *# [a 4#] of m {
+                  DEFAULT ->
+                    I# [m]
+                }
+            }
+      } in
+        let {
+          t3 = \u [] ->
+              case t2 of _ {
+                I# b ->
+                  case -# [b 6#] of d {
+                    DEFAULT ->
+                      I# [d]
+                  }
+              }
+        } in
+          case t3 of _ {
+            I# r ->
+              putInt# [r]
+          }
+== stage_fvs: variables captured by every closure ==
+main =
+    let {
+      t1 = \u {} [] ->
+          case +# [2# 3#] of s {
+            DEFAULT ->
+              I# [s]
+          }
+    } in
+      let {
+        t2 = \u {t1} [] ->
+            case t1 of _ {
+              I# a ->
+                case *# [a 4#] of m {
+                  DEFAULT ->
+                    I# [m]
+                }
+            }
+      } in
+        let {
+          t3 = \u {t2} [] ->
+              case t2 of _ {
+                I# b ->
+                  case -# [b 6#] of d {
+                    DEFAULT ->
+                      I# [d]
+                  }
+              }
+        } in
+          case t3 of _ {
+            I# r ->
+              putInt# [r]
+          }
+== stage_run: allocations, calls, jumps, thunk entries and updates ==
+  alloc #1 = THUNK t1 {}
+  alloc #2 = THUNK t2 {t1=#1}
+  alloc #3 = THUNK t3 {t2=#2}
+  enter thunk #3, push an update frame, stack 2
+  enter thunk #2, push an update frame, stack 4
+  enter thunk #1, push an update frame, stack 6
+  alloc #4 = I# 5#
+  update #1 := indirection to #4, stack 5
+  alloc #5 = I# 20#
+  update #2 := indirection to #5, stack 3
+  alloc #6 = I# 14#
+  update #3 := indirection to #6, stack 1

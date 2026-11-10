@@ -1,0 +1,61 @@
+== stage_source: STG program of branch ==
+main =
+    let {
+      a = \  [] ->
+          I# [3#]
+      b = \  [] ->
+          I# [5#]
+    } in
+      case a of _ {
+        I# x ->
+          case b of _ {
+            I# y ->
+              case <# [x y] of _ {
+                1# ->
+                  putInt# [y]
+                DEFAULT ->
+                  putInt# [x]
+              }
+          }
+      }
+== stage_flags: update flags and constructor closures ==
+main =
+    let {
+      a = I# [3#]
+      b = I# [5#]
+    } in
+      case a of _ {
+        I# x ->
+          case b of _ {
+            I# y ->
+              case <# [x y] of _ {
+                1# ->
+                  putInt# [y]
+                DEFAULT ->
+                  putInt# [x]
+              }
+          }
+      }
+== stage_fvs: variables captured by every closure ==
+main =
+    let {
+      a = I# [3#]
+      b = I# [5#]
+    } in
+      case a of _ {
+        I# x ->
+          case b of _ {
+            I# y ->
+              case <# [x y] of _ {
+                1# ->
+                  putInt# [y]
+                DEFAULT ->
+                  putInt# [x]
+              }
+          }
+      }
+== stage_run: allocations, calls, jumps, thunk entries and updates ==
+  alloc #1 = I# 3#
+  alloc #2 = I# 5#
+  enter #1, already a value
+  enter #2, already a value

@@ -92,8 +92,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n" x="734" y="295">sea-of-nodes</text>
 <circle class="pl" cx="722" cy="319" r="6"/>
 <text class="n p" x="734" y="323">Cranelift</text>
-<circle class="pl" cx="862" cy="291" r="6"/>
-<text class="n p" x="874" y="295">GHC</text>
+<circle class="dn" cx="862" cy="291" r="6"/>
+<text class="n" x="874" y="295">ghc</text>
 <circle class="pl" cx="862" cy="319" r="6"/>
 <text class="n p" x="874" y="323">Lean 4</text>
 <circle class="pl" cx="862" cy="347" r="6"/>

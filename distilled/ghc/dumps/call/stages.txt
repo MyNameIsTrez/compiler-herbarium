@@ -1,0 +1,153 @@
+== stage_source: STG program of call ==
+fact = \  [n] ->
+    case n of _ {
+      I# n1 ->
+        case <# [n1 2#] of _ {
+          1# ->
+            I# [1#]
+          DEFAULT ->
+            let {
+              m = \  [] ->
+                  case n of _ {
+                    I# k ->
+                      case -# [k 1#] of d {
+                        DEFAULT ->
+                          I# [d]
+                      }
+                  }
+            } in
+              case fact m of _ {
+                I# r ->
+                  case n of _ {
+                    I# n2 ->
+                      case *# [n2 r] of p {
+                        DEFAULT ->
+                          I# [p]
+                      }
+                  }
+              }
+        }
+    }
+main =
+    let {
+      five = \  [] ->
+          I# [5#]
+    } in
+      case fact five of _ {
+        I# r ->
+          putInt# [r]
+      }
+== stage_flags: update flags and constructor closures ==
+fact = \r [n] ->
+    case n of _ {
+      I# n1 ->
+        case <# [n1 2#] of _ {
+          1# ->
+            I# [1#]
+          DEFAULT ->
+            let {
+              m = \u [] ->
+                  case n of _ {
+                    I# k ->
+                      case -# [k 1#] of d {
+                        DEFAULT ->
+                          I# [d]
+                      }
+                  }
+            } in
+              case fact m of _ {
+                I# r ->
+                  case n of _ {
+                    I# n2 ->
+                      case *# [n2 r] of p {
+                        DEFAULT ->
+                          I# [p]
+                      }
+                  }
+              }
+        }
+    }
+main =
+    let {
+      five = I# [5#]
+    } in
+      case fact five of _ {
+        I# r ->
+          putInt# [r]
+      }
+== stage_fvs: variables captured by every closure ==
+fact = \r {} [n] ->
+    case n of _ {
+      I# n1 ->
+        case <# [n1 2#] of _ {
+          1# ->
+            I# [1#]
+          DEFAULT ->
+            let {
+              m = \u {n} [] ->
+                  case n of _ {
+                    I# k ->
+                      case -# [k 1#] of d {
+                        DEFAULT ->
+                          I# [d]
+                      }
+                  }
+            } in
+              case fact m of _ {
+                I# r ->
+                  case n of _ {
+                    I# n2 ->
+                      case *# [n2 r] of p {
+                        DEFAULT ->
+                          I# [p]
+                      }
+                  }
+              }
+        }
+    }
+main =
+    let {
+      five = I# [5#]
+    } in
+      case fact five of _ {
+        I# r ->
+          putInt# [r]
+      }
+== stage_run: allocations, calls, jumps, thunk entries and updates ==
+  alloc #1 = FUN fact {}
+  alloc #2 = I# 5#
+  call fact, stack 1
+  enter #2, already a value
+  alloc #3 = THUNK m {n=#2}
+  call fact, stack 2
+  enter thunk #3, push an update frame, stack 4
+  enter #2, already a value
+  alloc #4 = I# 4#
+  update #3 := indirection to #4, stack 3
+  alloc #5 = THUNK m {n=#3}
+  call fact, stack 3
+  enter thunk #5, push an update frame, stack 5
+  enter #4, already a value
+  alloc #6 = I# 3#
+  update #5 := indirection to #6, stack 4
+  alloc #7 = THUNK m {n=#5}
+  call fact, stack 4
+  enter thunk #7, push an update frame, stack 6
+  enter #6, already a value
+  alloc #8 = I# 2#
+  update #7 := indirection to #8, stack 5
+  alloc #9 = THUNK m {n=#7}
+  call fact, stack 5
+  enter thunk #9, push an update frame, stack 7
+  enter #8, already a value
+  alloc #10 = I# 1#
+  update #9 := indirection to #10, stack 6
+  alloc #11 = I# 1#
+  enter #8, already a value
+  alloc #12 = I# 2#
+  enter #6, already a value
+  alloc #13 = I# 6#
+  enter #4, already a value
+  alloc #14 = I# 24#
+  enter #2, already a value
+  alloc #15 = I# 120#

@@ -1,0 +1,10 @@
+== stage_source: STG program of hello ==
+main =
+    putStr# ["Hello, world!"]
+== stage_flags: update flags and constructor closures ==
+main =
+    putStr# ["Hello, world!"]
+== stage_fvs: variables captured by every closure ==
+main =
+    putStr# ["Hello, world!"]
+== stage_run: allocations, calls, jumps, thunk entries and updates ==
