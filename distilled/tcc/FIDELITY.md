@@ -33,10 +33,11 @@ Reference material used:
 
 ## Comparison with the real tool
 
-The real TCC was not built or run for this entry, so no output was compared.
+Real TCC was built from the same commit (`./configure && make -j2`, in a scratch clone since removed). Each example was written as C, with `print_int` and `print_str` declared but not defined, compiled with `tcc -c`, and disassembled with `objdump -d -r -M intel`. The five programs were also linked with a small `printf` based definition of the two functions, and run.
 
-- Matches: the instruction forms (`mov eax, [rbp-8]`, `cmp eax, imm8`, `imul`, `jge rel32`, `call rel32`), the registers picked in order (rax, then rcx), the arguments moved into rdi, the `leave; ret` epilogue and the prologue patched after the body are what the source emits, as read from `x86_64-gen.c`.
-- Differs: see the deviations. Real TCC also emits relocations and an ELF object, and folds constants.
+- Command: `tcc -c <example>.c -o <example>.o`, then `objdump -d -r -M intel --no-show-raw-insn <example>.o`
+- Matches: for `branch`, `loop` and `call`, the instructions of every function are the same, in the same order and with the same registers: the prologue and its `sub rsp` size, the 64-bit store of the parameter and 32-bit loads, `cmp` against an immediate or `ecx`, `jge`, `jmp` back to the loop head, `sub`, `imul ecx, eax`, `mov eax, ecx`, the `mov eax, 0` that ends `main`, and `leave; ret`. The frame size also agrees (16 for functions with locals, 0 for `main` in `arithmetic`). All five programs print exactly `expected.txt` when built with real TCC.
+- Differs: real TCC folds `(2 + 3) * 4 - 6` and emits `mov eax, 0xe`, where this entry emits the arithmetic (folding is left out, see the deviations). Real TCC emits a relocation for every call, where this entry resolves calls itself. `hello` was not compared, because its string and `print_str` are this entry's own stand-ins for the C library.
 
 ## Review
 
