@@ -148,6 +148,7 @@ Every entry that generates machine code runs it the same way: the code is copied
 - The generated code is a function that takes one integer argument and returns an integer. It returns to `main` instead of exiting.
 - It prints with raw `write` syscalls and makes no libc calls. Printing an integer therefore includes converting it to decimal in the generated code.
 - A string lives in the same buffer as the code and is reached with a RIP-relative `lea`, so there is no data section or relocation to model.
+- The three rules above are the default for ahead-of-time compilers. A design whose point is a runtime that the generated code calls into may differ. `distilled/luajit-remake` passes a frame pointer, calls a C helper to print, and reads constants from memory at addresses patched into the code.
 - ISO C forbids casting the `mmap` result straight to a function pointer, and `-Wpedantic` rejects it, so entries `memcpy` the pointer into a function-pointer variable instead. They also define `_DEFAULT_SOURCE` at the top, because strict `-std=c17` hides `mmap`.
 - Each entry that generates machine code writes its final code bytes to the path it is given, which ends up as `dumps/<example>/code.bin`. It can be disassembled with `objdump -D -b binary -m i386:x86-64`. This replaces the object file you would get from a conventional toolchain.
 - An interpreter generates no machine code, so it runs its bytecode in its own dispatch loop instead and has no `code.bin`.
