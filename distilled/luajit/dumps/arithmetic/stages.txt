@@ -1,0 +1,14 @@
+== stage_bytecode ==
+function <main> (10 instructions)
+   0  LOADK  0 0 0 imm=0
+   1  LOADI  1 0 0 imm=2
+   2  LOADI  2 0 0 imm=3
+   3  ADD    1 1 2 imm=0
+   4  LOADI  2 0 0 imm=4
+   5  MUL    1 1 2 imm=0
+   6  LOADI  2 0 0 imm=6
+   7  SUB    1 1 2 imm=0
+   8  CALL   0 0 0 imm=0
+   9  RET0   0 0 0 imm=0
+== stage_interpret ==
+interpreter finished

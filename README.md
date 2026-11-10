@@ -83,6 +83,7 @@ The JIT column says whether the real design compiles code to machine code while 
 | [`distilled/chibicc`](distilled/chibicc/) | 987 | chibicc, a small C compiler | Compiler | ❌ | An AST walked by a code generator that emits assembly per node with a stack machine, the opposite end of the design space from the IR-based entries |
 | [`distilled/gcc`](distilled/gcc/) | 1750 | GCC | Compiler | ❌ | GENERIC to GIMPLE to SSA to RTL, with PHI placement, out-of-SSA partitions, combine and a graph-coloring register allocator with copy preferences |
 | [`distilled/luajit-remake`](distilled/luajit-remake/) | 407 | LuaJIT Remake and Deegen | Interpreter | ✅ | A copy-and-patch baseline JIT: stencils with holes, copied and patched per bytecode, with the jump to the next bytecode cut off. The entry has only the JIT, not the interpreter that the real VM tiers up from |
+| [`distilled/luajit`](distilled/luajit/) | 756 | LuaJIT | Interpreter | ✅ | A tracing JIT: a hot loop is recorded into SSA IR with guards and snapshots, unrolled by copy-substitution with PHIs, and assembled backwards with register allocation. Only the `loop` example makes a trace. |
 
 Every row is a finished entry. Designs that are planned or still being investigated are leads in [RESEARCH.md](RESEARCH.md), and a lead gets a row here only when its entry passes every example.
 

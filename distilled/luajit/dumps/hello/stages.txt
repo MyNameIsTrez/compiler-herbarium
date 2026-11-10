@@ -1,0 +1,8 @@
+== stage_bytecode ==
+function <main> (4 instructions)
+   0  LOADK  0 0 0 imm=0
+   1  LOADK  1 1 0 imm=0
+   2  CALL   0 0 0 imm=0
+   3  RET0   0 0 0 imm=0
+== stage_interpret ==
+interpreter finished
