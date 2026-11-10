@@ -73,7 +73,7 @@ These are the entries in `research/`. They are new designs that do not have a si
 
 | Entry | Idea | JIT | Builds on |
 |-------|------|:---:|-----------|
-| `research/naive` | The simplest possible compiler: a stack machine IR where every instruction expands to a fixed run of x86-64 bytes, with no analysis and no optimization. It is the baseline the other entries are measured against. | ❌ | Nothing |
+| `research/naive` | The simplest possible compiler: a stack machine IR where every instruction expands to a fixed run of x86-64 bytes, with no analysis and no optimization. It is the baseline the other entries are measured against. | ❌ | Nothing. Related to V8's Sparkplug, see its README |
 
 ## Layout of an entry
 

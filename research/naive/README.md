@@ -10,7 +10,28 @@ The input is a stack machine IR. Each IR instruction is expanded into a fixed ru
 - The registers are scratch only, and no value stays in a register from one IR instruction to the next.
 - Jumps, calls and the string are emitted with a blank 32-bit offset, and a second pass fills them in once every instruction has an address.
 
-There is no analysis, no optimization and no register allocation. This is how a baseline template JIT works at its simplest, without the inline caches and type feedback that real ones add.
+There is no analysis, no optimization and no register allocation. It is closest in spirit to a baseline compiler such as V8's Sparkplug, but it is not a distillation of one. See the next section for what matches and what does not.
+
+## Relation to V8's Sparkplug
+
+Checked on 2026-11-10 against the [Sparkplug blog post](https://v8.dev/blog/sparkplug) and V8's `src/baseline/baseline-compiler.cc` and `baseline-compiler.h` on the main branch.
+
+What matches:
+
+- **No IR of its own.** Sparkplug compiles bytecode directly to machine code, as `naive` does. The blog says it "doesn't generate any intermediate representation (IR) like most compilers do".
+- **A linear walk with one case per instruction.** `BaselineCompiler::GenerateCode` iterates over the bytecode and calls `VisitSingleBytecode` for each one, which is the same shape as the `switch` in `stage_emit`.
+- **A label per jump target, patched later.** Sparkplug keeps a `labels_` entry per bytecode offset and binds it when it reaches that offset. `naive` records the offsets itself and patches them in `stage_patch`, which has the same effect.
+- **One backend per architecture.** The blog says there is no architecture-independent stage, so every port is written separately. `naive` targets x86-64 only.
+
+What differs, and why `naive` is not a distillation of it:
+
+- **Input.** Sparkplug reads Ignition's register bytecode, which has an accumulator. `naive` reads a stack machine IR.
+- **Where values live.** Sparkplug keeps the interpreter's frame layout, with the registers as frame slots and the accumulator in a machine register, so that on-stack replacement and deoptimization work unchanged. `naive` keeps every operand on the machine stack and has no interpreter to be compatible with.
+- **Builtins.** Most Sparkplug bytecodes become a call into a builtin shared with the interpreter, since JavaScript semantics are too large to emit inline. `naive` has no runtime, so every operation is a few inline instructions.
+- **A pre-pass.** `GenerateCode` first walks the bytecode to mark loop headers and exception handlers as jump targets, so the walk is not strictly a single pass. The blog describes it as a single linear pass, and `naive` does the same walk plus a separate patching step.
+- **Feedback.** Sparkplug uses a feedback vector gathered by the interpreter. `naive` has no profiling.
+
+So `naive` shares Sparkplug's central trick, expanding each instruction with no IR in between, but it is a different, smaller thing. It is a research entry for that reason.
 
 ## Stages
 
