@@ -1,0 +1,223 @@
+== stage_ast: typed AST ==
+function main
+  block
+    expr_stmt
+      lhs comma : int
+        lhs memzero sum
+        rhs assign : int
+          lhs var sum : int
+          rhs num 0 : int
+    expr_stmt
+      lhs comma : int
+        lhs memzero i
+        rhs assign : int
+          lhs var i : int
+          rhs num 1 : int
+    for (brk .L..2, cont .L..3)
+      cond lt : int
+        lhs var i : int
+        rhs num 11 : int
+      then block
+        expr_stmt
+          lhs assign : int
+            lhs var sum : int
+            rhs add : int
+              lhs var sum : int
+              rhs var i : int
+        expr_stmt
+          lhs assign : int
+            lhs var i : int
+            rhs add : int
+              lhs var i : int
+              rhs num 1 : int
+    expr_stmt
+      lhs funcall : int
+        lhs var print_int : func
+        arg var sum : int
+== stage_assign_offsets: frame layout ==
+main: stack_size 16
+  i                int    size 4  offset -4
+  sum              int    size 4  offset -8
+  __alloca_size__  char*  size 8  offset -16
+== stage_codegen: assembly ==
+  .local .L..1
+  .data
+.L..1:
+  .string "main"
+  .local .L..0
+  .data
+.L..0:
+  .string "main"
+  .text
+.globl main
+main:
+  push %rbp
+  mov %rsp, %rbp
+  sub $16, %rsp
+  mov %rsp, -16(%rbp)
+  mov $4, %rcx
+  lea -8(%rbp), %rdi
+  mov $0, %al
+  rep stosb
+  lea -8(%rbp), %rax
+  push %rax
+  mov $0, %rax
+  pop %rdi
+  mov %eax, (%rdi)
+  mov $4, %rcx
+  lea -4(%rbp), %rdi
+  mov $0, %al
+  rep stosb
+  lea -4(%rbp), %rax
+  push %rax
+  mov $1, %rax
+  pop %rdi
+  mov %eax, (%rdi)
+.L.begin.1:
+  mov $11, %rax
+  push %rax
+  lea -4(%rbp), %rax
+  movsxd (%rax), %rax
+  pop %rdi
+  cmp %edi, %eax
+  setl %al
+  movzb %al, %rax
+  cmp $0, %eax
+  je .L..2
+  lea -8(%rbp), %rax
+  push %rax
+  lea -4(%rbp), %rax
+  movsxd (%rax), %rax
+  push %rax
+  lea -8(%rbp), %rax
+  movsxd (%rax), %rax
+  pop %rdi
+  add %edi, %eax
+  pop %rdi
+  mov %eax, (%rdi)
+  lea -4(%rbp), %rax
+  push %rax
+  mov $1, %rax
+  push %rax
+  lea -4(%rbp), %rax
+  movsxd (%rax), %rax
+  pop %rdi
+  add %edi, %eax
+  pop %rdi
+  mov %eax, (%rdi)
+.L..3:
+  jmp .L.begin.1
+.L..2:
+  lea -8(%rbp), %rax
+  movsxd (%rax), %rax
+  push %rax
+  lea print_int(%rip), %rax
+  pop %rdi
+  mov %rax, %r10
+  mov $0, %rax
+  call *%r10
+  add $0, %rsp
+  mov $0, %rax
+.L.return.main:
+  mov %rbp, %rsp
+  pop %rbp
+  ret
+== stage_encode: machine code, with the offset of each instruction ==
+  +0x0000  .globl main
+  +0x0000  main:
+  +0x0000  push %rbp
+  +0x0001  mov %rsp, %rbp
+  +0x0004  sub $16, %rsp
+  +0x0008  mov %rsp, -16(%rbp)
+  +0x000c  mov $4, %rcx
+  +0x0013  lea -8(%rbp), %rdi
+  +0x0017  mov $0, %al
+  +0x0019  rep stosb
+  +0x001b  lea -8(%rbp), %rax
+  +0x001f  push %rax
+  +0x0020  mov $0, %rax
+  +0x0027  pop %rdi
+  +0x0028  mov %eax, (%rdi)
+  +0x002a  mov $4, %rcx
+  +0x0031  lea -4(%rbp), %rdi
+  +0x0035  mov $0, %al
+  +0x0037  rep stosb
+  +0x0039  lea -4(%rbp), %rax
+  +0x003d  push %rax
+  +0x003e  mov $1, %rax
+  +0x0045  pop %rdi
+  +0x0046  mov %eax, (%rdi)
+  +0x0048  .L.begin.1:
+  +0x0048  mov $11, %rax
+  +0x004f  push %rax
+  +0x0050  lea -4(%rbp), %rax
+  +0x0054  movsxd (%rax), %rax
+  +0x0057  pop %rdi
+  +0x0058  cmp %edi, %eax
+  +0x005a  setl %al
+  +0x005d  movzb %al, %rax
+  +0x0061  cmp $0, %eax
+  +0x0064  je .L..2
+  +0x006a  lea -8(%rbp), %rax
+  +0x006e  push %rax
+  +0x006f  lea -4(%rbp), %rax
+  +0x0073  movsxd (%rax), %rax
+  +0x0076  push %rax
+  +0x0077  lea -8(%rbp), %rax
+  +0x007b  movsxd (%rax), %rax
+  +0x007e  pop %rdi
+  +0x007f  add %edi, %eax
+  +0x0081  pop %rdi
+  +0x0082  mov %eax, (%rdi)
+  +0x0084  lea -4(%rbp), %rax
+  +0x0088  push %rax
+  +0x0089  mov $1, %rax
+  +0x0090  push %rax
+  +0x0091  lea -4(%rbp), %rax
+  +0x0095  movsxd (%rax), %rax
+  +0x0098  pop %rdi
+  +0x0099  add %edi, %eax
+  +0x009b  pop %rdi
+  +0x009c  mov %eax, (%rdi)
+  +0x009e  .L..3:
+  +0x009e  jmp .L.begin.1
+  +0x00a3  .L..2:
+  +0x00a3  lea -8(%rbp), %rax
+  +0x00a7  movsxd (%rax), %rax
+  +0x00aa  push %rax
+  +0x00ab  lea print_int(%rip), %rax
+  +0x00b2  pop %rdi
+  +0x00b3  mov %rax, %r10
+  +0x00b6  mov $0, %rax
+  +0x00bd  call *%r10
+  +0x00c0  add $0, %rsp
+  +0x00c4  mov $0, %rax
+  +0x00cb  .L.return.main:
+  +0x00cb  mov %rbp, %rsp
+  +0x00ce  pop %rbp
+  +0x00cf  ret
++0x0066  rel32 57 to .L..2 at +0x00a3
++0x009f  rel32 -91 to .L.begin.1 at +0x0048
++0x00ae  rel32 30 to print_int at +0x00d0
+== stage_encode: final code, 315 bytes ==
++0x0000: 55 48 89 e5 48 83 ec 10 48 89 65 f0 48 c7 c1 04
++0x0010: 00 00 00 48 8d 7d f8 b0 00 f3 aa 48 8d 45 f8 50
++0x0020: 48 c7 c0 00 00 00 00 5f 89 07 48 c7 c1 04 00 00
++0x0030: 00 48 8d 7d fc b0 00 f3 aa 48 8d 45 fc 50 48 c7
++0x0040: c0 01 00 00 00 5f 89 07 48 c7 c0 0b 00 00 00 50
++0x0050: 48 8d 45 fc 48 63 00 5f 39 f8 0f 9c c0 48 0f b6
++0x0060: c0 83 f8 00 0f 84 39 00 00 00 48 8d 45 f8 50 48
++0x0070: 8d 45 fc 48 63 00 50 48 8d 45 f8 48 63 00 5f 01
++0x0080: f8 5f 89 07 48 8d 45 fc 50 48 c7 c0 01 00 00 00
++0x0090: 50 48 8d 45 fc 48 63 00 5f 01 f8 5f 89 07 e9 a5
++0x00a0: ff ff ff 48 8d 45 f8 48 63 00 50 48 8d 05 1e 00
++0x00b0: 00 00 5f 49 89 c2 48 c7 c0 00 00 00 00 41 ff d2
++0x00c0: 48 83 c4 00 48 c7 c0 00 00 00 00 48 89 ec 5d c3
++0x00d0: 48 89 f8 48 83 ec 20 48 8d 74 24 20 48 c7 c1 0a
++0x00e0: 00 00 00 48 ff ce c6 06 0a 31 d2 48 f7 f1 80 c2
++0x00f0: 30 48 ff ce 88 16 48 85 c0 75 ee 48 8d 54 24 20
++0x0100: 48 29 f2 b8 01 00 00 00 bf 01 00 00 00 0f 05 48
++0x0110: 83 c4 20 c3 48 89 fe 31 d2 80 3c 17 00 74 05 48
++0x0120: ff c2 eb f5 b8 01 00 00 00 bf 01 00 00 00 0f 05
++0x0130: c3 6d 61 69 6e 00 6d 61 69 6e 00
+== stage_export ==

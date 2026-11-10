@@ -1,0 +1,222 @@
+== stage_ast: typed AST ==
+function main
+  block
+    expr_stmt
+      lhs funcall : int
+        lhs var print_int : func
+        arg funcall : int
+          lhs var fact : func
+          arg num 5 : int
+function fact
+  block
+    if
+      cond lt : int
+        lhs var n : int
+        rhs num 2 : int
+      then return
+        lhs num 1 : int
+    return
+      lhs mul : int
+        lhs var n : int
+        rhs funcall : int
+          lhs var fact : func
+          arg sub : int
+            lhs var n : int
+            rhs num 1 : int
+== stage_assign_offsets: frame layout ==
+main: stack_size 16
+  __alloca_size__  char*  size 8  offset -8
+fact: stack_size 16
+  __alloca_size__  char*  size 8  offset -8
+  n                int    size 4  offset -12
+== stage_codegen: assembly ==
+  .local .L..3
+  .data
+.L..3:
+  .string "main"
+  .local .L..2
+  .data
+.L..2:
+  .string "main"
+  .local .L..1
+  .data
+.L..1:
+  .string "fact"
+  .local .L..0
+  .data
+.L..0:
+  .string "fact"
+  .text
+.globl main
+main:
+  push %rbp
+  mov %rsp, %rbp
+  sub $16, %rsp
+  mov %rsp, -8(%rbp)
+  mov $5, %rax
+  push %rax
+  lea fact(%rip), %rax
+  pop %rdi
+  mov %rax, %r10
+  mov $0, %rax
+  call *%r10
+  add $0, %rsp
+  push %rax
+  lea print_int(%rip), %rax
+  pop %rdi
+  mov %rax, %r10
+  mov $0, %rax
+  call *%r10
+  add $0, %rsp
+  mov $0, %rax
+.L.return.main:
+  mov %rbp, %rsp
+  pop %rbp
+  ret
+.globl fact
+fact:
+  push %rbp
+  mov %rsp, %rbp
+  sub $16, %rsp
+  mov %rsp, -8(%rbp)
+  mov %edi, -12(%rbp)
+  mov $2, %rax
+  push %rax
+  lea -12(%rbp), %rax
+  movsxd (%rax), %rax
+  pop %rdi
+  cmp %edi, %eax
+  setl %al
+  movzb %al, %rax
+  cmp $0, %eax
+  je .L.else.1
+  mov $1, %rax
+  jmp .L.return.fact
+  jmp .L.end.1
+.L.else.1:
+.L.end.1:
+  mov $1, %rax
+  push %rax
+  lea -12(%rbp), %rax
+  movsxd (%rax), %rax
+  pop %rdi
+  sub %edi, %eax
+  push %rax
+  lea fact(%rip), %rax
+  pop %rdi
+  mov %rax, %r10
+  mov $0, %rax
+  call *%r10
+  add $0, %rsp
+  push %rax
+  lea -12(%rbp), %rax
+  movsxd (%rax), %rax
+  pop %rdi
+  imul %edi, %eax
+  jmp .L.return.fact
+.L.return.fact:
+  mov %rbp, %rsp
+  pop %rbp
+  ret
+== stage_encode: machine code, with the offset of each instruction ==
+  +0x0000  .globl main
+  +0x0000  main:
+  +0x0000  push %rbp
+  +0x0001  mov %rsp, %rbp
+  +0x0004  sub $16, %rsp
+  +0x0008  mov %rsp, -8(%rbp)
+  +0x000c  mov $5, %rax
+  +0x0013  push %rax
+  +0x0014  lea fact(%rip), %rax
+  +0x001b  pop %rdi
+  +0x001c  mov %rax, %r10
+  +0x001f  mov $0, %rax
+  +0x0026  call *%r10
+  +0x0029  add $0, %rsp
+  +0x002d  push %rax
+  +0x002e  lea print_int(%rip), %rax
+  +0x0035  pop %rdi
+  +0x0036  mov %rax, %r10
+  +0x0039  mov $0, %rax
+  +0x0040  call *%r10
+  +0x0043  add $0, %rsp
+  +0x0047  mov $0, %rax
+  +0x004e  .L.return.main:
+  +0x004e  mov %rbp, %rsp
+  +0x0051  pop %rbp
+  +0x0052  ret
+  +0x0053  .globl fact
+  +0x0053  fact:
+  +0x0053  push %rbp
+  +0x0054  mov %rsp, %rbp
+  +0x0057  sub $16, %rsp
+  +0x005b  mov %rsp, -8(%rbp)
+  +0x005f  mov %edi, -12(%rbp)
+  +0x0062  mov $2, %rax
+  +0x0069  push %rax
+  +0x006a  lea -12(%rbp), %rax
+  +0x006e  movsxd (%rax), %rax
+  +0x0071  pop %rdi
+  +0x0072  cmp %edi, %eax
+  +0x0074  setl %al
+  +0x0077  movzb %al, %rax
+  +0x007b  cmp $0, %eax
+  +0x007e  je .L.else.1
+  +0x0084  mov $1, %rax
+  +0x008b  jmp .L.return.fact
+  +0x0090  jmp .L.end.1
+  +0x0095  .L.else.1:
+  +0x0095  .L.end.1:
+  +0x0095  mov $1, %rax
+  +0x009c  push %rax
+  +0x009d  lea -12(%rbp), %rax
+  +0x00a1  movsxd (%rax), %rax
+  +0x00a4  pop %rdi
+  +0x00a5  sub %edi, %eax
+  +0x00a7  push %rax
+  +0x00a8  lea fact(%rip), %rax
+  +0x00af  pop %rdi
+  +0x00b0  mov %rax, %r10
+  +0x00b3  mov $0, %rax
+  +0x00ba  call *%r10
+  +0x00bd  add $0, %rsp
+  +0x00c1  push %rax
+  +0x00c2  lea -12(%rbp), %rax
+  +0x00c6  movsxd (%rax), %rax
+  +0x00c9  pop %rdi
+  +0x00ca  imul %edi, %eax
+  +0x00cd  jmp .L.return.fact
+  +0x00d2  .L.return.fact:
+  +0x00d2  mov %rbp, %rsp
+  +0x00d5  pop %rbp
+  +0x00d6  ret
++0x0017  rel32 56 to fact at +0x0053
++0x0031  rel32 162 to print_int at +0x00d7
++0x0080  rel32 17 to .L.else.1 at +0x0095
++0x008c  rel32 66 to .L.return.fact at +0x00d2
++0x0091  rel32 0 to .L.end.1 at +0x0095
++0x00ab  rel32 -92 to fact at +0x0053
++0x00ce  rel32 0 to .L.return.fact at +0x00d2
+== stage_encode: final code, 332 bytes ==
++0x0000: 55 48 89 e5 48 83 ec 10 48 89 65 f8 48 c7 c0 05
++0x0010: 00 00 00 50 48 8d 05 38 00 00 00 5f 49 89 c2 48
++0x0020: c7 c0 00 00 00 00 41 ff d2 48 83 c4 00 50 48 8d
++0x0030: 05 a2 00 00 00 5f 49 89 c2 48 c7 c0 00 00 00 00
++0x0040: 41 ff d2 48 83 c4 00 48 c7 c0 00 00 00 00 48 89
++0x0050: ec 5d c3 55 48 89 e5 48 83 ec 10 48 89 65 f8 89
++0x0060: 7d f4 48 c7 c0 02 00 00 00 50 48 8d 45 f4 48 63
++0x0070: 00 5f 39 f8 0f 9c c0 48 0f b6 c0 83 f8 00 0f 84
++0x0080: 11 00 00 00 48 c7 c0 01 00 00 00 e9 42 00 00 00
++0x0090: e9 00 00 00 00 48 c7 c0 01 00 00 00 50 48 8d 45
++0x00a0: f4 48 63 00 5f 29 f8 50 48 8d 05 a4 ff ff ff 5f
++0x00b0: 49 89 c2 48 c7 c0 00 00 00 00 41 ff d2 48 83 c4
++0x00c0: 00 50 48 8d 45 f4 48 63 00 5f 0f af c7 e9 00 00
++0x00d0: 00 00 48 89 ec 5d c3 48 89 f8 48 83 ec 20 48 8d
++0x00e0: 74 24 20 48 c7 c1 0a 00 00 00 48 ff ce c6 06 0a
++0x00f0: 31 d2 48 f7 f1 80 c2 30 48 ff ce 88 16 48 85 c0
++0x0100: 75 ee 48 8d 54 24 20 48 29 f2 b8 01 00 00 00 bf
++0x0110: 01 00 00 00 0f 05 48 83 c4 20 c3 48 89 fe 31 d2
++0x0120: 80 3c 17 00 74 05 48 ff c2 eb f5 b8 01 00 00 00
++0x0130: bf 01 00 00 00 0f 05 c3 6d 61 69 6e 00 6d 61 69
++0x0140: 6e 00 66 61 63 74 00 66 61 63 74 00
+== stage_export ==

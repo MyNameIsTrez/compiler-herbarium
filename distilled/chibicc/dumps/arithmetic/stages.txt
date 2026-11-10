@@ -1,0 +1,105 @@
+== stage_ast: typed AST ==
+function main
+  block
+    expr_stmt
+      lhs funcall : int
+        lhs var print_int : func
+        arg sub : int
+          lhs mul : int
+            lhs add : int
+              lhs num 2 : int
+              rhs num 3 : int
+            rhs num 4 : int
+          rhs num 6 : int
+== stage_assign_offsets: frame layout ==
+main: stack_size 16
+  __alloca_size__  char*  size 8  offset -8
+== stage_codegen: assembly ==
+  .local .L..1
+  .data
+.L..1:
+  .string "main"
+  .local .L..0
+  .data
+.L..0:
+  .string "main"
+  .text
+.globl main
+main:
+  push %rbp
+  mov %rsp, %rbp
+  sub $16, %rsp
+  mov %rsp, -8(%rbp)
+  mov $6, %rax
+  push %rax
+  mov $4, %rax
+  push %rax
+  mov $3, %rax
+  push %rax
+  mov $2, %rax
+  pop %rdi
+  add %edi, %eax
+  pop %rdi
+  imul %edi, %eax
+  pop %rdi
+  sub %edi, %eax
+  push %rax
+  lea print_int(%rip), %rax
+  pop %rdi
+  mov %rax, %r10
+  mov $0, %rax
+  call *%r10
+  add $0, %rsp
+  mov $0, %rax
+.L.return.main:
+  mov %rbp, %rsp
+  pop %rbp
+  ret
+== stage_encode: machine code, with the offset of each instruction ==
+  +0x0000  .globl main
+  +0x0000  main:
+  +0x0000  push %rbp
+  +0x0001  mov %rsp, %rbp
+  +0x0004  sub $16, %rsp
+  +0x0008  mov %rsp, -8(%rbp)
+  +0x000c  mov $6, %rax
+  +0x0013  push %rax
+  +0x0014  mov $4, %rax
+  +0x001b  push %rax
+  +0x001c  mov $3, %rax
+  +0x0023  push %rax
+  +0x0024  mov $2, %rax
+  +0x002b  pop %rdi
+  +0x002c  add %edi, %eax
+  +0x002e  pop %rdi
+  +0x002f  imul %edi, %eax
+  +0x0032  pop %rdi
+  +0x0033  sub %edi, %eax
+  +0x0035  push %rax
+  +0x0036  lea print_int(%rip), %rax
+  +0x003d  pop %rdi
+  +0x003e  mov %rax, %r10
+  +0x0041  mov $0, %rax
+  +0x0048  call *%r10
+  +0x004b  add $0, %rsp
+  +0x004f  mov $0, %rax
+  +0x0056  .L.return.main:
+  +0x0056  mov %rbp, %rsp
+  +0x0059  pop %rbp
+  +0x005a  ret
++0x0039  rel32 30 to print_int at +0x005b
+== stage_encode: final code, 198 bytes ==
++0x0000: 55 48 89 e5 48 83 ec 10 48 89 65 f8 48 c7 c0 06
++0x0010: 00 00 00 50 48 c7 c0 04 00 00 00 50 48 c7 c0 03
++0x0020: 00 00 00 50 48 c7 c0 02 00 00 00 5f 01 f8 5f 0f
++0x0030: af c7 5f 29 f8 50 48 8d 05 1e 00 00 00 5f 49 89
++0x0040: c2 48 c7 c0 00 00 00 00 41 ff d2 48 83 c4 00 48
++0x0050: c7 c0 00 00 00 00 48 89 ec 5d c3 48 89 f8 48 83
++0x0060: ec 20 48 8d 74 24 20 48 c7 c1 0a 00 00 00 48 ff
++0x0070: ce c6 06 0a 31 d2 48 f7 f1 80 c2 30 48 ff ce 88
++0x0080: 16 48 85 c0 75 ee 48 8d 54 24 20 48 29 f2 b8 01
++0x0090: 00 00 00 bf 01 00 00 00 0f 05 48 83 c4 20 c3 48
++0x00a0: 89 fe 31 d2 80 3c 17 00 74 05 48 ff c2 eb f5 b8
++0x00b0: 01 00 00 00 bf 01 00 00 00 0f 05 c3 6d 61 69 6e
++0x00c0: 00 6d 61 69 6e 00
+== stage_export ==

@@ -66,7 +66,7 @@ The JIT column says whether the real design compiles code while the program is r
 | `distilled/gcc` | GCC | ❌ | GIMPLE, RTL, and the pass pipeline |
 | [`distilled/puc-lua`](distilled/puc-lua/) | The reference Lua interpreter | ❌ | Register bytecode and the dispatch loop |
 | `distilled/cpython` | CPython | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The JIT is optional and experimental |
-| `distilled/chibicc` | chibicc, a small C compiler | ❌ | An AST walked by a code generator that emits assembly per node with a stack machine, the opposite end of the design space from the IR-based entries |
+| [`distilled/chibicc`](distilled/chibicc/) | chibicc, a small C compiler | ❌ | An AST walked by a code generator that emits assembly per node with a stack machine, the opposite end of the design space from the IR-based entries |
 | `distilled/luajit` | LuaJIT | ✅ | Interpreter, hot trace recording, trace IR, machine code |
 
 More designs can be added over time. The list is a plan, not a promise.
@@ -180,7 +180,7 @@ Examples are checked for correct output, not timed. Designs can still be compare
 
 ## Status
 
-Just started. Four entries exist so far, `research/naive`, `distilled/puc-lua`, `distilled/sea-of-nodes` and `distilled/clang`, and all pass every example. The other distilled entries are still only planned.
+Just started. Five entries exist so far, `research/naive`, `distilled/puc-lua`, `distilled/sea-of-nodes`, `distilled/clang` and `distilled/chibicc`, and all pass every example. The other distilled entries are still only planned.
 
 ## Non-goals
 

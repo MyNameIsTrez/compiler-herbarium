@@ -1,0 +1,79 @@
+== stage_ast: typed AST ==
+function main
+  block
+    expr_stmt
+      lhs funcall : int
+        lhs var print_str : func
+        arg var .L..2 : char[15]
+== stage_assign_offsets: frame layout ==
+main: stack_size 16
+  __alloca_size__  char*  size 8  offset -8
+== stage_codegen: assembly ==
+  .local .L..2
+  .data
+.L..2:
+  .string "Hello, world!\n"
+  .local .L..1
+  .data
+.L..1:
+  .string "main"
+  .local .L..0
+  .data
+.L..0:
+  .string "main"
+  .text
+.globl main
+main:
+  push %rbp
+  mov %rsp, %rbp
+  sub $16, %rsp
+  mov %rsp, -8(%rbp)
+  lea .L..2(%rip), %rax
+  push %rax
+  lea print_str(%rip), %rax
+  pop %rdi
+  mov %rax, %r10
+  mov $0, %rax
+  call *%r10
+  add $0, %rsp
+  mov $0, %rax
+.L.return.main:
+  mov %rbp, %rsp
+  pop %rbp
+  ret
+== stage_encode: machine code, with the offset of each instruction ==
+  +0x0000  .globl main
+  +0x0000  main:
+  +0x0000  push %rbp
+  +0x0001  mov %rsp, %rbp
+  +0x0004  sub $16, %rsp
+  +0x0008  mov %rsp, -8(%rbp)
+  +0x000c  lea .L..2(%rip), %rax
+  +0x0013  push %rax
+  +0x0014  lea print_str(%rip), %rax
+  +0x001b  pop %rdi
+  +0x001c  mov %rax, %r10
+  +0x001f  mov $0, %rax
+  +0x0026  call *%r10
+  +0x0029  add $0, %rsp
+  +0x002d  mov $0, %rax
+  +0x0034  .L.return.main:
+  +0x0034  mov %rbp, %rsp
+  +0x0037  pop %rbp
+  +0x0038  ret
++0x000f  rel32 135 to .L..2 at +0x009a
++0x0017  rel32 98 to print_str at +0x007d
+== stage_encode: final code, 179 bytes ==
++0x0000: 55 48 89 e5 48 83 ec 10 48 89 65 f8 48 8d 05 87
++0x0010: 00 00 00 50 48 8d 05 62 00 00 00 5f 49 89 c2 48
++0x0020: c7 c0 00 00 00 00 41 ff d2 48 83 c4 00 48 c7 c0
++0x0030: 00 00 00 00 48 89 ec 5d c3 48 89 f8 48 83 ec 20
++0x0040: 48 8d 74 24 20 48 c7 c1 0a 00 00 00 48 ff ce c6
++0x0050: 06 0a 31 d2 48 f7 f1 80 c2 30 48 ff ce 88 16 48
++0x0060: 85 c0 75 ee 48 8d 54 24 20 48 29 f2 b8 01 00 00
++0x0070: 00 bf 01 00 00 00 0f 05 48 83 c4 20 c3 48 89 fe
++0x0080: 31 d2 80 3c 17 00 74 05 48 ff c2 eb f5 b8 01 00
++0x0090: 00 00 bf 01 00 00 00 0f 05 c3 48 65 6c 6c 6f 2c
++0x00a0: 20 77 6f 72 6c 64 21 0a 00 6d 61 69 6e 00 6d 61
++0x00b0: 69 6e 00
+== stage_export ==
