@@ -1,0 +1,185 @@
+== stage_bytecode ==
+function <main> (6 instructions)
+   0  LOADK  0 0 0 imm=0
+   1  LOADK  1 1 0 imm=0
+   2  LOADI  2 0 0 imm=5
+   3  CALL   1 0 0 imm=0
+   4  CALL   0 0 0 imm=0
+   5  RET0   0 0 0 imm=0
+function <fact> (11 instructions)
+   0  LOADI  1 0 0 imm=2
+   1  JNLT   0 0 1 imm=5
+   2  LOADI  1 0 0 imm=1
+   3  RET1   1 0 0 imm=0
+   4  RET0   0 0 0 imm=0
+   5  LOADK  1 1 0 imm=0
+   6  LOADI  2 0 0 imm=1
+   7  SUB    2 0 2 imm=0
+   8  CALL   1 0 0 imm=0
+   9  MUL    1 0 1 imm=0
+  10  RET1   1 0 0 imm=0
+== stage_stencils ==
+stencil PROLOGUE (4 bytes, 0 holes)
+  bytes: 53 48 89 fb
+stencil LOADI (27 bytes, 3 holes)
+  bytes: 48 c7 83 00 00 00 00 01 00 00 00 48 c7 83 00 00 00 00 00 00 00 00 e9 00 00 00 00
+  hole +3  4 bytes A.tag
+  hole +14 4 bytes A.val
+  hole +18 4 bytes imm
+stencil LOADK (36 bytes, 3 holes)
+  bytes: 48 b8 00 00 00 00 00 00 00 00 48 8b 08 48 8b 50 08 48 89 8b 00 00 00 00 48 89 93 00 00 00 00 e9 00 00 00 00
+  hole +2  8 bytes &const[B]
+  hole +20 4 bytes A.tag
+  hole +27 4 bytes A.val
+stencil SUB (68 bytes, 8 holes)
+  bytes: 48 83 bb 00 00 00 00 01 0f 85 00 00 00 00 48 83 bb 00 00 00 00 01 0f 85 00 00 00 00 48 8b 83 00 00 00 00 48 8b 8b 00 00 00 00 48 29 c8 48 89 83 00 00 00 00 48 c7 83 00 00 00 00 01 00 00 00 e9 00 00 00 00
+  hole +3  4 bytes B.tag
+  hole +10 4 bytes slow
+  hole +17 4 bytes C.tag
+  hole +24 4 bytes slow
+  hole +31 4 bytes B.val
+  hole +38 4 bytes C.val
+  hole +48 4 bytes A.val
+  hole +55 4 bytes A.tag
+stencil MUL (69 bytes, 8 holes)
+  bytes: 48 83 bb 00 00 00 00 01 0f 85 00 00 00 00 48 83 bb 00 00 00 00 01 0f 85 00 00 00 00 48 8b 83 00 00 00 00 48 8b 8b 00 00 00 00 48 0f af c1 48 89 83 00 00 00 00 48 c7 83 00 00 00 00 01 00 00 00 e9 00 00 00 00
+  hole +3  4 bytes B.tag
+  hole +10 4 bytes slow
+  hole +17 4 bytes C.tag
+  hole +24 4 bytes slow
+  hole +31 4 bytes B.val
+  hole +38 4 bytes C.val
+  hole +49 4 bytes A.val
+  hole +56 4 bytes A.tag
+stencil JNLT (53 bytes, 7 holes)
+  bytes: 48 83 bb 00 00 00 00 01 0f 85 00 00 00 00 48 83 bb 00 00 00 00 01 0f 85 00 00 00 00 48 8b 83 00 00 00 00 48 3b 83 00 00 00 00 0f 8d 00 00 00 00 e9 00 00 00 00
+  hole +3  4 bytes B.tag
+  hole +10 4 bytes slow
+  hole +17 4 bytes C.tag
+  hole +24 4 bytes slow
+  hole +31 4 bytes B.val
+  hole +38 4 bytes C.val
+  hole +44 4 bytes target
+stencil CALL (35 bytes, 4 holes)
+  bytes: 48 83 bb 00 00 00 00 03 0f 85 00 00 00 00 48 8b 83 00 00 00 00 48 8d bb 00 00 00 00 ff 10 e9 00 00 00 00
+  hole +3  4 bytes A.tag
+  hole +10 4 bytes slow
+  hole +17 4 bytes A.val
+  hole +24 4 bytes argbase
+stencil RET1 (24 bytes, 2 holes)
+  bytes: 48 8b 83 00 00 00 00 48 8b 8b 00 00 00 00 48 89 43 f0 48 89 4b f8 5b c3
+  hole +3  4 bytes A.tag
+  hole +10 4 bytes A.val
+stencil RET0 (2 bytes, 0 holes)
+  bytes: 5b c3
+stencil SLOW (12 bytes, 1 holes)
+  bytes: 48 b8 00 00 00 00 00 00 00 00 ff d0
+  hole +2  8 bytes &rt_type_error
+== stage_layout ==
+function <main> at +0x000
+   0  LOADK  +0x004  31 bytes  (jump to next dropped)
+   1  LOADK  +0x023  31 bytes  (jump to next dropped)
+   2  LOADI  +0x042  22 bytes  (jump to next dropped)
+   3  CALL   +0x058  30 bytes  (jump to next dropped)
+   4  CALL   +0x076  30 bytes  (jump to next dropped)
+   5  RET0   +0x094   2 bytes
+      SLOW   +0x096  12 bytes
+function <fact> at +0x0b0
+   0  LOADI  +0x0b4  22 bytes  (jump to next dropped)
+   1  JNLT   +0x0ca  48 bytes  (jump to next dropped)
+   2  LOADI  +0x0fa  22 bytes  (jump to next dropped)
+   3  RET1   +0x110  24 bytes
+   4  RET0   +0x128   2 bytes
+   5  LOADK  +0x12a  31 bytes  (jump to next dropped)
+   6  LOADI  +0x149  22 bytes  (jump to next dropped)
+   7  SUB    +0x15f  63 bytes  (jump to next dropped)
+   8  CALL   +0x19e  30 bytes  (jump to next dropped)
+   9  MUL    +0x1bc  64 bytes  (jump to next dropped)
+  10  RET1   +0x1fc  24 bytes
+      SLOW   +0x214  12 bytes
+total 544 bytes
+== stage_patch ==
+function <main>
+   0  LOADK +0x004
+    +0x006  &const[B]      <host address>
+    +0x018  A.tag          0
+    +0x01f  A.val          8
+   1  LOADK +0x023
+    +0x025  &const[B]      <host address>
+    +0x037  A.tag          16
+    +0x03e  A.val          24
+   2  LOADI +0x042
+    +0x045  A.tag          32
+    +0x050  A.val          40
+    +0x054  imm            5
+   3  CALL +0x058
+    +0x05b  A.tag          16
+    +0x062  slow           -> +0x096
+    +0x069  A.val          24
+    +0x070  argbase        32
+   4  CALL +0x076
+    +0x079  A.tag          0
+    +0x080  slow           -> +0x096
+    +0x087  A.val          8
+    +0x08e  argbase        16
+   5  RET0 +0x094
+  SLOW +0x096
+    +0x098  &rt_type_error <host address>
+function <fact>
+   0  LOADI +0x0b4
+    +0x0b7  A.tag          16
+    +0x0c2  A.val          24
+    +0x0c6  imm            2
+   1  JNLT +0x0ca
+    +0x0cd  B.tag          0
+    +0x0d4  slow           -> +0x214
+    +0x0db  C.tag          16
+    +0x0e2  slow           -> +0x214
+    +0x0e9  B.val          8
+    +0x0f0  C.val          24
+    +0x0f6  target         -> +0x12a
+   2  LOADI +0x0fa
+    +0x0fd  A.tag          16
+    +0x108  A.val          24
+    +0x10c  imm            1
+   3  RET1 +0x110
+    +0x113  A.tag          16
+    +0x11a  A.val          24
+   4  RET0 +0x128
+   5  LOADK +0x12a
+    +0x12c  &const[B]      <host address>
+    +0x13e  A.tag          16
+    +0x145  A.val          24
+   6  LOADI +0x149
+    +0x14c  A.tag          32
+    +0x157  A.val          40
+    +0x15b  imm            1
+   7  SUB +0x15f
+    +0x162  B.tag          0
+    +0x169  slow           -> +0x214
+    +0x170  C.tag          32
+    +0x177  slow           -> +0x214
+    +0x17e  B.val          8
+    +0x185  C.val          40
+    +0x18f  A.val          40
+    +0x196  A.tag          32
+   8  CALL +0x19e
+    +0x1a1  A.tag          16
+    +0x1a8  slow           -> +0x214
+    +0x1af  A.val          24
+    +0x1b6  argbase        32
+   9  MUL +0x1bc
+    +0x1bf  B.tag          0
+    +0x1c6  slow           -> +0x214
+    +0x1cd  C.tag          16
+    +0x1d4  slow           -> +0x214
+    +0x1db  B.val          8
+    +0x1e2  C.val          24
+    +0x1ed  A.val          24
+    +0x1f4  A.tag          16
+  10  RET1 +0x1fc
+    +0x1ff  A.tag          16
+    +0x206  A.val          24
+  SLOW +0x214
+    +0x216  &rt_type_error <host address>
+== stage_export ==
