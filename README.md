@@ -124,13 +124,13 @@ scripts/check-entry.sh distilled/<compiler>            # build, run, check outpu
 scripts/check-entry.sh --update distilled/<compiler>   # also regenerate the committed dumps
 ```
 
-It builds with:
+Every `main.c` builds with plain gcc and plain clang, with no flags, for example `gcc distilled/cpython/main.c`. The script is stricter, and builds with:
 
 ```
 gcc -std=c17 -O1 -g -Wall -Wextra -Wpedantic -Werror -Wshadow -Wstrict-prototypes -fsanitize=address,undefined
 ```
 
-CI runs the script for every directory under `distilled/` and `research/`, with both gcc and clang (`CC=clang scripts/check-entry.sh ...`), at `-O2`, which is the level most likely to expose undefined behavior and flow-based warnings (`-O1` stays the local default, and `OPT=-O2` selects the other), so a new entry is picked up without editing the workflow. With clang the script adds `-fno-sanitize=function`, because that check crashes on calls into generated machine code. CI also compiles every `main.c` once with plain `gcc main.c` and plain `clang main.c`, with no flags, as promised above.
+CI runs the script for every directory under `distilled/` and `research/`, with both gcc and clang (`CC=clang scripts/check-entry.sh ...`), at `-O2`, which is the level most likely to expose undefined behavior and flow-based warnings (`-O1` stays the local default, and `OPT=-O2` selects the other), so a new entry is picked up without editing the workflow. With clang the script adds `-fno-sanitize=function`, because that check crashes on calls into generated machine code. CI also compiles every `main.c` once with plain `gcc main.c` and plain `clang main.c`, with no flags.
 
 ### Coverage
 
