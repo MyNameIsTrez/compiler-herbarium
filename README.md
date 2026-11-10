@@ -4,6 +4,10 @@ A collection of heavily cut-down compilers and interpreters, each written from s
 
 The repo is meant as a learning resource for people, and as a reference that LLMs can read when researching new ways to do compilation.
 
+![The design space of the entries: what sits between the source and execution, against when machine code is made. Filled dots are finished entries, dashed dots are planned ones.](docs/design-space.svg)
+
+The map shows where each design sits, and where nothing sits yet. Finished entries are filled dots. Planned entries, which are leads in [RESEARCH.md](RESEARCH.md) that look worth an entry, are dashed, and they are not in the tables below until they pass every example. The placement is a judgement call, and `scripts/check-map.sh` checks only that every entry is on it.
+
 It holds two kinds of entries, kept in separate directories:
 
 - `distilled/` holds toy versions of existing, open-source compilers and interpreters.
