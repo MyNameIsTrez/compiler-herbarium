@@ -6,7 +6,9 @@ The repo is meant as a learning resource for people, and as a reference that LLM
 
 ![The design space of the entries: what sits between the source and execution, against when machine code is made. Filled dots are finished entries, dashed dots are planned ones.](docs/design-space.svg)
 
-The map shows where each design sits, and where nothing sits yet. Finished entries are filled dots. Planned entries, which are leads in [RESEARCH.md](RESEARCH.md) that look worth an entry, are dashed, and they are not in the tables below until they pass every example. The placement is a judgement call, and `scripts/check-map.sh` checks only that every entry is on it.
+The map shows where each design sits, and where nothing sits yet. Finished entries are filled dots. Planned entries, which are leads in [RESEARCH.md](RESEARCH.md) that look worth an entry, are dashed dots, and they are not in the tables below until they pass every example. The placement is a judgement call, and `scripts/check-map.sh` checks only that every entry is on it.
+
+**One goal of this repository is to fill out this map.** Think of it as a bingo board: each cell is a combination of what sits between the source and execution and when machine code is made, and the aim is for every cell that a real compiler occupies to hold a distilled entry. A distilled entry comes first, because it is checked against real source. Where a cell is empty and a search finds no open-source compiler or interpreter that sits there, the repo adds an `original/` entry instead, shown as an amber diamond, so the board is covered by designs that are at least tried out. A cell may also stay empty on purpose, when nobody builds that kind of compiler or the design would add nothing, and RESEARCH.md records those declined leads.
 
 It holds two kinds of entries, kept in separate directories:
 
