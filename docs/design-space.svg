@@ -60,6 +60,10 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <line class="l" x1="162" y1="291" x2="162" y2="319"/>
 <circle class="pl" cx="162" cy="155" r="6"/>
 <text class="n p" x="174" y="159">Wizard</text>
+<circle class="pl" cx="302" cy="155" r="6"/>
+<text class="n p" x="314" y="159">jlox</text>
+<circle class="pl" cx="162" cy="455" r="6"/>
+<text class="n p" x="174" y="459">Winch</text>
 <circle class="dn" cx="442" cy="111" r="6"/>
 <text class="n" x="454" y="115">puc-lua</text>
 <circle class="dn" cx="442" cy="139" r="6"/>
