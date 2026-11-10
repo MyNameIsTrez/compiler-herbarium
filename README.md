@@ -75,7 +75,7 @@ The JIT column says whether the real design compiles code to machine code while 
 
 | Entry | Lines of C | Mimics | Kind | JIT | What it shows |
 |-------|-----------:|--------|------|:---:|---------------------|
-| [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1401 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | Compiler | Compiler | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
+| [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1401 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | Compiler | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
 | [`distilled/clang`](distilled/clang/) | 1745 | Clang and LLVM | Compiler | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
 | [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | Interpreter | ❌ | Register bytecode and the dispatch loop |
 | [`distilled/cpython`](distilled/cpython/) | 1158 | CPython | Interpreter | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The JIT is optional and experimental |
