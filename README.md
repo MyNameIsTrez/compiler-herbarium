@@ -59,9 +59,11 @@ Every entry that generates machine code runs it the same way: the code is copied
 
 `puc-lua` is an interpreter and generates no machine code, so it runs its bytecode in its own dispatch loop instead.
 
-## Beyond hello world
+## Examples
 
-Hello world will make most designs look alike, because the differences show up with control flow and with values that live across instructions. Later tasks can form a ladder: arithmetic, a loop, a branch, a function call. Each rung is added to every entry, the same way a Rosetta Code task is.
+Hello world will make most designs look alike, because the differences show up with control flow and with values that live across instructions. Later examples can form a ladder: arithmetic, a loop, a branch, a function call. Each rung is added to every entry, the same way a Rosetta Code task is.
+
+Examples are checked for correct output, not timed. Designs can still be compared with numbers that do not need a stopwatch, such as emitted instruction count, code size in bytes, or the number of IR nodes at each stage.
 
 ## Status
 
@@ -69,6 +71,7 @@ Just started. Nothing here runs yet.
 
 ## Non-goals
 
-- Competing with the real compilers on speed or coverage.
+- Measuring or optimizing performance. The compilers stay tiny, so speed numbers would say little about the real designs.
+- Competing with the real compilers on coverage.
 - Parsing a real language.
 - Being a production tool. These are specimens, not products.
