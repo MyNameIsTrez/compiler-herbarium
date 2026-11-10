@@ -86,3 +86,13 @@ These do not pass "What earns an entry" in the [README](README.md).
 | Umbra and Flying Start | Umbra's source is not open (a binary download, a proprietary license), and no open reimplementation of Flying Start was found, so there is nothing to distill from. The paper was read: an SSA IR in a compact array, mapped instruction by instruction to x86, plus stack-slot reuse and a live-span pass. |
 | Vigil | A 105-line Python script that rewrites `implore` and `swear` lines with regular expressions into calls of helper functions and then `exec`s the result in Python. It is a thin layer over an existing back end. |
 | WebAssembly as a standalone entry | A plain Wasm engine repeats the stack-VM execution of `distilled/puc-lua`, `cpython` and `original/naive`. The new part, validation by a typed abstract stack, is what Wizard and Winch build on, so the format is only an input for those leads. The spec pages were not read. |
+
+## Cells of the design space map that will stay empty
+
+The map at the top of the [README](README.md) has a crossed cell where this repo has decided not to add an entry, ever. A cell that is merely empty is a gap, not a decision, so only cells with a reason that holds for every design in them are crossed.
+
+| Cell | Why it stays empty |
+|------|--------------------|
+| Analysis only, nothing in between | There is no representation to analyze, so the cell has no designs in it. |
+| Analysis only, tree (AST) | Type checkers, linters and similar checks of source are front-end work, which this repo leaves out (it is also why Idris 2 is declined). |
+
