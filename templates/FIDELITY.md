@@ -2,9 +2,10 @@
 
 Real design being mimicked: <name and version>
 
-Reference material used (source tree, commit or tag, docs, papers):
+Reference material used (source tree, docs, papers). Pin every source repository to the full 40-character commit hash that was read, also when you name a tag or a branch, because tags and branches move:
 
-- <link or path>
+- Source: <repo link> at `<full commit hash>` (<tag or branch, shallow or sparse clone>). Files read: <list>.
+- Not read: <list>.
 
 ## Stage mapping
 
