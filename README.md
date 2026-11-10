@@ -78,7 +78,7 @@ The JIT column says whether the real design compiles code to machine code while 
 | [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1401 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | Compiler | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
 | [`distilled/clang`](distilled/clang/) | 1745 | Clang and LLVM | Compiler | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
 | [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | Interpreter | ❌ | Register bytecode and the dispatch loop |
-| [`distilled/cpython`](distilled/cpython/) | 1158 | CPython | Interpreter | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The JIT is optional and experimental |
+| [`distilled/cpython`](distilled/cpython/) | 1158 | CPython | Interpreter | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The entry has no JIT: real CPython has an optional, experimental one (hence 🟡), and none of its code was read or copied |
 | [`distilled/chibicc`](distilled/chibicc/) | 987 | chibicc, a small C compiler | Compiler | ❌ | An AST walked by a code generator that emits assembly per node with a stack machine, the opposite end of the design space from the IR-based entries |
 
 Every row is a finished entry. Designs that are planned or still being investigated are leads in [RESEARCH.md](RESEARCH.md), and a lead gets a row here only when its entry passes every example.
