@@ -4,6 +4,11 @@ A collection of heavily cut-down compilers and interpreters, each written from s
 
 The repo is meant as a learning resource for people, and as a reference that LLMs can read when researching new ways to do compilation.
 
+It holds two kinds of entries, kept in separate directories:
+
+- `distilled/` holds toy versions of existing, open-source compilers and interpreters.
+- `research/` holds new compilers produced by this repo that are not purely distilled versions of an existing design, such as a hybrid of two designs or a new idea tried on the same tasks.
+
 ## The idea
 
 Every entry compiles (or interprets) the same tiny program, effectively:
@@ -22,28 +27,40 @@ Every compiler and interpreter in this repo is written in C17, so differences be
 
 This repo is Linux only. Entries may rely on Linux system calls and Linux-specific memory mapping, and no effort is made to support other operating systems.
 
-## Planned entries
+## Real compilers
 
-| Entry | Mimics | What it should show |
-|-------|--------|---------------------|
-| `sea-of-nodes` | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | Graph IR with floating nodes, scheduling, instruction selection |
-| `clang` | Clang and LLVM | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
-| `gcc` | GCC | GIMPLE, RTL, and the pass pipeline |
-| `puc-lua` | The reference Lua interpreter | Register bytecode and the dispatch loop |
-| `luajit` | LuaJIT | Interpreter, hot trace recording, trace IR, machine code |
+These are the planned entries in `distilled/`, each a toy version of a real compiler or interpreter.
+
+The JIT column says whether the real design compiles code while the program is running (✅), as opposed to compiling ahead of time or interpreting (❌).
+
+| Entry | Mimics | JIT | What it should show |
+|-------|--------|:---:|---------------------|
+| `distilled/sea-of-nodes` | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | ❌ | Graph IR with floating nodes, scheduling, instruction selection |
+| `distilled/clang` | Clang and LLVM | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
+| `distilled/gcc` | GCC | ❌ | GIMPLE, RTL, and the pass pipeline |
+| `distilled/puc-lua` | The reference Lua interpreter | ❌ | Register bytecode and the dispatch loop |
+| `distilled/luajit` | LuaJIT | ✅ | Interpreter, hot trace recording, trace IR, machine code |
 
 More designs can be added over time. The list is a plan, not a promise.
 
 Only open-source compilers and interpreters get an entry. The real source code is required to distill a design down to its essence, and it is what each entry's `FIDELITY.md` and review pass are checked against. A design that is only documented, or whose source is closed (like MSVC), is out of scope.
 
+## Research compilers
+
+These are the entries in `research/`. They are new designs that do not have a single real counterpart, so they have no `FIDELITY.md`. Each one has a `README.md` that says what idea it tests and which distilled entries it builds on or differs from. The JIT column means the same as above.
+
+| Entry | Idea | JIT | Builds on |
+|-------|------|:---:|-----------|
+| None yet | | | |
+
 ## Layout of an entry
 
-Each entry follows the same shape, so the same file names can be opened in different directories and compared:
+Each entry follows the same shape, so the same file names can be opened in different directories and compared. Distilled entries live in `distilled/<entry>/` and research entries in `research/<entry>/`:
 
 ```
 <entry>/
   README.md     what the design is, what this version leaves out
-  FIDELITY.md   how each stage maps to the real compiler (see templates/FIDELITY.md)
+  FIDELITY.md   how each stage maps to the real compiler (distilled entries only, see templates/FIDELITY.md)
   input.*       the hardcoded program in the design's native IR
   ...           the stages, one source file per stage where practical
   dumps/        the intermediate form after each stage, and code.bin
@@ -64,7 +81,7 @@ Every entry that generates machine code runs it the same way: the code is copied
 
 ## When is an entry done
 
-An entry is a toy version of a real design, so "done" has to mean more than "it prints the right text". An entry is done when all of these hold:
+A distilled entry is a toy version of a real design, so "done" has to mean more than "it prints the right text". It is done when all of these hold:
 
 - Its code runs and the harness check passes.
 - Every stage that defines the design is present, in the same order as in the real compiler. For example, GCC lowers from GIMPLE to RTL, and LuaJIT records a trace, builds trace IR and then emits machine code.
@@ -72,6 +89,8 @@ An entry is a toy version of a real design, so "done" has to mean more than "it 
 - A review pass has been done against the real source and, where the real tool can print its own intermediate forms, against those dumps. Useful tools are `clang -emit-llvm` with `-mllvm -print-after-all`, `gcc -fdump-tree-all` and `-fdump-rtl-all`, `luac -l -l`, and LuaJIT's `-jbc` and `-jdump`. Output will not be identical, but the stages, their order and the shape of the data should match.
 
 A reviewer, human or LLM, is given those references and checks specific claims. Asking a model from memory whether a design matches is not enough, because it can misremember how the real compiler works. An LLM is useful for the mechanical checks, such as filling in the stage mapping, spotting missing stages and confirming that the listed deviations match the code. Whether the remaining deviations are acceptable is a human decision.
+
+A research entry has no real counterpart to check against, so it is done when its code runs, the harness check passes, and its `README.md` states the idea, the distilled entries it builds on and how it differs from them.
 
 ## Examples
 
