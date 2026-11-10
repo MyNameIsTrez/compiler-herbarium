@@ -41,8 +41,17 @@ opt=${OPT:--O1}
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
+# clang's -fsanitize=function reads a type tag in the 8 bytes before the target of every call
+# through a function pointer. Entries that run generated machine code call into an mmap'd page,
+# where those bytes are not mapped, so the check would crash on correct code. gcc has no such
+# check, and does not know the flag.
+extra=()
+if "$cc" --version | grep -qi clang; then
+    extra+=(-fno-sanitize=function)
+fi
+
 "$cc" -std=c17 "$opt" -g -Wall -Wextra -Wpedantic -Werror -Wshadow -Wstrict-prototypes \
-    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined "${extra[@]}" \
     "$source_file" -o "$work/entry"
 
 status=0

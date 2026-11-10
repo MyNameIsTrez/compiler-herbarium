@@ -24,15 +24,20 @@ jobs:
       fail-fast: false
       matrix:
         entry: ${{ fromJSON(needs.discover.outputs.entries) }}
+        cc: [gcc, clang]
         opt: ["-O1", "-O2"]
     steps:
       - uses: actions/checkout@v4
-      - name: Build, run and check ${{ matrix.entry }} at ${{ matrix.opt }}
+      - name: Build, run and check ${{ matrix.entry }} with ${{ matrix.cc }} at ${{ matrix.opt }}
         run: scripts/check-entry.sh "${{ matrix.entry }}"
         env:
+          CC: ${{ matrix.cc }}
           OPT: ${{ matrix.opt }}
+      - name: Build ${{ matrix.entry }} the plain way, as the README says
+        if: matrix.opt == '-O1'
+        run: ${{ matrix.cc }} "${{ matrix.entry }}/main.c" -o "$RUNNER_TEMP/plain"
       - name: Check that the stages in main.c and FIDELITY.md agree
-        if: startsWith(matrix.entry, 'distilled/') && matrix.opt == '-O1'
+        if: startsWith(matrix.entry, 'distilled/') && matrix.cc == 'gcc' && matrix.opt == '-O1'
         run: scripts/check-fidelity.sh "${{ matrix.entry }}"
 
   coverage:

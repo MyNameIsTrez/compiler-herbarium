@@ -4,8 +4,8 @@
   N2   Fun      N0   main
   N3   Region   ___ N13
   N4   Phi      N3 N15
-  N5   Con      N2   #3
-  N6   Con      N2   #2
+  N5   Con      N2   #2
+  N6   Con      N2   #3
   N7   Con      N2   #5
   N8   Con      N2   #4
   N9   Con      N2   #20

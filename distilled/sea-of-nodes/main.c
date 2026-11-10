@@ -450,7 +450,11 @@ static void parse_hello(void)
 static void parse_arithmetic(void)
 {
     fn_begin("main", 0);
-    struct node *sum = add(num(2), num(3));
+    /* C does not say which argument is evaluated first, and the node numbers follow the order,
+     * so the operands are built left to right in separate statements, as the parser would. */
+    struct node *two = num(2);
+    struct node *three = num(3);
+    struct node *sum = add(two, three);
     struct node *product = mul(sum, num(4));
     call(NATIVE_PRINT_INT, sub(product, num(6)));
     fn_end(num(0));

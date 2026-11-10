@@ -73,7 +73,7 @@ The JIT column says whether the real design compiles code while the program is r
 
 | Entry | Lines of C | Mimics | JIT | What it shows |
 |-------|-----------:|--------|:---:|---------------------|
-| [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1399 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
+| [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1401 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
 | [`distilled/clang`](distilled/clang/) | 1745 | Clang and LLVM | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
 | `distilled/gcc` | - | GCC | ❌ | GIMPLE, RTL, and the pass pipeline |
 | [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | ❌ | Register bytecode and the dispatch loop |
@@ -130,7 +130,7 @@ It builds with:
 gcc -std=c17 -O1 -g -Wall -Wextra -Wpedantic -Werror -Wshadow -Wstrict-prototypes -fsanitize=address,undefined
 ```
 
-CI runs the script for every directory under `distilled/` and `research/`, at `-O1` and `-O2`, so a new entry is picked up without editing the workflow.
+CI runs the script for every directory under `distilled/` and `research/`, with both gcc and clang (`CC=clang scripts/check-entry.sh ...`), at `-O1` and `-O2`, so a new entry is picked up without editing the workflow. With clang the script adds `-fno-sanitize=function`, because that check crashes on calls into generated machine code. CI also compiles every `main.c` once with plain `gcc main.c` and plain `clang main.c`, with no flags, as promised above.
 
 ### Coverage
 
