@@ -136,7 +136,3 @@ Just started. Nothing here runs yet.
 - Competing with the real compilers on coverage.
 - Parsing a real language.
 - Being a production tool. These are specimens, not products.
-
-## License
-
-[MIT](LICENSE)
