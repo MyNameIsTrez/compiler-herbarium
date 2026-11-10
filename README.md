@@ -31,7 +31,7 @@ That is useful in a few ways:
 
 The repo is a set of specimens and a workbench, not a benchmark and not a production toolchain.
 
-[`RESEARCH.md`](RESEARCH.md) is the running list of links behind it: the leads that already have an entry, and the ones that still need investigating.
+[`RESEARCH.md`](RESEARCH.md) is the running list of links behind it: the leads that still need investigating, and the ones that were declined.
 
 ## The idea
 
