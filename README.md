@@ -16,6 +16,10 @@ There is no tokenizer and no parser. Each entry starts from a hardcoded data str
 
 What distinguishes the designs lives in the middle of the pipeline, so each entry **dumps its intermediate form after every stage**. The dumps are the main output. Reading them in order shows how a design thinks, and diffing them across entries shows where the designs differ.
 
+## Language
+
+Every compiler and interpreter in this repo is written in C17, so differences between entries come from the design rather than from the implementation language.
+
 ## Planned entries
 
 | Entry | Mimics | What it should show |
