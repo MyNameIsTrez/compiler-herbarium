@@ -34,7 +34,7 @@ This repo is Linux only. Entries may rely on Linux system calls and Linux-specif
 
 More designs can be added over time. The list is a plan, not a promise.
 
-Only open-source compilers and interpreters get an entry. The real source code is required to distill a design down to its essence, and it is what each entry's `FIDELITY.md` and review pass are checked against. A design that is only documented, or whose source is closed, is out of scope.
+Only open-source compilers and interpreters get an entry. The real source code is required to distill a design down to its essence, and it is what each entry's `FIDELITY.md` and review pass are checked against. A design that is only documented, or whose source is closed (like MSVC), is out of scope.
 
 ## Layout of an entry
 
