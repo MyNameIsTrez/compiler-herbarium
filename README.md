@@ -76,15 +76,15 @@ The JIT column says whether the real design compiles code to machine code while 
 
 | Entry | Lines of C | Mimics | Kind | JIT | What it shows |
 |-------|-----------:|--------|------|:---:|---------------------|
-| [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1401 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | Compiler | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
-| [`distilled/clang`](distilled/clang/) | 1745 | Clang and LLVM | Compiler | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
-| [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | Interpreter | ❌ | Register bytecode and the dispatch loop |
-| [`distilled/cpython`](distilled/cpython/) | 1158 | CPython | Interpreter | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The entry has no JIT: real CPython has an optional, experimental one (hence 🟡), and none of its code was read or copied |
 | [`distilled/chibicc`](distilled/chibicc/) | 987 | chibicc, a small C compiler | Compiler | ❌ | An AST walked by a code generator that emits assembly per node with a stack machine, the opposite end of the design space from the IR-based entries |
+| [`distilled/clang`](distilled/clang/) | 1745 | Clang and LLVM | Compiler | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
+| [`distilled/cpython`](distilled/cpython/) | 1158 | CPython | Interpreter | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The entry has no JIT: real CPython has an optional, experimental one (hence 🟡), and none of its code was read or copied |
 | [`distilled/gcc`](distilled/gcc/) | 1750 | GCC | Compiler | ❌ | GENERIC to GIMPLE to SSA to RTL, with PHI placement, out-of-SSA partitions, combine and a graph-coloring register allocator with copy preferences |
-| [`distilled/luajit-remake`](distilled/luajit-remake/) | 407 | LuaJIT Remake and Deegen | Interpreter | ✅ | A copy-and-patch baseline JIT: stencils with holes, copied and patched per bytecode, with the jump to the next bytecode cut off. The entry has only the JIT, not the interpreter that the real VM tiers up from |
 | [`distilled/luajit`](distilled/luajit/) | 756 | LuaJIT | Interpreter | ✅ | A tracing JIT: a hot loop is recorded into SSA IR with guards and snapshots, unrolled by copy-substitution with PHIs, and assembled backwards with register allocation. Only the `loop` example makes a trace. |
+| [`distilled/luajit-remake`](distilled/luajit-remake/) | 407 | LuaJIT Remake and Deegen | Interpreter | ✅ | A copy-and-patch baseline JIT: stencils with holes, copied and patched per bytecode, with the jump to the next bytecode cut off. The entry has only the JIT, not the interpreter that the real VM tiers up from |
+| [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | Interpreter | ❌ | Register bytecode and the dispatch loop |
 | [`distilled/qbe`](distilled/qbe/) | 1630 | QBE | Compiler | ❌ | Pruned SSA from an IL with mutable temporaries, the ABI as register copies, backward instruction selection, and a backward register allocator with hints and parallel moves on edges |
+| [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1401 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | Compiler | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
 
 Every row is a finished entry. Designs that are planned or still being investigated are leads in [RESEARCH.md](RESEARCH.md), and a lead gets a row here only when its entry passes every example.
 

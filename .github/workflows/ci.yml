@@ -5,6 +5,13 @@ on:
   pull_request:
 
 jobs:
+  tables:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check that the README and RESEARCH tables are sorted
+        run: scripts/check-sorted.sh
+
   discover:
     runs-on: ubuntu-latest
     outputs:

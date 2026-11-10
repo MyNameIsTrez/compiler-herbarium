@@ -33,10 +33,13 @@ Do not update it for edits that leave all of that alone, such as fixing a commen
 2. Run `scripts/coverage-entry.sh <entry-dir>`.
 3. For a distilled entry, run `scripts/check-fidelity.sh <entry-dir>`.
 4. Run `scripts/check-cloc.sh --update` and commit the README if the Lines of C column changed.
+5. Run `scripts/check-sorted.sh` after adding or moving a table row.
 
 ## RESEARCH.md
 
 `RESEARCH.md` lists leads in three tables: leads that have an entry in the repo, leads that do not yet, and leads that were considered and declined. When you add an entry that comes from a lead, move that lead's row to the first table and say how it was used. Mark a lead as read only if you actually read it, not if you only listed it.
+
+Keep the rows of every table in `README.md` and `RESEARCH.md` sorted alphabetically by their first column (the "Examples" table is exempt, since it lists examples in order of difficulty). `scripts/check-sorted.sh` checks this in CI.
 
 ## Coverage
 
