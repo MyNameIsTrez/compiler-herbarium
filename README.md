@@ -188,3 +188,4 @@ Just started. Four entries exist so far, `research/naive`, `distilled/puc-lua`, 
 - Competing with the real compilers on coverage.
 - Parsing a real language, or including the optimizations that every compiler shares.
 - Being a production tool. These are specimens, not products.
+- GPU compilers. They mostly add a different target and runtime rather than a new compiler design, and they would need their own examples and a CI that can run GPU code.
