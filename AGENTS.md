@@ -32,6 +32,7 @@ Do not update it for edits that leave all of that alone, such as fixing a commen
 1. Run `scripts/check-entry.sh <entry-dir>`. If the intermediate form legitimately changed, run it with `--update` and commit the regenerated `dumps/`.
 2. Run `scripts/coverage-entry.sh <entry-dir>`.
 3. For a distilled entry, run `scripts/check-fidelity.sh <entry-dir>`.
+4. Run `scripts/check-cloc.sh --update` and commit the README if the Lines of C column changed.
 
 ## RESEARCH.md
 

@@ -67,17 +67,19 @@ A language that only differs in surface syntax does not qualify, such as brainfu
 
 These are the entries in `distilled/`, each a toy version of a real compiler or interpreter. A name that is not a link is still planned, and its last column says what it will show once it exists.
 
+The Lines of C column is `cloc`'s count of code lines in the entry's `main.c`, without blanks and comments. `scripts/check-cloc.sh` checks it and `scripts/check-cloc.sh --update` rewrites it.
+
 The JIT column says whether the real design compiles code while the program is running (✅), as opposed to compiling ahead of time or interpreting (❌). It is 🟡 when the answer depends on how the design is used, for example an IR that real systems use in both JIT and ahead-of-time compilers.
 
-| Entry | Mimics | JIT | What it shows |
-|-------|--------|:---:|---------------------|
-| [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
-| [`distilled/clang`](distilled/clang/) | Clang and LLVM | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
-| `distilled/gcc` | GCC | ❌ | GIMPLE, RTL, and the pass pipeline |
-| [`distilled/puc-lua`](distilled/puc-lua/) | The reference Lua interpreter | ❌ | Register bytecode and the dispatch loop |
-| [`distilled/cpython`](distilled/cpython/) | CPython | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The JIT is optional and experimental |
-| [`distilled/chibicc`](distilled/chibicc/) | chibicc, a small C compiler | ❌ | An AST walked by a code generator that emits assembly per node with a stack machine, the opposite end of the design space from the IR-based entries |
-| `distilled/luajit` | LuaJIT | ✅ | Interpreter, hot trace recording, trace IR, machine code |
+| Entry | Lines of C | Mimics | JIT | What it shows |
+|-------|-----------:|--------|:---:|---------------------|
+| [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1399 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
+| [`distilled/clang`](distilled/clang/) | 1745 | Clang and LLVM | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
+| `distilled/gcc` | - | GCC | ❌ | GIMPLE, RTL, and the pass pipeline |
+| [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | ❌ | Register bytecode and the dispatch loop |
+| [`distilled/cpython`](distilled/cpython/) | 1158 | CPython | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The JIT is optional and experimental |
+| [`distilled/chibicc`](distilled/chibicc/) | 987 | chibicc, a small C compiler | ❌ | An AST walked by a code generator that emits assembly per node with a stack machine, the opposite end of the design space from the IR-based entries |
+| `distilled/luajit` | - | LuaJIT | ✅ | Interpreter, hot trace recording, trace IR, machine code |
 
 More designs can be added over time. The list is a plan, not a promise.
 
@@ -87,9 +89,9 @@ Only open-source compilers and interpreters get an entry. The real source code i
 
 These are the entries in `research/`. They are new designs that do not have a single real counterpart, so they have no `FIDELITY.md`. Each one has a `README.md` that says what idea it tests and which distilled entries it builds on or differs from. The JIT column uses the same ✅, ❌ and 🟡 as above.
 
-| Entry | Idea | JIT | Builds on |
-|-------|------|:---:|-----------|
-| `research/naive` | The simplest possible compiler: a stack machine IR where every instruction expands to a fixed run of x86-64 bytes, with no analysis and no optimization. It is the baseline the other entries are measured against. | ❌ | Nothing. Related to V8's Sparkplug, see its README |
+| Entry | Lines of C | Idea | JIT | Builds on |
+|-------|-----------:|------|:---:|-----------|
+| `research/naive` | 284 | The simplest possible compiler: a stack machine IR where every instruction expands to a fixed run of x86-64 bytes, with no analysis and no optimization. It is the baseline the other entries are measured against. | ❌ | Nothing. Related to V8's Sparkplug, see its README |
 
 ## Layout of an entry
 
@@ -163,6 +165,7 @@ A distilled entry is a toy version of a real design, so "done" has to mean more 
 - `scripts/check-entry.sh` passes, which means the output is correct and the committed dumps are up to date.
 - `scripts/coverage-entry.sh` passes, which means 100% line and branch coverage.
 - `scripts/check-fidelity.sh` passes, which means every `stage_*` function in `main.c` is in the `FIDELITY.md` mapping table and the other way around.
+- `scripts/check-cloc.sh` passes, so the Lines of C column of the README tables is current. Run it with `--update` after changing a `main.c`.
 - Every stage that defines the design is present, in the same order as in the real compiler. For example, GCC lowers from GIMPLE to RTL, and LuaJIT records a trace, builds trace IR and then emits machine code.
 - Every stage is simplified, never dropped. A toy keeps the full pipeline and shrinks each stage, for example a register allocator that colors an interference graph but does no live-range splitting or coalescing, instead of leaving out register allocation or replacing it with a stack slot per value.
 - Its `FIDELITY.md` is filled in. Each stage is mapped to the real compiler's stage name and a location in the real source, and every deliberate deviation is listed with a reason.
