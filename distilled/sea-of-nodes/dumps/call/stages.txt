@@ -1,0 +1,227 @@
+== stage_parse: graph as built, constants folded and shared ==
+  N0   Start    ___
+  N1   Stop     ___ N22 N31
+  N2   Fun      N0   main
+  N3   Region   ___ N28
+  N4   Phi      N3 N30
+  N5   Fun      N0   fact
+  N6   Region   ___ N12 N19
+  N7   Phi      N6 N14 N21
+  N8   Parm     N5
+  N9   Con      N5   #2
+  N10  LT       ___ N8 N9
+  N11  If       N5 N10
+  N12  CProj    N11   true
+  N13  CProj    N11   false
+  N14  Con      N5   #1
+  N15  XCtrl    ___
+  N16  Region   ___ N15 N13
+  N17  Sub      ___ N8 N14
+  N18  Call     N16 N17   fact
+  N19  CallEnd  N18
+  N20  Result   N19
+  N21  Mul      ___ N8 N20
+  N22  Return   N6 N7
+  N23  Con      N2   #5
+  N24  Call     N2 N23   fact
+  N25  CallEnd  N24
+  N26  Result   N25
+  N27  Call     N25 N26   print_int
+  N28  CallEnd  N27
+  N29  Result   N28
+  N30  Con      N2   #0
+  N31  Return   N3 N4
+== stage_iter: peepholes until nothing changes ==
+N3 Region has one live input, replaced by N28
+N16 Region has one live input, replaced by N13
+== stage_iter: reachable graph ==
+  N0   Start    ___
+  N1   Stop     ___ N22 N31
+  N2   Fun      N0   main
+  N5   Fun      N0   fact
+  N6   Region   ___ N12 N19
+  N7   Phi      N6 N14 N21
+  N8   Parm     N5
+  N9   Con      N5   #2
+  N10  LT       ___ N8 N9
+  N11  If       N5 N10
+  N12  CProj    N11   true
+  N13  CProj    N11   false
+  N14  Con      N5   #1
+  N17  Sub      ___ N8 N14
+  N18  Call     N13 N17   fact
+  N19  CallEnd  N18
+  N20  Result   N19
+  N21  Mul      ___ N8 N20
+  N22  Return   N6 N7
+  N23  Con      N2   #5
+  N24  Call     N2 N23   fact
+  N25  CallEnd  N24
+  N26  Result   N25
+  N27  Call     N25 N26   print_int
+  N28  CallEnd  N27
+  N30  Con      N2   #0
+  N31  Return   N28 N30
+== stage_loop_tree: blocks in reverse postorder ==
+  block 0: N2   Fun      idom N-1  idepth 0  loop depth 0
+  block 1: N25  CallEnd  idom N2   idepth 1  loop depth 0
+  block 2: N28  CallEnd  idom N25  idepth 2  loop depth 0
+  block 3: N5   Fun      idom N-1  idepth 0  loop depth 0
+  block 4: N13  CProj    idom N5   idepth 1  loop depth 0
+  block 5: N19  CallEnd  idom N13  idepth 2  loop depth 0
+  block 6: N12  CProj    idom N5   idepth 1  loop depth 0
+  block 7: N6   Region   idom N5   idepth 1  loop depth 0
+== stage_inst_select: machine nodes ==
+  N0   Start    ___
+  N1   Stop     ___ N22 N31
+  N2   Fun      N0   main
+  N5   Fun      N0   fact
+  N6   Region   ___ N12 N19
+  N7   Phi      N6 N14 N21
+  N8   Parm     N5
+  N10  cmpi     ___ N8   #2
+  N11  jl       N5 N10
+  N12  CProj    N11   true
+  N13  CProj    N11   false
+  N14  movi     N5   #1
+  N17  subi     ___ N8   #1
+  N18  call     N13 N17   fact
+  N19  CallEnd  N18
+  N20  Result   N19
+  N21  imul     ___ N8 N20
+  N22  Return   N6 N7
+  N23  movi     N2   #5
+  N24  call     N2 N23   fact
+  N25  CallEnd  N24
+  N26  Result   N25
+  N27  call     N25 N26   print_int
+  N28  CallEnd  N27
+  N30  movi     N2   #0
+  N31  Return   N28 N30
+== stage_schedule: constants shared by several uses get one copy per use ==
+== stage_schedule: block of each floating node ==
+  N14  movi  goes to block N12
+  N17  subi  goes to block N13
+  N21  imul  goes to block N19
+  N23  movi  goes to block N2
+  N30  movi  goes to block N28
+== stage_local_sched: nodes in each block, in order ==
+  block N2 (Fun)
+    N23  movi   #5
+    N24  call   N23 fact
+  block N25 (CallEnd)
+    N26  Result
+    N27  call   N26 print_int
+  block N28 (CallEnd)
+    N30  movi   #0
+    N31  Return N30
+  block N5 (Fun)
+    N8   Parm
+    N10  cmpi   N8 #2
+    N11  jl     N10
+  block N13 (CProj)
+    N17  subi   N8 #1
+    N18  call   N17 fact
+  block N19 (CallEnd)
+    N20  Result
+    N21  imul   N8 N20
+  block N12 (CProj)
+    N14  movi   #1
+  block N6 (Region)
+    N7   Phi    N14 N21
+    N22  Return N7
+== stage_reg_alloc: rounds ==
+round 1
+  N17 needs a register different from its first input, which stays live
+  split N8 before N17
+round 2
+  the LRG of N26 has no register left
+  split N26 after its def as N33
+  split N33 before N27
+round 3
+  the LRG of N8 has no register left
+  split N8 after its def as N35
+  split N7 before N22
+round 4
+LRGs
+  LRG N23  rdi  members: N23
+  LRG N26  rax  members: N26
+  LRG N33  rax  members: N33
+  LRG N34  rdi  members: N34
+  LRG N30  rax  members: N30
+  LRG N8   rdi  members: N8
+  LRG N35  rbx  members: N35 N21 N14 N7
+  LRG N32  rdi  members: N32 N17
+  LRG N20  rax  members: N20
+  LRG N36  rax  members: N36
+== stage_reg_alloc: registers ==
+  block N2 (Fun)
+    N23  rdi  = movi   #5
+    N24         call   N23(rdi) fact
+  block N25 (CallEnd)
+    N26  rax  = Result
+    N33  rax  = split  N26(rax)
+    N34  rdi  = split  N33(rax)
+    N27         call   N34(rdi) print_int
+  block N28 (CallEnd)
+    N30  rax  = movi   #0
+    N31         Return N30(rax)
+  block N5 (Fun)
+    N8   rdi  = Parm
+    N35  rbx  = split  N8(rdi)
+    N10         cmpi   N35(rbx) #2
+    N11         jl     N10
+  block N13 (CProj)
+    N32  rdi  = split  N35(rbx)
+    N17  rdi  = subi   N32(rdi) #1
+    N18         call   N17(rdi) fact
+  block N19 (CallEnd)
+    N20  rax  = Result
+    N21  rbx  = imul   N35(rbx) N20(rax)
+  block N12 (CProj)
+    N14  rbx  = movi   #1
+  block N6 (Region)
+    N7   rbx  = Phi    N14(rbx) N21(rbx)
+    N36  rax  = split  N7(rbx)
+    N22         Return N36(rax)
+== stage_encode: machine code, with the offset of each node ==
+  +0x0000    N23  rdi  = movi   #5
+  +0x0007    N24         call   N23(rdi) fact
+  +0x000c    N26  rax  = Result
+  +0x000c    N33  rax  = split  N26(rax)
+  +0x000c    N34  rdi  = split  N33(rax)
+  +0x000f    N27         call   N34(rdi) print_int
+  +0x0014    N30  rax  = movi   #0
+  +0x001b    N31         Return N30(rax)
+  +0x001d    N8   rdi  = Parm
+  +0x001d    N35  rbx  = split  N8(rdi)
+  +0x0020    N10         cmpi   N35(rbx) #2
+  +0x0027    N11         jl     N10
+  +0x002d    N32  rdi  = split  N35(rbx)
+  +0x0030    N17  rdi  = subi   N32(rdi) #1
+  +0x0037    N18         call   N17(rdi) fact
+  +0x003c    N20  rax  = Result
+  +0x003c    N21  rbx  = imul   N35(rbx) N20(rax)
+  +0x0045    N14  rbx  = movi   #1
+  +0x004c    N7   rbx  = Phi    N14(rbx) N21(rbx)
+  +0x004c    N36  rax  = split  N7(rbx)
+  +0x004f    N22         Return N36(rax)
++0x0008  rel32 16 to +0x001c
++0x0010  rel32 61 to +0x0051
++0x0029  rel32 24 to +0x0045
++0x0038  rel32 -32 to +0x001c
++0x0041  rel32 7 to +0x004c
+== stage_encode: final code, 184 bytes ==
++0x0000: 48 c7 c7 05 00 00 00 e8 10 00 00 00 48 89 c7 e8
++0x0010: 3d 00 00 00 48 c7 c0 00 00 00 00 c3 53 48 89 fb
++0x0020: 48 81 fb 02 00 00 00 0f 8c 18 00 00 00 48 89 df
++0x0030: 48 81 ef 01 00 00 00 e8 e0 ff ff ff 48 0f af d8
++0x0040: e9 07 00 00 00 48 c7 c3 01 00 00 00 48 89 d8 5b
++0x0050: c3 48 89 f8 48 83 ec 20 48 8d 74 24 20 48 c7 c1
++0x0060: 0a 00 00 00 48 ff ce c6 06 0a 31 d2 48 f7 f1 80
++0x0070: c2 30 48 ff ce 88 16 48 85 c0 75 ee 48 8d 54 24
++0x0080: 20 48 29 f2 b8 01 00 00 00 bf 01 00 00 00 0f 05
++0x0090: 48 83 c4 20 c3 0f b6 17 48 8d 77 01 b8 01 00 00
++0x00a0: 00 bf 01 00 00 00 0f 05 c3 0e 48 65 6c 6c 6f 2c
++0x00b0: 20 77 6f 72 6c 64 21 0a
+== stage_export ==

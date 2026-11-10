@@ -1,0 +1,76 @@
+== stage_parse: graph as built, constants folded and shared ==
+  N0   Start    ___
+  N1   Stop     ___ N11
+  N2   Fun      N0   main
+  N3   Region   ___ N7
+  N4   Phi      N3 N9
+  N5   Str      N2   #0
+  N6   Call     N2 N5   print_str
+  N7   CallEnd  N6
+  N8   Result   N7
+  N9   Con      N2   #0
+  N10  XCtrl    ___
+  N11  Return   N3 N4
+== stage_iter: peepholes until nothing changes ==
+N3 Region has one live input, replaced by N7
+== stage_iter: reachable graph ==
+  N0   Start    ___
+  N1   Stop     ___ N11
+  N2   Fun      N0   main
+  N5   Str      N2   #0
+  N6   Call     N2 N5   print_str
+  N7   CallEnd  N6
+  N9   Con      N2   #0
+  N11  Return   N7 N9
+== stage_loop_tree: blocks in reverse postorder ==
+  block 0: N2   Fun      idom N-1  idepth 0  loop depth 0
+  block 1: N7   CallEnd  idom N2   idepth 1  loop depth 0
+== stage_inst_select: machine nodes ==
+  N0   Start    ___
+  N1   Stop     ___ N11
+  N2   Fun      N0   main
+  N5   lea      N2
+  N6   call     N2 N5   print_str
+  N7   CallEnd  N6
+  N9   movi     N2   #0
+  N11  Return   N7 N9
+== stage_schedule: constants shared by several uses get one copy per use ==
+== stage_schedule: block of each floating node ==
+  N5   lea   goes to block N2
+  N9   movi  goes to block N7
+== stage_local_sched: nodes in each block, in order ==
+  block N2 (Fun)
+    N5   lea    string 0
+    N6   call   N5 print_str
+  block N7 (CallEnd)
+    N9   movi   #0
+    N11  Return N9
+== stage_reg_alloc: rounds ==
+round 1
+LRGs
+  LRG N5   rdi  members: N5
+  LRG N9   rax  members: N9
+== stage_reg_alloc: registers ==
+  block N2 (Fun)
+    N5   rdi  = lea    string 0
+    N6          call   N5(rdi) print_str
+  block N7 (CallEnd)
+    N9   rax  = movi   #0
+    N11         Return N9(rax)
+== stage_encode: machine code, with the offset of each node ==
+  +0x0000    N5   rdi  = lea    string 0
+  +0x0007    N6          call   N5(rdi) print_str
+  +0x000c    N9   rax  = movi   #0
+  +0x0013    N11         Return N9(rax)
++0x0003  rel32 101 to +0x006c
++0x0008  rel32 76 to +0x0058
+== stage_encode: final code, 123 bytes ==
++0x0000: 48 8d 3d 65 00 00 00 e8 4c 00 00 00 48 c7 c0 00
++0x0010: 00 00 00 c3 48 89 f8 48 83 ec 20 48 8d 74 24 20
++0x0020: 48 c7 c1 0a 00 00 00 48 ff ce c6 06 0a 31 d2 48
++0x0030: f7 f1 80 c2 30 48 ff ce 88 16 48 85 c0 75 ee 48
++0x0040: 8d 54 24 20 48 29 f2 b8 01 00 00 00 bf 01 00 00
++0x0050: 00 0f 05 48 83 c4 20 c3 0f b6 17 48 8d 77 01 b8
++0x0060: 01 00 00 00 bf 01 00 00 00 0f 05 c3 0e 48 65 6c
++0x0070: 6c 6f 2c 20 77 6f 72 6c 64 21 0a
+== stage_export ==

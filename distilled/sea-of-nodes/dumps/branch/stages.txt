@@ -1,0 +1,86 @@
+== stage_parse: graph as built, constants folded and shared ==
+  N0   Start    ___
+  N1   Stop     ___ N20
+  N2   Fun      N0   main
+  N3   Region   ___ N17
+  N4   Phi      N3 N18
+  N5   Con      N2   #3
+  N6   Con      N2   #5
+  N7   Con      N2   #1
+  N8   If       N2 N7
+  N9   CProj    N8   true
+  N10  CProj    N8   false
+  N11  Call     N9 N6   print_int
+  N12  CallEnd  N11
+  N13  Result   N12
+  N14  Call     N10 N5   print_int
+  N15  CallEnd  N14
+  N16  Result   N15
+  N17  Region   ___ N12 N15
+  N18  Con      N2   #0
+  N19  XCtrl    ___
+  N20  Return   N3 N4
+== stage_iter: peepholes until nothing changes ==
+N3 Region has one live input, replaced by N17
+N9 CProj follows a constant If, replaced by N2
+N17 Region has one live input, replaced by N12
+== stage_iter: reachable graph ==
+  N0   Start    ___
+  N1   Stop     ___ N20
+  N2   Fun      N0   main
+  N6   Con      N2   #5
+  N11  Call     N2 N6   print_int
+  N12  CallEnd  N11
+  N18  Con      N2   #0
+  N20  Return   N12 N18
+== stage_loop_tree: blocks in reverse postorder ==
+  block 0: N2   Fun      idom N-1  idepth 0  loop depth 0
+  block 1: N12  CallEnd  idom N2   idepth 1  loop depth 0
+== stage_inst_select: machine nodes ==
+  N0   Start    ___
+  N1   Stop     ___ N20
+  N2   Fun      N0   main
+  N6   movi     N2   #5
+  N11  call     N2 N6   print_int
+  N12  CallEnd  N11
+  N18  movi     N2   #0
+  N20  Return   N12 N18
+== stage_schedule: constants shared by several uses get one copy per use ==
+== stage_schedule: block of each floating node ==
+  N6   movi  goes to block N2
+  N18  movi  goes to block N12
+== stage_local_sched: nodes in each block, in order ==
+  block N2 (Fun)
+    N6   movi   #5
+    N11  call   N6 print_int
+  block N12 (CallEnd)
+    N18  movi   #0
+    N20  Return N18
+== stage_reg_alloc: rounds ==
+round 1
+LRGs
+  LRG N6   rdi  members: N6
+  LRG N18  rax  members: N18
+== stage_reg_alloc: registers ==
+  block N2 (Fun)
+    N6   rdi  = movi   #5
+    N11         call   N6(rdi) print_int
+  block N12 (CallEnd)
+    N18  rax  = movi   #0
+    N20         Return N18(rax)
+== stage_encode: machine code, with the offset of each node ==
+  +0x0000    N6   rdi  = movi   #5
+  +0x0007    N11         call   N6(rdi) print_int
+  +0x000c    N18  rax  = movi   #0
+  +0x0013    N20         Return N18(rax)
++0x0008  rel32 8 to +0x0014
+== stage_encode: final code, 123 bytes ==
++0x0000: 48 c7 c7 05 00 00 00 e8 08 00 00 00 48 c7 c0 00
++0x0010: 00 00 00 c3 48 89 f8 48 83 ec 20 48 8d 74 24 20
++0x0020: 48 c7 c1 0a 00 00 00 48 ff ce c6 06 0a 31 d2 48
++0x0030: f7 f1 80 c2 30 48 ff ce 88 16 48 85 c0 75 ee 48
++0x0040: 8d 54 24 20 48 29 f2 b8 01 00 00 00 bf 01 00 00
++0x0050: 00 0f 05 48 83 c4 20 c3 0f b6 17 48 8d 77 01 b8
++0x0060: 01 00 00 00 bf 01 00 00 00 0f 05 c3 0e 48 65 6c
++0x0070: 6c 6f 2c 20 77 6f 72 6c 64 21 0a
+== stage_export ==
