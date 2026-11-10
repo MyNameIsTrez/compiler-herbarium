@@ -1,0 +1,62 @@
+== stage_bytecode: LuaJIT's instruction format, A, B, C and D are fields of the word ==
+function <main> (5 instructions), integer constant: 0
+  0000  FUNCF    3 (frame size 3)
+  0001  KFUNC    0   0
+  0002  KSTR     2   1
+  0003  CALL     0   1   2
+  0004  RET0     0   1
+== stage_assemble: the interpreter as x86-64 machine code, 1131 bytes ==
+  registers: BASE rdx, PC rbx, DISPATCH r14, KBASE r15, RA rcx, RB/OP rbp, RC/RD rax
+  every handler ends with ins_next, 19 bytes: decode the word at PC, then jmp [DISPATCH+OP*8]
+  +0x0000  vm_enter
+  +0x0034  vm_return
+  +0x0043  ISGE
+  +0x00ab  KSTR, KFUNC
+  +0x00c9  KSHORT
+  +0x00f0  MOV
+  +0x010b  ADDVN
+  +0x0167  SUBVN
+  +0x01c3  ADDVV
+  +0x021f  MULVV
+  +0x027c  CALL
+  +0x02a5  RET0
+  +0x02e8  RET1
+  +0x02f5  LOOP
+  +0x030d  ILOOP
+  +0x0320  JLOOP
+  +0x0331  JMP
+  +0x034c  FUNCF
+  +0x0364  IFUNCF
+  +0x037b  FUNCC
+  +0x03a0  vm_hotloop
+  +0x03bd  vm_hotcall
+  +0x03da  vm_record
+  +0x03f7  vm_redispatch
+  +0x040b  vm_exit_handler
+  +0x0469  vm_meta
+== stage_dispatch: dispatch tables and hot counters ==
+  the dispatch table has an entry per opcode, the static table has the ones below FUNCF
+  the static table maps LOOP to the ILOOP handler, which does not count
+  ISGE   dispatch +0x0043  static +0x0043
+  KSTR   dispatch +0x00ab  static +0x00ab
+  KSHORT dispatch +0x00c9  static +0x00c9
+  KFUNC  dispatch +0x00ab  static +0x00ab
+  MOV    dispatch +0x00f0  static +0x00f0
+  ADDVN  dispatch +0x010b  static +0x010b
+  SUBVN  dispatch +0x0167  static +0x0167
+  ADDVV  dispatch +0x01c3  static +0x01c3
+  MULVV  dispatch +0x021f  static +0x021f
+  CALL   dispatch +0x027c  static +0x027c
+  RET0   dispatch +0x02a5  static +0x02a5
+  RET1   dispatch +0x02e8  static +0x02e8
+  LOOP   dispatch +0x02f5  static +0x030d
+  ILOOP  dispatch +0x030d  static +0x030d
+  JLOOP  dispatch +0x0320  static +0x0320
+  JMP    dispatch +0x0331  static +0x0331
+  FUNCF  dispatch +0x034c
+  IFUNCF dispatch +0x0364
+  FUNCC  dispatch +0x037b
+  hot counters (64 of them, a pc hashes to one) start at 3
+  main 0000 FUNCF uses counter 12
+== stage_interpret: call vm_enter at +0x0000, the program runs on the generated code ==
+  the bottom frame returned to C, jit_base is clear

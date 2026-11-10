@@ -26,6 +26,10 @@ Every entry is checked against the five programs in `examples/`. Only `loop` has
 
 The interpreter is a C `switch`, not the assembler VM of LuaJIT. There are no tables, calls or floats in a trace, no side traces, no trace linking, no spilling, no optimizations except the loop one, and no recovery from a trace that fails to record.
 
+## Compared with distilled/luajit-interpreter
+
+The two entries are the two halves of LuaJIT. This entry is the trace compiler, on top of an interpreter that is a plain C `switch` over 16-byte slots. [luajit-interpreter](../luajit-interpreter/) is the interpreter as it really is: x86-64 machine code with pinned registers, dispatch tables, hot counters and an exit handler, with only a template where the trace compiler would be. Read this one to see how a trace is made, and that one to see how a trace is started, entered and left.
+
 ## Fidelity
 
 See [FIDELITY.md](FIDELITY.md) for the mapping to the real source, which parts of it were read, and what was dropped.
