@@ -65,7 +65,7 @@ A language that only differs in surface syntax does not qualify, such as brainfu
 
 ## Real compilers
 
-These are the entries in `distilled/`, each a toy version of a real compiler or interpreter. A name that is not a link is still planned, and its last column says what it will show once it exists.
+These are the entries in `distilled/`, each a toy version of a real compiler or interpreter.
 
 The Lines of C column is `cloc`'s count of code lines in the entry's `main.c`, without blanks and comments. `scripts/check-cloc.sh` checks it and `scripts/check-cloc.sh --update` rewrites it.
 
@@ -75,13 +75,11 @@ The JIT column says whether the real design compiles code while the program is r
 |-------|-----------:|--------|:---:|---------------------|
 | [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1401 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
 | [`distilled/clang`](distilled/clang/) | 1745 | Clang and LLVM | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
-| `distilled/gcc` | - | GCC | ❌ | GIMPLE, RTL, and the pass pipeline |
 | [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | ❌ | Register bytecode and the dispatch loop |
 | [`distilled/cpython`](distilled/cpython/) | 1158 | CPython | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The JIT is optional and experimental |
 | [`distilled/chibicc`](distilled/chibicc/) | 987 | chibicc, a small C compiler | ❌ | An AST walked by a code generator that emits assembly per node with a stack machine, the opposite end of the design space from the IR-based entries |
-| `distilled/luajit` | - | LuaJIT | ✅ | Interpreter, hot trace recording, trace IR, machine code |
 
-More designs can be added over time. The list is a plan, not a promise.
+Every row is a finished entry. Designs that are planned or still being investigated are leads in [RESEARCH.md](RESEARCH.md), and a lead gets a row here only when its entry passes every example.
 
 Only open-source compilers and interpreters get an entry. The real source code is required to distill a design down to its essence, and it is what each entry's `FIDELITY.md` and review pass are checked against. A design that is only documented, or whose source is closed (like MSVC), is out of scope.
 
@@ -193,7 +191,7 @@ Examples are checked for correct output, not timed. Designs can still be compare
 
 ## Status
 
-Just started. Six entries exist so far, `research/naive`, `distilled/puc-lua`, `distilled/sea-of-nodes`, `distilled/clang`, `distilled/chibicc` and `distilled/cpython`, and all pass every example. The other distilled entries are still only planned.
+Just started. Six entries exist so far, `research/naive`, `distilled/puc-lua`, `distilled/sea-of-nodes`, `distilled/clang`, `distilled/chibicc` and `distilled/cpython`, and all pass every example. Leads for more entries are in [RESEARCH.md](RESEARCH.md).
 
 ## Non-goals
 
