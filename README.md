@@ -41,6 +41,7 @@ Each entry follows the same shape, so the same file names can be opened in diffe
 ```
 <entry>/
   README.md     what the design is, what this version leaves out
+  FIDELITY.md   how each stage maps to the real compiler (see templates/FIDELITY.md)
   input.*       the hardcoded program in the design's native IR
   ...           the stages, one source file per stage where practical
   dumps/        the intermediate form after each stage, and code.bin
@@ -58,6 +59,17 @@ Every entry that generates machine code runs it the same way: the code is copied
 - Each entry also writes its final code bytes to `dumps/code.bin`, which can be disassembled with `objdump -D -b binary -m i386:x86-64`. This replaces the object file you would get from a conventional toolchain.
 
 `puc-lua` is an interpreter and generates no machine code, so it runs its bytecode in its own dispatch loop instead.
+
+## When is an entry done
+
+An entry is a toy version of a real design, so "done" has to mean more than "it prints the right text". An entry is done when all of these hold:
+
+- Its code runs and the harness check passes.
+- Every stage that defines the design is present, in the same order as in the real compiler. For example, GCC lowers from GIMPLE to RTL, and LuaJIT records a trace, builds trace IR and then emits machine code.
+- Its `FIDELITY.md` is filled in. Each stage is mapped to the real compiler's stage name and a location in the real source, and every deliberate deviation is listed with a reason.
+- A review pass has been done against the real source and, where the real tool can print its own intermediate forms, against those dumps. Useful tools are `clang -emit-llvm` with `-mllvm -print-after-all`, `gcc -fdump-tree-all` and `-fdump-rtl-all`, `luac -l -l`, and LuaJIT's `-jbc` and `-jdump`. Output will not be identical, but the stages, their order and the shape of the data should match.
+
+A reviewer, human or LLM, is given those references and checks specific claims. Asking a model from memory whether a design matches is not enough, because it can misremember how the real compiler works. An LLM is useful for the mechanical checks, such as filling in the stage mapping, spotting missing stages and confirming that the listed deviations match the code. Whether the remaining deviations are acceptable is a human decision.
 
 ## Examples
 
