@@ -16,9 +16,11 @@ There is no tokenizer and no parser. Each entry starts from a hardcoded data str
 
 What distinguishes the designs lives in the middle of the pipeline, so each entry **dumps its intermediate form after every stage**. The dumps are the main output. Reading them in order shows how a design thinks, and diffing them across entries shows where the designs differ.
 
-## Language
+## Language and platform
 
 Every compiler and interpreter in this repo is written in C17, so differences between entries come from the design rather than from the implementation language.
+
+This repo is Linux only. Entries may rely on Linux system calls and Linux-specific memory mapping, and no effort is made to support other operating systems.
 
 ## Planned entries
 
@@ -41,10 +43,21 @@ Each entry follows the same shape, so the same file names can be opened in diffe
   README.md     what the design is, what this version leaves out
   input.*       the hardcoded program in the design's native IR
   ...           the stages, one source file per stage where practical
-  dumps/        the intermediate form after each stage
+  dumps/        the intermediate form after each stage, and code.bin
 ```
 
 A shared harness runs every entry's output and checks that it prints `Hello, world!`, so the entries stay honest and comparable.
+
+## Running generated code
+
+Every entry that generates machine code runs it the same way: the code is copied into an `mmap`ed buffer, the buffer is made executable with `mprotect`, and the harness calls it in-process. No entry writes an ELF file or invokes an assembler or linker, so the only thing that differs between entries is the compilation design.
+
+- The generated hello world is raw `write` syscalls followed by `ret`, with no libc calls. It returns to the harness instead of exiting.
+- The string lives in the same buffer as the code and is reached with a RIP-relative `lea`, so there is no data section or relocation to model.
+- The harness forks one process per entry, so a crashing entry cannot take the harness down.
+- Each entry also writes its final code bytes to `dumps/code.bin`, which can be disassembled with `objdump -D -b binary -m i386:x86-64`. This replaces the object file you would get from a conventional toolchain.
+
+`puc-lua` is an interpreter and generates no machine code, so it runs its bytecode in its own dispatch loop instead.
 
 ## Beyond hello world
 
