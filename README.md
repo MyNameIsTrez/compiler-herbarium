@@ -65,11 +65,11 @@ A language that only differs in surface syntax does not qualify, such as brainfu
 
 ## Real compilers
 
-These are the planned entries in `distilled/`, each a toy version of a real compiler or interpreter.
+These are the entries in `distilled/`, each a toy version of a real compiler or interpreter. A name that is not a link is still planned, and its last column says what it will show once it exists.
 
 The JIT column says whether the real design compiles code while the program is running (✅), as opposed to compiling ahead of time or interpreting (❌). It is 🟡 when the answer depends on how the design is used, for example an IR that real systems use in both JIT and ahead-of-time compilers.
 
-| Entry | Mimics | JIT | What it should show |
+| Entry | Mimics | JIT | What it shows |
 |-------|--------|:---:|---------------------|
 | [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
 | [`distilled/clang`](distilled/clang/) | Clang and LLVM | ❌ | AST-free lowering to SSA, mem2reg style cleanup, instruction selection, register allocation |
