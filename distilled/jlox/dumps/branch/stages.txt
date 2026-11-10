@@ -1,0 +1,32 @@
+== stage_source: syntax tree of branch ==
+(block
+  (var a 3)
+  (var b 5)
+  (if (< a b)
+    (block
+      (print b)
+    )
+    (block
+      (print a)
+    )
+  )
+)
+== stage_resolve: scope distance of every variable use ==
+begin scope 0
+resolve a: 0 scopes up
+resolve b: 0 scopes up
+begin scope 1
+resolve b: 1 scope up
+end scope 1
+begin scope 1
+resolve a: 1 scope up
+end scope 1
+end scope 0
+== stage_run: every variable access and call ==
+new environment for a block
+define a = 3
+define b = 5
+get a from the scope 0 up: 3
+get b from the scope 0 up: 5
+new environment for a block
+get b from the scope 1 up: 5

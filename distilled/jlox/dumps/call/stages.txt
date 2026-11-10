@@ -1,0 +1,51 @@
+== stage_source: syntax tree of call ==
+(fun fact (n)
+  (if (< n 2)
+    (block
+      (return 1)
+    )
+  )
+  (return (* n (call fact (- n 1))))
+)
+(print (call fact 5))
+== stage_resolve: scope distance of every variable use ==
+begin scope 0 (function fact)
+resolve n: 0 scopes up
+begin scope 1
+end scope 1
+resolve n: 0 scopes up
+resolve fact: not found, so a global
+resolve n: 0 scopes up
+end scope 0 (function fact)
+resolve fact: not found, so a global
+== stage_run: every variable access and call ==
+define fact as a function closing over the current environment
+get fact from the globals
+call fact(5)
+  get n from the scope 0 up: 5
+  get n from the scope 0 up: 5
+  get fact from the globals
+  get n from the scope 0 up: 5
+  call fact(4)
+    get n from the scope 0 up: 4
+    get n from the scope 0 up: 4
+    get fact from the globals
+    get n from the scope 0 up: 4
+    call fact(3)
+      get n from the scope 0 up: 3
+      get n from the scope 0 up: 3
+      get fact from the globals
+      get n from the scope 0 up: 3
+      call fact(2)
+        get n from the scope 0 up: 2
+        get n from the scope 0 up: 2
+        get fact from the globals
+        get n from the scope 0 up: 2
+        call fact(1)
+          get n from the scope 0 up: 1
+          new environment for a block
+        fact returned 1
+      fact returned 2
+    fact returned 6
+  fact returned 24
+fact returned 120

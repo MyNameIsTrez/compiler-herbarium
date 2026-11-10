@@ -1,0 +1,100 @@
+== stage_source: syntax tree of loop ==
+(block
+  (var sum 0)
+  (var i 1)
+  (while (< i 11)
+    (block
+      (; (= sum (+ sum i)))
+      (; (= i (+ i 1)))
+    )
+  )
+  (print sum)
+)
+== stage_resolve: scope distance of every variable use ==
+begin scope 0
+resolve i: 0 scopes up
+begin scope 1
+resolve sum: 1 scope up
+resolve i: 1 scope up
+resolve sum: 1 scope up
+resolve i: 1 scope up
+resolve i: 1 scope up
+end scope 1
+resolve sum: 0 scopes up
+end scope 0
+== stage_run: every variable access and call ==
+new environment for a block
+define sum = 0
+define i = 1
+get i from the scope 0 up: 1
+new environment for a block
+get sum from the scope 1 up: 0
+get i from the scope 1 up: 1
+set sum in the scope 1 up: 1
+get i from the scope 1 up: 1
+set i in the scope 1 up: 2
+get i from the scope 0 up: 2
+new environment for a block
+get sum from the scope 1 up: 1
+get i from the scope 1 up: 2
+set sum in the scope 1 up: 3
+get i from the scope 1 up: 2
+set i in the scope 1 up: 3
+get i from the scope 0 up: 3
+new environment for a block
+get sum from the scope 1 up: 3
+get i from the scope 1 up: 3
+set sum in the scope 1 up: 6
+get i from the scope 1 up: 3
+set i in the scope 1 up: 4
+get i from the scope 0 up: 4
+new environment for a block
+get sum from the scope 1 up: 6
+get i from the scope 1 up: 4
+set sum in the scope 1 up: 10
+get i from the scope 1 up: 4
+set i in the scope 1 up: 5
+get i from the scope 0 up: 5
+new environment for a block
+get sum from the scope 1 up: 10
+get i from the scope 1 up: 5
+set sum in the scope 1 up: 15
+get i from the scope 1 up: 5
+set i in the scope 1 up: 6
+get i from the scope 0 up: 6
+new environment for a block
+get sum from the scope 1 up: 15
+get i from the scope 1 up: 6
+set sum in the scope 1 up: 21
+get i from the scope 1 up: 6
+set i in the scope 1 up: 7
+get i from the scope 0 up: 7
+new environment for a block
+get sum from the scope 1 up: 21
+get i from the scope 1 up: 7
+set sum in the scope 1 up: 28
+get i from the scope 1 up: 7
+set i in the scope 1 up: 8
+get i from the scope 0 up: 8
+new environment for a block
+get sum from the scope 1 up: 28
+get i from the scope 1 up: 8
+set sum in the scope 1 up: 36
+get i from the scope 1 up: 8
+set i in the scope 1 up: 9
+get i from the scope 0 up: 9
+new environment for a block
+get sum from the scope 1 up: 36
+get i from the scope 1 up: 9
+set sum in the scope 1 up: 45
+get i from the scope 1 up: 9
+set i in the scope 1 up: 10
+get i from the scope 0 up: 10
+new environment for a block
+get sum from the scope 1 up: 45
+get i from the scope 1 up: 10
+set sum in the scope 1 up: 55
+get i from the scope 1 up: 10
+set i in the scope 1 up: 11
+get i from the scope 0 up: 11
+get sum from the scope 0 up: 55

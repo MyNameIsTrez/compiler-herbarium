@@ -1,0 +1,4 @@
+== stage_source: syntax tree of hello ==
+(print "Hello, world!")
+== stage_resolve: scope distance of every variable use ==
+== stage_run: every variable access and call ==

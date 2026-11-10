@@ -1,0 +1,4 @@
+== stage_source: syntax tree of arithmetic ==
+(print (- (* (+ 2 3) 4) 6))
+== stage_resolve: scope distance of every variable use ==
+== stage_run: every variable access and call ==
