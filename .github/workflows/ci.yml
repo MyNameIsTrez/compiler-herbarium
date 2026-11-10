@@ -31,6 +31,9 @@ jobs:
         run: scripts/check-entry.sh "${{ matrix.entry }}"
         env:
           OPT: ${{ matrix.opt }}
+      - name: Check that the stages in main.c and FIDELITY.md agree
+        if: startsWith(matrix.entry, 'distilled/') && matrix.opt == '-O1'
+        run: scripts/check-fidelity.sh "${{ matrix.entry }}"
 
   coverage:
     needs: discover

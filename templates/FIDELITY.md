@@ -8,11 +8,11 @@ Reference material used (source tree, commit or tag, docs, papers):
 
 ## Stage mapping
 
-One row per stage of this entry, in pipeline order.
+One row per stage of this entry, in pipeline order. Write each stage as its `stage_*` function name from `main.c` in backticks, for example `stage_lower`. `scripts/check-fidelity.sh` fails if a `stage_*` function is missing from this table, or if the table names one that `main.c` does not have.
 
 | Stage in this entry | Real stage name | Where it lives in the real source | Kept | Dropped or simplified |
 |---------------------|-----------------|-----------------------------------|------|-----------------------|
-| | | | | |
+| `stage_example` | | | | |
 
 ## Deliberate deviations
 
