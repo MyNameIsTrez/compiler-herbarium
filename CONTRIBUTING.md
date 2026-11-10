@@ -27,4 +27,4 @@ Bug reports are welcome as issues too. Please include the entry, the example and
 
 ## Where leads go
 
-Leads end up in `research/` as new experiments, or in `distilled/` as new toy versions of real compilers. See the [README](README.md) for what each directory holds and when an entry counts as done.
+Leads are recorded in [RESEARCH.md](RESEARCH.md). They then end up in `research/` as new experiments, or in `distilled/` as new toy versions of real compilers. See the [README](README.md) for what each directory holds and when an entry counts as done.

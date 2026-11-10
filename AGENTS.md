@@ -30,6 +30,10 @@ Do not update it for edits that leave all of that alone, such as fixing a commen
 2. Run `scripts/coverage-entry.sh <entry-dir>`.
 3. For a distilled entry, run `scripts/check-fidelity.sh <entry-dir>`.
 
+## RESEARCH.md
+
+`RESEARCH.md` lists leads in two tables: leads that have a compiler in the repo, and leads that do not. When you add an entry that comes from a lead, move that lead's row to the first table and say how it was used. Mark a lead as read only if you actually read it, not if you only listed it.
+
 ## Coverage
 
 Line and branch coverage must stay at 100%. Prefer deleting code that is never reached over excluding it. Use a `GCOVR_EXCL_*` comment only for code that can never run, such as the failure path of a syscall, and say why on the same line.

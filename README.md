@@ -22,6 +22,8 @@ That is useful in a few ways:
 
 The repo is a set of specimens and a workbench, not a benchmark and not a production toolchain.
 
+[`RESEARCH.md`](RESEARCH.md) is the running list of links behind it: the leads that already have an entry, and the ones that still need investigating.
+
 ## The idea
 
 Every entry compiles (or interprets) the same set of tiny programs, listed in [`examples/`](examples/). They go from hello world up to a recursive function. Each is defined by a short Lua program and its exact expected output, for example:
