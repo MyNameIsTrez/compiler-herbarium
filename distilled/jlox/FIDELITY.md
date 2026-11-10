@@ -26,14 +26,15 @@ Reference material used:
 - `return` uses `setjmp` and `longjmp`, where jlox throws a `Return` exception (which has the stack trace turned off) and `LoxFunction.call` catches it. The call restores the current environment by hand, where `executeBlock` does it in a `finally` clause. A function that ends without `return` would yield the previous return value instead of `nil`.
 - Values are bools, numbers and strings, and function objects. There is no `nil`, and a condition is read as a bool, because only comparisons feed a condition here. `print` writes `%g` for numbers.
 - There is no native `clock`, so the globals start empty. The memory of all environments and nodes is freed at exit, since a garbage collector would not teach anything here (Java provides one to jlox).
-- The trace of variable accesses and calls in `stage_run` is this entry's own. jlox prints nothing while it runs.
+- The trace of variable accesses and calls in `stage_run` is this entry's own. jlox prints nothing while it runs (checked by running it).
 
 ## Comparison with the real tool
 
-The real jlox was not built or run for this entry, so no output was compared.
+The real jlox was compiled with `javac` from the same commit (a scratch clone, since removed) and run on each example translated by hand to Lox, for example `{ var sum = 0; var i = 1; while (i < 11) { sum = sum + i; i = i + 1; } print sum; }` for `loop`.
 
-- Matches: the order of work in the resolver and the interpreter, as read from the source. The depth of each variable use follows `resolveLocal` (`scopes.size() - 1 - i`), and the closure and call environments follow `visitFunctionStmt` and `LoxFunction.call`.
-- Differs: see the deviations. The dumps are not jlox output.
+- Command: `java -cp out com.craftinginterpreters.lox.Lox <example>.lox`, plus a ten-line harness in the `lox` package that runs `Scanner`, `Parser` and `AstPrinter` on the file.
+- Matches: all five examples print exactly `expected.txt`, and jlox prints nothing on stderr while it runs. The trees have the same shape as this entry's: for `call`, `(fun fact(n) (if (< n 2.0) (block (return 1.0)))(return (* n (call fact  (- n 1.0)))))`, and expression statements start with `;`, as here.
+- Differs: `AstPrinter` prints the whole tree on one line, writes numbers as `1.0` and variable declarations as `(var sum = 0.0)`, and shows parentheses as a `group` node, which the hand-built trees here leave out. The resolver distances and the run trace in this entry's dumps cannot be compared, because the real jlox does not print them. The distances were checked by reading `resolveLocal` only.
 
 ## Review
 
