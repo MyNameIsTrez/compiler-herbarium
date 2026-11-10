@@ -1,0 +1,198 @@
+== stage_ast: GENERIC ==
+main ()
+{
+  int sum;
+  int i;
+  sum = 0;
+  i = 1;
+  goto <D.1001>;
+  <D.1002>:
+  sum = sum + i;
+  i = i + 1;
+  <D.1001>:
+  if (i <= 10) goto <D.1002>; else goto <D.1000>;
+  <D.1000>:
+  print_int (sum);
+}
+== stage_gimplify: GIMPLE ==
+main ()
+{
+  int sum;
+  int i;
+
+  sum = 0;
+  i = 1;
+  goto <D.1001>;
+ <D.1002>:
+  sum = sum + i;
+  i = i + 1;
+ <D.1001>:
+  if (i <= 10) goto <D.1002>; else goto <D.1000>;
+ <D.1000>:
+  print_int (sum);
+}
+== stage_lower: GIMPLE after lowering ==
+main ()
+{
+  int sum;
+  int i;
+
+  sum = 0;
+  i = 1;
+  goto <D.1001>;
+ <D.1002>:
+  sum = sum + i;
+  i = i + 1;
+ <D.1001>:
+  if (i <= 10) goto <D.1002>; else goto <D.1000>;
+ <D.1000>:
+  print_int (sum);
+  return;
+}
+== stage_cfg: basic blocks ==
+main ()
+{
+  int i;
+  int sum;
+
+  <bb 2> :
+  sum = 0;
+  i = 1;
+  goto <bb 4>;
+
+  <bb 3> :
+  sum = sum + i;
+  i = i + 1;
+
+  <bb 4> :
+  if (i <= 10) goto <bb 3>; else goto <bb 5>;
+
+  <bb 5> :
+  print_int (sum);
+  return;
+
+}
+== stage_ssa: SSA form ==
+main ()
+{
+  int i;
+  int sum;
+
+  <bb 2> :
+  sum_3 = 0;
+  i_4 = 1;
+  goto <bb 4>;
+
+  <bb 3> :
+  sum_5 = sum_1 + i_2;
+  i_6 = i_2 + 1;
+
+  <bb 4> :
+  # sum_1 = PHI <sum_3(2), sum_5(3)>
+  # i_2 = PHI <i_4(2), i_6(3)>
+  if (i_2 <= 10) goto <bb 3>; else goto <bb 5>;
+
+  <bb 5> :
+  print_int (sum_1);
+  return;
+
+}
+== stage_expand: RTL ==
+partitions of main: 1:r98 2:r99 3:r98 4:r99 5:r98 6:r99
+main
+;; basic block 2
+   1: r98:SI=0x0
+   2: r99:SI=0x1
+   3: pc=L4
+;; basic block 3
+L3:
+   5: {r98:SI=r98:SI+r99:SI;clobber flags:CC;}
+   6: {r99:SI=r99:SI+0x1;clobber flags:CC;}
+;; basic block 4
+L4:
+   8: flags:CCGC=cmp(r99:SI,0xa)
+   9: pc={(flags:CCGC<=0)?L3:pc}
+;; basic block 5
+  11: di:SI=r98:SI
+  12: call [`print_int'] argc:0
+== stage_combine: RTL after combine ==
+main
+;; basic block 2
+   1: r98:SI=0x0
+   2: r99:SI=0x1
+   3: pc=L4
+;; basic block 3
+L3:
+   5: {r98:SI=r98:SI+r99:SI;clobber flags:CC;}
+   6: {r99:SI=r99:SI+0x1;clobber flags:CC;}
+;; basic block 4
+L4:
+   8: flags:CCGC=cmp(r99:SI,0xa)
+   9: pc={(flags:CCGC<=0)?L3:pc}
+;; basic block 5
+  11: di:SI=r98:SI
+  12: call [`print_int'] argc:0
+== stage_ira: hard registers ==
+r98 -> di
+r99 -> ax
+main
+;; basic block 2
+   1: di:SI=0x0
+   2: ax:SI=0x1
+   3: pc=L4
+;; basic block 3
+L3:
+   5: {di:SI=di:SI+ax:SI;clobber flags:CC;}
+   6: {ax:SI=ax:SI+0x1;clobber flags:CC;}
+;; basic block 4
+L4:
+   8: flags:CCGC=cmp(ax:SI,0xa)
+   9: pc={(flags:CCGC<=0)?L3:pc}
+;; basic block 5
+  12: call [`print_int'] argc:0
+== stage_frame: prologue and epilogue ==
+main: push rbx 0, sub rsp 8 1
+== stage_final: assembly ==
+main:
+  subq $8, %rsp
+  movl $0, %edi
+  movl $1, %eax
+  jmp .L1
+.L2:
+  addl %eax, %edi
+  addl $1, %eax
+.L1:
+  cmpl $10, %eax
+  jle .L2
+  call print_int
+  addq $8, %rsp
+  ret
+== stage_encode: machine code, with the offset of each instruction ==
+  +0x0000  main:
+  +0x0000  subq $8, %rsp
+  +0x0004  movl $0, %edi
+  +0x0009  movl $1, %eax
+  +0x000e  jmp .L1
+  +0x0013  .L2:
+  +0x0013  addl %eax, %edi
+  +0x0015  addl $1, %eax
+  +0x0018  .L1:
+  +0x0018  cmpl $10, %eax
+  +0x001b  jle .L2
+  +0x0021  call print_int
+  +0x0026  addq $8, %rsp
+  +0x002a  ret
++0x000f  rel32 5 to .L1 at +0x0018
++0x001d  rel32 -14 to .L2 at +0x0013
++0x0022  rel32 5 to print_int at +0x002b
+== stage_encode: final code, 140 bytes ==
++0x0000: 48 83 ec 08 bf 00 00 00 00 b8 01 00 00 00 e9 05
++0x0010: 00 00 00 01 c7 83 c0 01 83 f8 0a 0f 8e f2 ff ff
++0x0020: ff e8 05 00 00 00 48 83 c4 08 c3 48 89 f8 48 83
++0x0030: ec 20 48 8d 74 24 20 48 c7 c1 0a 00 00 00 48 ff
++0x0040: ce c6 06 0a 31 d2 48 f7 f1 80 c2 30 48 ff ce 88
++0x0050: 16 48 85 c0 75 ee 48 8d 54 24 20 48 29 f2 b8 01
++0x0060: 00 00 00 bf 01 00 00 00 0f 05 48 83 c4 20 c3 48
++0x0070: 89 fe 31 d2 80 3c 17 00 74 05 48 ff c2 eb f5 b8
++0x0080: 01 00 00 00 bf 01 00 00 00 0f 05 c3
+== stage_export ==

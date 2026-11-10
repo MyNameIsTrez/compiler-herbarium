@@ -80,6 +80,7 @@ The JIT column says whether the real design compiles code to machine code while 
 | [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | Interpreter | ❌ | Register bytecode and the dispatch loop |
 | [`distilled/cpython`](distilled/cpython/) | 1158 | CPython | Interpreter | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The entry has no JIT: real CPython has an optional, experimental one (hence 🟡), and none of its code was read or copied |
 | [`distilled/chibicc`](distilled/chibicc/) | 987 | chibicc, a small C compiler | Compiler | ❌ | An AST walked by a code generator that emits assembly per node with a stack machine, the opposite end of the design space from the IR-based entries |
+| [`distilled/gcc`](distilled/gcc/) | 1750 | GCC | Compiler | ❌ | GENERIC to GIMPLE to SSA to RTL, with PHI placement, out-of-SSA partitions, combine and a graph-coloring register allocator with copy preferences |
 
 Every row is a finished entry. Designs that are planned or still being investigated are leads in [RESEARCH.md](RESEARCH.md), and a lead gets a row here only when its entry passes every example.
 

@@ -1,0 +1,84 @@
+== stage_ast: GENERIC ==
+main ()
+{
+  print_str ("Hello, world!\n");
+}
+== stage_gimplify: GIMPLE ==
+main ()
+{
+
+  print_str ("Hello, world!\n");
+}
+== stage_lower: GIMPLE after lowering ==
+main ()
+{
+
+  print_str ("Hello, world!\n");
+  return;
+}
+== stage_cfg: basic blocks ==
+main ()
+{
+
+  <bb 2> :
+  print_str ("Hello, world!\n");
+  return;
+
+}
+== stage_ssa: SSA form ==
+main ()
+{
+
+  <bb 2> :
+  print_str ("Hello, world!\n");
+  return;
+
+}
+== stage_expand: RTL ==
+partitions of main:
+main
+;; basic block 2
+   1: di:DI=`.LC0'
+   2: call [`print_str'] argc:0
+== stage_combine: RTL after combine ==
+main
+;; basic block 2
+   1: di:DI=`.LC0'
+   2: call [`print_str'] argc:0
+== stage_ira: hard registers ==
+main
+;; basic block 2
+   1: di:DI=`.LC0'
+   2: call [`print_str'] argc:0
+== stage_frame: prologue and epilogue ==
+main: push rbx 0, sub rsp 8 1
+== stage_final: assembly ==
+main:
+  subq $8, %rsp
+  leaq .LC0(%rip), %rdi
+  call print_str
+  addq $8, %rsp
+  ret
+  .section .rodata
+.LC0:
+  .string "Hello, world!\n"
+== stage_encode: machine code, with the offset of each instruction ==
+  +0x0000  main:
+  +0x0000  subq $8, %rsp
+  +0x0004  leaq .LC0(%rip), %rdi
+  +0x000b  call print_str
+  +0x0010  addq $8, %rsp
+  +0x0014  ret
++0x0007  rel32 107 to .LC0 at +0x0076
++0x000c  rel32 73 to print_str at +0x0059
+== stage_encode: final code, 133 bytes ==
++0x0000: 48 83 ec 08 48 8d 3d 6b 00 00 00 e8 49 00 00 00
++0x0010: 48 83 c4 08 c3 48 89 f8 48 83 ec 20 48 8d 74 24
++0x0020: 20 48 c7 c1 0a 00 00 00 48 ff ce c6 06 0a 31 d2
++0x0030: 48 f7 f1 80 c2 30 48 ff ce 88 16 48 85 c0 75 ee
++0x0040: 48 8d 54 24 20 48 29 f2 b8 01 00 00 00 bf 01 00
++0x0050: 00 00 0f 05 48 83 c4 20 c3 48 89 fe 31 d2 80 3c
++0x0060: 17 00 74 05 48 ff c2 eb f5 b8 01 00 00 00 bf 01
++0x0070: 00 00 00 0f 05 c3 48 65 6c 6c 6f 2c 20 77 6f 72
++0x0080: 6c 64 21 0a 00
+== stage_export ==
