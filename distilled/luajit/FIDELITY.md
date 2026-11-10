@@ -6,7 +6,7 @@ Reference material used:
 
 - Source: [LuaJIT/LuaJIT](https://github.com/LuaJIT/LuaJIT) at `c4b1e2f73a2e10fbcc637fcec474f639c38daafe` (branch `v2.1`, a shallow clone), `src/` only. Files read, in part: `lj_opt_loop.c` (the header comment, `loop_emit_phi`, `loop_subst_snap`, `loop_unroll`), `lj_ir.h` (the opcode list `IRDEF`, the reference layout around `REF_BIAS`), `lj_opt_fold.c` (`lj_opt_fold` entry, `lj_opt_cse`, the `SLOAD` rule `fwd_sload`), `lj_asm.c` (the register allocator from `ra_setup` to `ra_alloc1`, the snapshot allocation functions by name and `asm_snap_prep`, and `lj_asm_trace` in full), `lj_snap.c` (`snapshot_slots`, `snapshot_stack`), `lj_record.c` (`rec_for`, `rec_loop_interp`, `rec_loop_jit`), `lj_trace.c` (`lj_trace_hot`), `lj_dispatch.c` (`lj_dispatch_init_hotcount`) and `lj_jit.h` (the `SnapShot` struct and the `hotloop` parameter).
 - Not read: `lj_asm_x86.h` (the instruction emitters, `asm_phi`, `asm_phi_shuffle`, `asm_loop`, `asm_head_root`'s callees), `lj_emit_x86.h`, `lj_snap.c` beyond the two functions above (in particular `lj_snap_restore`), `lj_record.c` beyond the loop functions (in particular `lj_record_ins`, where `needsnap` is consumed), the state machine in `lj_trace.c`, the other optimizations (`lj_opt_fold.c` rules, `lj_opt_narrow.c`, `lj_opt_mem.c`, `lj_opt_sink.c`, `lj_opt_dce.c`), `lj_bc.h`, the interpreter and the exit handler (`vm_x64.dasc`), and the machine code area (`lj_mcode.c`). No paper was read.
-- The real tool was not built or run, so there is no dump of it to compare with.
+- The real tool was run, but not built from the commit above: the LuaJIT installed on the machine (`LuaJIT 2.1.1774896198`) was used for the comparison at the end of this file.
 
 ## Stage mapping
 
@@ -29,7 +29,11 @@ Reference material used:
 
 ## Comparison with the real tool
 
-The real tool was not run (it was not built), so this entry has not been compared with `luajit -jdump` output. The ideas to check are in the source files listed above, and an independent review should compare the dumps with a real `-jdump=bitmsr` of the `loop` example at `-Ohotloop=3`.
+The comparison used the LuaJIT that is installed on the machine, `LuaJIT 2.1.1774896198` from `/usr/local/bin`. It was not rebuilt from the pinned commit, so its output may differ a little from that commit's. The real tool was run on `examples/loop/program.lua` with the `jit.dump` module (`LUA_PATH="/usr/local/share/luajit-2.1/?.lua;;"`), and all five examples print exactly `expected.txt` under it.
+
+- Command: `luajit -Ohotloop=3 -jdump=bitmsr examples/loop/program.lua`
+- Matches: the trace is a pre-roll followed by a `LOOP` marker and a copy of the body, in which the invariant work stays above `LOOP`. The IR has the same operations and the same two `PHI`s at the end, one per loop-carried value. A trace has four snapshots, as here, and the exits of the loop carry the values of the loop variables. The loop body is `add`, `add`, a compare and a conditional jump back, with the values kept in registers across iterations.
+- Differs: the real trace is recorded from the loop body (it starts at the `ADDVV`, with the compare after it), while this entry records from the compare, so the `LT` sits at a different place in the pre-roll. Real LuaJIT works on doubles (`num` `SLOAD`s and `addsd` in `xmm` registers, with constants inline) where this entry has integers in general registers. The real trace has a `RENAME` and a `movaps` before the `PHI`s are filled, which the entry has no equivalent of. The real code inverts the final compare so the loop jumps back directly with `ja`, where this entry ends the body with a compare, a jump out and an unconditional jump back. The real trace also begins with stores that update the VM state, and its exits go through exit stubs, where this entry has hand-written stubs. The code size, the addresses and the register names therefore differ.
 
 ## Review
 
