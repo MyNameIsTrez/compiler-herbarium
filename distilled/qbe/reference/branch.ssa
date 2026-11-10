@@ -1,0 +1,15 @@
+export function w $main() {
+@start
+	%a =w copy 3
+	%b =w copy 5
+	%c =w csltw %a, %b
+	jnz %c, @then, @else
+@then
+	call $print_int(w %b)
+	jmp @end
+@else
+	call $print_int(w %a)
+	jmp @end
+@end
+	ret 0
+}

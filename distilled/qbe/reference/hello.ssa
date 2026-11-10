@@ -1,0 +1,6 @@
+data $str = { b "Hello, world!\n", b 0 }
+export function w $main() {
+@start
+	call $print_str(l $str)
+	ret 0
+}

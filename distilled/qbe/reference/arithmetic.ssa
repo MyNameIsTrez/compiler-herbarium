@@ -1,0 +1,8 @@
+export function w $main() {
+@start
+	%a =w add 2, 3
+	%a =w mul %a, 4
+	%a =w sub %a, 6
+	call $print_int(w %a)
+	ret 0
+}

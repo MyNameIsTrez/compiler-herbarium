@@ -6,7 +6,7 @@ Reference material used:
 
 - Source: the QBE mirror at `180d2eb4157b706dc480bce50ff6d03a65ec334b` (a scratch clone of the default branch, whose upstream is c9x.me/git/qbe.git). Files read: `ssa.c`, `live.c`, `rega.c`, `cfg.c` (`fillrpo`, `filldom`, `fillfron`, `loopiter`, `fillloop`, `filldepth`, `simpljmp`), `spill.c` (`fillcost`, `tmpuse`, `sethint`, `dopm`, the main loop and `merge`), `amd64/isel.c`, `amd64/emit.c` (`omap`, `emitf`, `emitins` with the `Omul` and `Osub` special cases, `amd64_sysv_emitfn`, `sysv_framesz`), `amd64/sysv.c` (`selcall`, `selpar`, `selret`, `abi`), `amd64/targ.c`, `amd64/all.h`, the flags in `ops.h`, and `util.c`.
 - Not read in depth: `parse.c`, `mem.c`, `alias.c`, `load.c`, `copy.c`, `fold.c`, `gvn.c`, `gcm.c`, `ifopt.c`, `simpl.c`, `abi.c`, `amd64/winabi.c`, the arm64 and rv64 back ends, and the `limit` selection part of `spill.c`. No paper or documentation was read.
-- The real tool was not built or run, so there is no dump of it to compare with.
+- The real tool was built at that commit with `make` on the repo owner's machine and run on hand-written IL of the five examples (`reference/`), see the comparison below. Only its final assembly was compared. Its intermediate forms (`-d` debug output) were not looked at.
 
 ## Stage mapping
 
@@ -29,18 +29,20 @@ Reference material used:
 - The allocatable registers are the ones the encoder can name (below r8), and `rbp` and `rsp` are never allocated.
 - Assembly text and bytes both come out of `stage_emit`. The real QBE stops at text.
 - A function needs at most 60 temporaries and a few blocks. Self-loops of empty blocks and a conditional jump with equal targets are not handled.
-- The real tool was never run, and the review below is a self review.
+- The review below is a self review, apart from the comparison with the real output.
 
 ## Comparison with the real tool
 
-The real tool was not built, so this entry has not been compared with the output of `qbe`. An independent review should write the IL of the five examples, run `qbe -t amd64_sysv` on it, and compare the assembly with the text in `dumps/<example>/stages.txt` under `stage_emit`. The expected agreement is in the shape: the same moves around calls, `ret` through `rax`, the same use of `rbx` for a value live across a call, and a block named `<pred>_<succ>` for an edge that needs moves.
+The five examples were written as QBE IL by hand (`reference/<example>.ssa`) and compiled with the real tool, whose output is in `reference/<example>.s`.
 
-- Command: `qbe -t amd64_sysv < program.ssa` (not run)
-- Matches: the stages and their order, the data between them, the register choices that follow from the read code.
-- Differs: register numbering and label names are this entry's own, and the instruction bytes do not exist in QBE.
+- Command: `qbe -t amd64_sysv reference/<example>.ssa`
+- Matches: `loop` has the same instructions in the same order inside the loop (`movl $0, %eax`, `movl $1, %ecx`, `cmpl $11, %ecx`, `jge`, `addl %ecx, %eax`, `addl $1, %ecx`, `jmp`), and the same registers: `s` in `eax` and `i` in `ecx`. `call` has the same prologue (`push rbp; mov rbp, rsp; sub rsp, 8; push rbx`) and epilogue (`pop rbx; leave; ret`), keeps `n` in `rbx` across the recursive call, copies it back with `movl %ebx, %edi` and multiplies with `imull %edi, %eax`, and `main` has the same sequence `movl $5, %edi`, `movl $1, %esi`, `callq fact`, `movl %eax, %edi`, `callq print_int`. `hello` matches apart from the items below.
+- Differs, because QBE runs passes this entry drops. `arithmetic` and `branch` are folded to `movl $14, %edi` and `movl $5, %edi`, since `fold` and `copy` run in QBE's default pipeline. In `loop`, QBE removes `%last = copy %s` and its extra block, so no `loop_end` edge block exists and `movl %eax, %edi` is at the exit. This entry keeps the copy, so the pruned PHI and the edge block are visible.
+- Differs in allocation and layout (a real difference, not a dropped pass). In `fact` QBE copies `one` into `eax` at the start of the function (the block of the PHI for `r` hints it there), and restores it to `esi` before the call. This entry does the copy inside `base` and keeps `one` in `esi`. QBE moves `n` to `rbx` inside the `rec` block, this entry at the start of the function. Both are a consequence of the order in which blocks are allocated and of the dropped step 3 of `rega` and the hint swap, but this was not traced through the real code. QBE also lays out the loop body directly after the loop header (no `jmp` after `jge`), which this entry does not, because it lacks the loop-depth tie-break in the RPO.
+- Differs in the output form: QBE prints `endbr64`, `callq`, `.p2align 4` before a loop header, the data section and `.type`/`.size`, and only the labels that are jump targets. It also returns the value of `ret 0` with `movl $0, %eax` where the entry's void `main` has no such instruction.
 
 ## Review
 
 | Date | Reviewer | References given to the reviewer | Result |
 |------|----------|----------------------------------|--------|
-| 2026-11-10 | The agent that wrote the entry (self review, no independent reviewer) | The source files listed above | The generated code was disassembled and checked by hand, and the stage behavior was compared with the read code of `ssa.c`, `rega.c` and `spill.c`. The parts listed as not read were not checked. An independent review is still open |
+| 2026-11-10 | The agent that wrote the entry (self review, no independent reviewer) | The source files listed above, and the output of the real `qbe` for the five examples | The generated code was disassembled and checked by hand, and the stage behavior was compared with the read code of `ssa.c`, `rega.c` and `spill.c` and with the real assembly (see above). The differences in register placement in `call` were not traced through the real code. The parts listed as not read were not checked. An independent review is still open |

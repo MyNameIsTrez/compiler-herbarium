@@ -34,4 +34,6 @@ No parser, no stack slots, no `alias`, `load`, `copy`, `fold`, `gvn` or `gcm`, n
 
 ## Fidelity
 
+`reference/` holds the five examples as real QBE IL and the assembly that the real `qbe` makes of them, for comparison with the dumps.
+
 See [FIDELITY.md](FIDELITY.md) for the mapping to QBE's source, which files were read and which were not, and what was dropped.

@@ -1,0 +1,16 @@
+export function w $main() {
+@start
+	%s =w copy 0
+	%i =w copy 1
+@loop
+	%last =w copy %s
+	%c =w csltw %i, 11
+	jnz %c, @body, @end
+@body
+	%s =w add %s, %i
+	%i =w add %i, 1
+	jmp @loop
+@end
+	call $print_int(w %last)
+	ret 0
+}

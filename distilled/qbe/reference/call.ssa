@@ -1,0 +1,21 @@
+function w $fact(w %n, w %one) {
+@start
+	%c =w csltw %n, 2
+	jnz %c, @base, @rec
+@base
+	%r =w copy %one
+	jmp @end
+@rec
+	%m =w sub %n, 1
+	%f =w call $fact(w %m, w %one)
+	%r =w mul %n, %f
+	jmp @end
+@end
+	ret %r
+}
+export function w $main() {
+@start
+	%x =w call $fact(w 5, w 1)
+	call $print_int(w %x)
+	ret 0
+}
