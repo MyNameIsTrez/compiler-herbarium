@@ -1,0 +1,59 @@
+== stage_source: the program of the example ==
+function main()
+    local hello: string = "Hello, "
+    local world: string = "world!"
+    local nl: string = "\n"
+    local tmp: string = hello .. world
+    local line: string = tmp .. nl
+    io.write(line)
+end
+== stage_typecheck: the program with its casts ==
+function main()
+    local hello: string = "Hello, "
+    local world: string = "world!"
+    local nl: string = "\n"
+    local tmp: string = hello .. world
+    local line: string = tmp .. nl
+    io.write(line)
+end
+== stage_to_ir: basic blocks of flat commands ==
+function main
+  variables: hello:string world:string nl:string tmp:string line:string
+  B0:
+    hello = "Hello, "
+    world = "world!"
+    nl = "\n"
+    tmp = hello .. world
+    CheckGC
+    line = tmp .. nl
+    CheckGC
+    BuiltinIoWrite(line)
+== stage_gc: live GC variables and Lua stack slots ==
+function main
+  B0 command 4, CheckGC: live {nl, tmp}
+  B0 command 6, CheckGC: live {line}
+  stack slots: nl=0 tmp=1 line=0
+  frame size: 2
+== stage_coder: C code ==
+/* main */
+static void function_01(lua_State *L) {
+    if (!lua_checkstack(L, 2)) { /* error */ }
+    StackValue *base = L->top.p;
+    TString * x1; /* hello */
+    TString * x2; /* world */
+    TString * x3; /* nl */
+    TString * x4; /* tmp */
+    TString * x5; /* line */
+  L0:
+    x1 = "Hello, ";
+    x2 = "world!";
+    x3 = "\n"; s2v(base + 0) = x3;
+    x4 = pallene_string_concatN(L, 2, (TString *[]){x1, x2}); s2v(base + 1) = x4;
+    L->top.p = base + 2; luaC_condGC(L);
+    x5 = pallene_string_concatN(L, 2, (TString *[]){x4, x3}); s2v(base + 0) = x5;
+    L->top.p = base + 1; luaC_condGC(L);
+    pallene_io_write(L, x5);
+}
+== stage_run: the program on the toy runtime ==
+  collect: top 2, roots #2 #3, freed
+  collect: top 1, roots #4, freed #3

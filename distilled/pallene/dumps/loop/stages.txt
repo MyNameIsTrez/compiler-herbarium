@@ -1,0 +1,77 @@
+== stage_source: the program of the example ==
+function main()
+    local sum: integer = 0
+    local i: integer = 1
+    while i < 11 do
+        sum = sum + i
+        i = i + 1
+    end
+    local s: string = tostring(sum) .. "\n"
+    io.write(s)
+end
+== stage_typecheck: the program with its casts ==
+function main()
+    local sum: integer = 0
+    local i: integer = 1
+    while i < 11 do
+        sum = sum + i
+        i = i + 1
+    end
+    local s: string = tostring(cast<any>(sum)) .. "\n"
+    io.write(s)
+end
+== stage_to_ir: basic blocks of flat commands ==
+function main
+  variables: sum:integer i:integer $t2:boolean s:string $t4:string $t5:any
+  B0:
+    sum = 0
+    i = 1
+    goto B1
+  B1:
+    $t2 = i < 11
+    if $t2 goto B2 else B3
+  B2:
+    sum = sum + i
+    i = i + 1
+    goto B1
+  B3:
+    $t5 = ToDyn<integer>(sum)
+    $t4 = BuiltinTostring($t5)
+    s = $t4 .. "\n"
+    CheckGC
+    BuiltinIoWrite(s)
+== stage_gc: live GC variables and Lua stack slots ==
+function main
+  B3 command 3, CheckGC: live {s}
+  stack slots: s=0
+  frame size: 1
+== stage_coder: C code ==
+/* main */
+static void function_01(lua_State *L) {
+    if (!lua_checkstack(L, 1)) { /* error */ }
+    StackValue *base = L->top.p;
+    lua_Integer x1; /* sum */
+    lua_Integer x2; /* i */
+    int x3; /* $t2 */
+    TString * x4; /* s */
+    TString * x5; /* $t4 */
+    TValue x6 = {{0},0}; /* $t5 */
+  L0:
+    x1 = 0;
+    x2 = 1;
+  L1:
+    x3 = x2 < 11;
+    if (x3) { goto L2; } else { goto L3; }
+  L2:
+    x1 = x1 + x2;
+    x2 = x2 + 1;
+    goto L1;
+  L3:
+    setivalue(&x6, x1);
+    x5 = pallene_tostring(L, x6);
+    x4 = pallene_string_concatN(L, 2, (TString *[]){x5, "\n"}); s2v(base + 0) = x4;
+    L->top.p = base + 1; luaC_condGC(L);
+    pallene_io_write(L, x4);
+}
+== stage_run: the program on the toy runtime ==
+  collect: top 1, roots #2, freed #0

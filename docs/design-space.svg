@@ -80,6 +80,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n" x="174" y="323">tcc</text>
 <circle class="dn" cx="302" cy="305" r="6"/>
 <text class="n" x="314" y="309">chibicc</text>
+<circle class="dn" cx="582" cy="239" r="6"/>
+<text class="n" x="594" y="243">pallene</text>
 <circle class="dn" cx="582" cy="263" r="6"/>
 <text class="n" x="594" y="267">clang</text>
 <circle class="dn" cx="582" cy="291" r="6"/>

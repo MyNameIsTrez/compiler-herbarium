@@ -1,0 +1,108 @@
+== stage_source: the program of the example ==
+function fact(n: integer): integer
+    if n < 2 then
+        return 1
+    end
+    return n * fact(n - 1)
+end
+function main()
+    local r: integer = fact(5)
+    local s: string = tostring(r) .. "\n"
+    io.write(s)
+end
+== stage_typecheck: the program with its casts ==
+function fact(n: integer): integer
+    if n < 2 then
+        return 1
+    end
+    return n * fact(n - 1)
+end
+function main()
+    local r: integer = fact(5)
+    local s: string = tostring(cast<any>(r)) .. "\n"
+    io.write(s)
+end
+== stage_to_ir: basic blocks of flat commands ==
+function fact
+  variables: n:integer $t1:integer $t2:boolean $t3:integer $t4:integer $t5:integer
+  B0:
+    $t2 = n < 2
+    if $t2 goto B1 else B3
+  B1:
+    $t1 = 1
+    goto B4
+  B2:
+    goto B3
+  B3:
+    $t5 = n - 1
+    $t4 = CallStatic fact($t5)
+    $t3 = n * $t4
+    $t1 = $t3
+    goto B4
+  B4:
+function main
+  variables: r:integer s:string $t2:string $t3:any
+  B0:
+    r = CallStatic fact(5)
+    $t3 = ToDyn<integer>(r)
+    $t2 = BuiltinTostring($t3)
+    s = $t2 .. "\n"
+    CheckGC
+    BuiltinIoWrite(s)
+== stage_gc: live GC variables and Lua stack slots ==
+function fact
+  B3 command 1, CallStatic: live {}
+  stack slots:
+  frame size: 0
+function main
+  B0 command 0, CallStatic: live {}
+  B0 command 4, CheckGC: live {s}
+  stack slots: s=0
+  frame size: 1
+== stage_coder: C code ==
+/* fact */
+static lua_Integer function_01(lua_State *L, lua_Integer x1) {
+    StackValue *base = L->top.p;
+    lua_Integer x2; /* $t1 */
+    int x3; /* $t2 */
+    lua_Integer x4; /* $t3 */
+    lua_Integer x5; /* $t4 */
+    lua_Integer x6; /* $t5 */
+  L0:
+    x3 = x1 < 2;
+    if (x3) { goto L1; } else { goto L3; }
+  L1:
+    x2 = 1;
+    goto L4;
+  L2:
+  L3:
+    x6 = x1 - 1;
+    x5 = L->top.p = base + 0; function_01(L, x6);
+    x4 = x1 * x5;
+    x2 = x4;
+  L4:
+    return x2;
+}
+/* main */
+static void function_02(lua_State *L) {
+    if (!lua_checkstack(L, 1)) { /* error */ }
+    StackValue *base = L->top.p;
+    lua_Integer x1; /* r */
+    TString * x2; /* s */
+    TString * x3; /* $t2 */
+    TValue x4 = {{0},0}; /* $t3 */
+  L0:
+    x1 = L->top.p = base + 0; function_01(L, 5);
+    setivalue(&x4, x1);
+    x3 = pallene_tostring(L, x4);
+    x2 = pallene_string_concatN(L, 2, (TString *[]){x3, "\n"}); s2v(base + 0) = x2;
+    L->top.p = base + 1; luaC_condGC(L);
+    pallene_io_write(L, x2);
+}
+== stage_run: the program on the toy runtime ==
+  call fact, base 0
+  call fact, base 0
+  call fact, base 0
+  call fact, base 0
+  call fact, base 0
+  collect: top 1, roots #2, freed #0

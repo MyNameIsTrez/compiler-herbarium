@@ -1,0 +1,84 @@
+== stage_source: the program of the example ==
+function main()
+    local a: integer = 3
+    local b: integer = 5
+    local s: string = ""
+    if a < b then
+        s = tostring(b)
+    else
+        s = tostring(a)
+    end
+    local line: string = s .. "\n"
+    io.write(line)
+end
+== stage_typecheck: the program with its casts ==
+function main()
+    local a: integer = 3
+    local b: integer = 5
+    local s: string = ""
+    if a < b then
+        s = tostring(cast<any>(b))
+    else
+        s = tostring(cast<any>(a))
+    end
+    local line: string = s .. "\n"
+    io.write(line)
+end
+== stage_to_ir: basic blocks of flat commands ==
+function main
+  variables: a:integer b:integer s:string $t3:boolean $t4:any $t5:any line:string
+  B0:
+    a = 3
+    b = 5
+    s = ""
+    $t3 = a < b
+    if $t3 goto B1 else B2
+  B1:
+    $t4 = ToDyn<integer>(b)
+    s = BuiltinTostring($t4)
+    goto B3
+  B2:
+    $t5 = ToDyn<integer>(a)
+    s = BuiltinTostring($t5)
+    goto B3
+  B3:
+    line = s .. "\n"
+    CheckGC
+    BuiltinIoWrite(line)
+== stage_gc: live GC variables and Lua stack slots ==
+function main
+  B3 command 1, CheckGC: live {line}
+  stack slots: line=0
+  frame size: 1
+== stage_coder: C code ==
+/* main */
+static void function_01(lua_State *L) {
+    if (!lua_checkstack(L, 1)) { /* error */ }
+    StackValue *base = L->top.p;
+    lua_Integer x1; /* a */
+    lua_Integer x2; /* b */
+    TString * x3; /* s */
+    int x4; /* $t3 */
+    TValue x5 = {{0},0}; /* $t4 */
+    TValue x6 = {{0},0}; /* $t5 */
+    TString * x7; /* line */
+  L0:
+    x1 = 3;
+    x2 = 5;
+    x3 = "";
+    x4 = x1 < x2;
+    if (x4) { goto L1; } else { goto L2; }
+  L1:
+    setivalue(&x5, x2);
+    x3 = pallene_tostring(L, x5);
+    goto L3;
+  L2:
+    setivalue(&x6, x1);
+    x3 = pallene_tostring(L, x6);
+  L3:
+    x7 = pallene_string_concatN(L, 2, (TString *[]){x3, "\n"}); s2v(base + 0) = x7;
+    L->top.p = base + 1; luaC_condGC(L);
+    pallene_io_write(L, x7);
+}
+== stage_run: the program on the toy runtime ==
+  collect: top 1, roots #3, freed #1
