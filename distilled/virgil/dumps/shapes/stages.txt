@@ -1,0 +1,75 @@
+== stage_source ==
+class Shape { }
+class Square extends Shape { side: int, tag: int }
+class Circle extends Shape { r: int }
+class Tri extends Shape { b: int, h: int }
+class Node { shape: Shape, next: Node, extra: Shape }
+class Dot extends Shape { }
+global head: Node
+global sq: Square
+fn Shape.area($0: Shape) -> int = 0
+fn Square.area($0: Square) -> int = (mul (. $0 side) (. $0 side))
+fn Circle.area($0: Circle) -> int = (mul (mul (. $0 r) (. $0 r)) 3)
+fn Tri.area($0: Tri) -> int = (mul (. $0 b) (. $0 h))
+fn sum($0: Node) -> int = (if $0 (add (call-virtual area (. $0 shape)) (call sum (. $0 next))) 0)
+fn mkc() -> Shape = (new Circle 5)
+fn init() -> int = (seq (set @sq (new Square 3 7)) (seq (set @head (new Node @sq (new Node (new Square 4 7) (new Node (new Dot) (new Node @sq null null) null) (new Tri 1 2)) (new Tri 3 4))) 0))
+fn main() -> int = (add (add (call sum @head) (call-virtual area (call mkc))) (call-virtual area (new Circle 5)))
+
+== stage_init ==
+  #1 Square { side=3, tag=7 }
+  #2 Square { side=4, tag=7 }
+  #3 Dot { }
+  #4 Node { shape=#1, next=null, extra=null }
+  #5 Node { shape=#3, next=#4, extra=null }
+  #6 Tri { b=1, h=2 }
+  #7 Node { shape=#2, next=#5, extra=#6 }
+  #8 Tri { b=3, h=4 }
+  #9 Node { shape=#1, next=#7, extra=#8 }
+  @head = #9
+  @sq = #1
+
+== stage_reach ==
+live functions:
+  main
+  sum
+  mkc
+  Circle.area
+  Square.area
+  Shape.area
+live classes: Square Circle Node Dot
+fields:
+  Square.side: read values=many
+  Square.tag: never-read
+  Circle.r: read value=5
+  Node.shape: read values=many
+  Node.next: read values=many
+  Node.extra: never-read
+heap: #1=live #2=live #3=live #4=live #5=live #6=dead #7=live #8=dead #9=live
+
+== stage_specialize ==
+round 0: 6 groups
+round 1: 6 groups
+
+== stage_normalize ==
+class Square: side=slot 0 tag=deleted  (1 slots, was 2)
+class Circle: r=const(5)  (0 slots, was 1)
+class Node: shape=slot 0 next=slot 1 extra=deleted  (2 slots, was 3)
+class Dot:  (0 slots, was 0)
+copy main#0 () -> i
+copy sum#0 (r) -> i
+copy mkc#0 () -> r
+copy Circle.area#0 (r) -> i
+copy Square.area#0 (r) -> i
+copy Shape.area#0 (r) -> i
+  #1 Square { side=3 }
+  #2 Square { side=4 }
+  #3 Dot { }
+  #4 Node { shape=#1, next=null }
+  #5 Node { shape=#3, next=#4 }
+  #7 Node { shape=#2, next=#5 }
+  #9 Node { shape=#1, next=#7 }
+6 copies of functions
+
+== stage_run ==
+result 184

@@ -1,0 +1,35 @@
+== stage_source ==
+class Cfg { scale: int, count: int, log: int }
+global cfg: Cfg
+fn bump($0: Cfg, $1: int) -> int = (seq (set $0 $1) (set $0 (add (. $0 count) $1)))
+fn init() -> int = (seq (set @cfg (new Cfg 7 0 0)) 0)
+fn main() -> int = (seq (call bump @cfg 1) (seq (call bump @cfg 1) (mul (. @cfg scale) (. @cfg count))))
+
+== stage_init ==
+  #1 Cfg { scale=7, count=0, log=0 }
+  @cfg = #1
+
+== stage_reach ==
+live functions:
+  main
+  bump
+live classes: Cfg
+fields:
+  Cfg.scale: read value=7
+  Cfg.count: read written values=many
+  Cfg.log: never-read written
+heap: #1=live
+
+== stage_specialize ==
+round 0: 2 groups
+round 1: 2 groups
+
+== stage_normalize ==
+class Cfg: scale=const(7) count=slot 0 log=deleted  (1 slots, was 3)
+copy main#0 () -> i
+copy bump#0 (r, i) -> i
+  #1 Cfg { count=0 }
+2 copies of functions
+
+== stage_run ==
+result 14

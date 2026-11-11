@@ -1,0 +1,35 @@
+== stage_source ==
+class Seg { a: (int,int), b: (int,int), origin: (int,int) }
+global s: Seg
+fn dist($0: Seg) -> int = (add (mul (sub (proj 0 (. $0 b)) (proj 0 (. $0 a))) (sub (proj 0 (. $0 b)) (proj 0 (. $0 a)))) (mul (sub (proj 1 (. $0 b)) (proj 1 (. $0 a))) (sub (proj 1 (. $0 b)) (proj 1 (. $0 a)))))
+fn init() -> int = (seq (set @s (new Seg (tuple 1 2) (tuple 4 6) (tuple 0 0))) 0)
+fn main() -> int = (call dist @s)
+
+== stage_init ==
+  #1 Seg { a=(1,2), b=(4,6), origin=(0,0) }
+  @s = #1
+
+== stage_reach ==
+live functions:
+  main
+  dist
+live classes: Seg
+fields:
+  Seg.a: read values=many
+  Seg.b: read values=many
+  Seg.origin: never-read
+heap: #1=live
+
+== stage_specialize ==
+round 0: 2 groups
+round 1: 2 groups
+
+== stage_normalize ==
+class Seg: a=slot 0 b=slot 2 origin=deleted  (4 slots, was 6)
+copy main#0 () -> i
+copy dist#0 (r) -> i
+  #1 Seg { a=(1,2), b=(4,6) }
+2 copies of functions
+
+== stage_run ==
+result 25

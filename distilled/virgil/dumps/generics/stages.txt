@@ -1,0 +1,118 @@
+== stage_source ==
+class A { v: int }
+class B { w: int }
+fn id<T>($0: T) -> T = $0
+fn dup<T>($0: T) -> (T,T) = (tuple $0 $0)
+fn first<T>($0: T) -> T = (proj 0 (call dup<T> $0))
+fn last<T>($0: T) -> T = (proj 1 (call dup<T> $0))
+fn rt<T>($0: T) -> T = (call first<T> (call id<T> $0))
+fn alloc<T>() -> T = (new T)
+fn fresh<T>() -> T = (call alloc<T>)
+fn init() -> int = 0
+fn main() -> int = (add (add (add (add (call rt<int> 3) (add (. (call rt<A> (new A (add 1 3))) v) (. (call rt<B> (new B 5)) w))) (add (proj 0 (call rt<(int,int)> (tuple 2 3))) (proj 1 (call rt<(int,int)> (tuple 2 3))))) (call last<int> 7)) (add (. (call fresh<A>) v) (. (call fresh<B>) w)))
+
+== stage_init ==
+
+== stage_reach ==
+live functions:
+  main
+  rt<int>
+  rt<A>
+  rt<B>
+  rt<(int,int)>
+  last<int>
+  fresh<A>
+  fresh<B>
+  id<int>
+  first<int>
+  id<A>
+  first<A>
+  id<B>
+  first<B>
+  id<(int,int)>
+  first<(int,int)>
+  dup<int>
+  alloc<A>
+  alloc<B>
+  dup<A>
+  dup<B>
+  dup<(int,int)>
+live classes: A B
+fields:
+  A.v: read values=many
+  B.w: read values=many
+heap:
+
+== stage_specialize ==
+round 0: 17 groups
+round 1: 18 groups
+round 2: 18 groups
+id copy 0: <int>
+id copy 1: <A> <B>
+id copy 2: <(int,int)>
+dup copy 0: <int>
+dup copy 1: <A> <B>
+dup copy 2: <(int,int)>
+first copy 0: <int>
+first copy 1: <A> <B>
+first copy 2: <(int,int)>
+last copy 0: <int>
+rt copy 0: <int>
+rt copy 1: <A> <B>
+rt copy 2: <(int,int)>
+alloc copy 0: <A>
+alloc copy 1: <B>
+fresh copy 0: <A>
+fresh copy 1: <B>
+
+== stage_normalize ==
+class A: v=slot 0  (1 slots, was 1)
+class B: w=slot 0  (1 slots, was 1)
+copy main#0 () -> i
+copy rt#0 (i) -> i
+copy rt#1 (r) -> r
+copy rt#2 (ii) -> ii
+copy last#0 (i) -> i
+copy fresh#0 () -> r
+copy fresh#1 () -> r
+copy id#0 (i) -> i
+copy first#0 (i) -> i
+copy id#1 (r) -> r
+copy first#1 (r) -> r
+copy id#2 (ii) -> ii
+copy first#2 (ii) -> ii
+copy dup#0 (i) -> ii
+copy alloc#0 () -> r
+copy alloc#1 () -> r
+copy dup#1 (r) -> rr
+copy dup#2 (ii) -> iiii
+18 copies of functions
+
+== stage_run ==
+  call rt<int> -> copy 0
+  call id<int> -> copy 0
+  call first<int> -> copy 0
+  call dup<int> -> copy 0
+  call rt<A> -> copy 1
+  call id<A> -> copy 1
+  call first<A> -> copy 1
+  call dup<A> -> copy 1
+  call rt<B> -> copy 1
+  call id<B> -> copy 1
+  call first<B> -> copy 1
+  call dup<B> -> copy 1
+  call rt<(int,int)> -> copy 2
+  call id<(int,int)> -> copy 2
+  call first<(int,int)> -> copy 2
+  call dup<(int,int)> -> copy 2
+  call rt<(int,int)> -> copy 2
+  call id<(int,int)> -> copy 2
+  call first<(int,int)> -> copy 2
+  call dup<(int,int)> -> copy 2
+  call last<int> -> copy 0
+  call dup<int> -> copy 0
+  call fresh<A> -> copy 0
+  call alloc<A> -> copy 0
+  call fresh<B> -> copy 1
+  call alloc<B> -> copy 1
+result 24
