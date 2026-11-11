@@ -1,0 +1,213 @@
+== stage_source ==
+def bump (x0 : tobj) :=
+  case x0 of
+  nil =>
+    let x1 : scalar := ctor_0[nil];
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x4 : scalar := 2;
+    let x5 : scalar := lt x2 x4;
+    case x5 of
+    false =>
+      let x6 : scalar := 3;
+      let x7 : scalar := lt x2 x6;
+      case x7 of
+      false =>
+        let x8 : obj := ctor_1[cons] x2 x0;
+        ret x8
+      true =>
+        ret x0
+    true =>
+      let x9 : scalar := 1;
+      let x10 : scalar := add x2 x9;
+      let x11 : obj := ctor_1[cons] x10 x3;
+      ret x11
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : tobj := bump x6;
+  ret x7
+
+== stage_reset_reuse ==
+def bump (x0 : tobj) :=
+  case x0 of
+  nil =>
+    let x1 : scalar := ctor_0[nil];
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x4 : scalar := 2;
+    let x5 : scalar := lt x2 x4;
+    case x5 of
+    false =>
+      let x6 : scalar := 3;
+      let x7 : scalar := lt x2 x6;
+      case x7 of
+      false =>
+        let x8 : obj := ctor_1[cons] x2 x0;
+        ret x8
+      true =>
+        ret x0
+    true =>
+      let x12 : tobj := reset[2] x0;
+      let x9 : scalar := 1;
+      let x10 : scalar := add x2 x9;
+      let x11 : obj := reuse x12 in ctor_1[cons] x10 x3;
+      ret x11
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : tobj := bump x6;
+  ret x7
+
+== stage_borrow ==
+def bump (x0 : tobj) :=
+  case x0 of
+  nil =>
+    let x1 : scalar := ctor_0[nil];
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x4 : scalar := 2;
+    let x5 : scalar := lt x2 x4;
+    case x5 of
+    false =>
+      let x6 : scalar := 3;
+      let x7 : scalar := lt x2 x6;
+      case x7 of
+      false =>
+        let x8 : obj := ctor_1[cons] x2 x0;
+        ret x8
+      true =>
+        ret x0
+    true =>
+      let x12 : tobj := reset[2] x0;
+      let x9 : scalar := 1;
+      let x10 : scalar := add x2 x9;
+      let x11 : obj := reuse x12 in ctor_1[cons] x10 x3;
+      ret x11
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : tobj := bump x6;
+  ret x7
+
+== stage_rc ==
+def bump (x0 : tobj) :=
+  case x0 of
+  nil =>
+    let x1 : scalar := ctor_0[nil];
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x4 : scalar := 2;
+    let x5 : scalar := lt x2 x4;
+    case x5 of
+    false =>
+      let x6 : scalar := 3;
+      let x7 : scalar := lt x2 x6;
+      case x7 of
+      false =>
+        let x8 : obj := ctor_1[cons] x2 x0;
+        ret x8
+      true =>
+        ret x0
+    true =>
+      inc x3;
+      let x12 : tobj := reset[2] x0;
+      let x9 : scalar := 1;
+      let x10 : scalar := add x2 x9;
+      let x11 : obj := reuse x12 in ctor_1[cons] x10 x3;
+      ret x11
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : tobj := bump x6;
+  ret x7
+
+== stage_expand ==
+def bump (x0 : tobj) :=
+  case x0 of
+  nil =>
+    let x1 : scalar := ctor_0[nil];
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x4 : scalar := 2;
+    let x5 : scalar := lt x2 x4;
+    case x5 of
+    false =>
+      let x6 : scalar := 3;
+      let x7 : scalar := lt x2 x6;
+      case x7 of
+      false =>
+        let x8 : obj := ctor_1[cons] x2 x0;
+        ret x8
+      true =>
+        ret x0
+    true =>
+      inc x3;
+      block_1 (x12 : tobj, x13 : scalar) :=
+        let x9 : scalar := 1;
+        let x10 : scalar := add x2 x9;
+        block_0 (x11 : obj) :=
+          ret x11
+        case x13 of
+        false =>
+          set x12[0] := x10;
+          jmp block_0 x12
+        true =>
+          let x14 : obj := ctor_1[cons] x10 x3;
+          jmp block_0 x14
+      let x15 : scalar := isShared x0;
+      case x15 of
+      false =>
+        let x17 : tobj := proj[1] x0;
+        dec x17;
+        let x16 : tobj := proj[0] x0;
+        dec x16;
+        jmp block_1 x0 x15
+      true =>
+        dec x0;
+        jmp block_1 _ x15
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : tobj := bump x6;
+  ret x7
+
+== stage_run ==
+allocations 3, frees 3, incs 1, decs 1
+reset found the cell exclusive 1 times and shared 0 times
+objects alive at exit 0

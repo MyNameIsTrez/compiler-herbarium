@@ -1,0 +1,178 @@
+== stage_source ==
+def length (x0 : tobj) (x1 : scalar) :=
+  case x0 of
+  nil =>
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x4 : scalar := 1;
+    let x5 : scalar := add x1 x4;
+    let x6 : scalar := length x3 x5;
+    ret x6
+def headlen (x0 : tobj) :=
+  case x0 of
+  nil =>
+    let x1 : scalar := ctor_0[nil];
+    ret x1
+  cons =>
+    let x2 : tobj := proj[1] x0;
+    let x3 : scalar := 0;
+    let x4 : scalar := length x0 x3;
+    let x5 : obj := ctor_1[cons] x4 x2;
+    ret x5
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : tobj := headlen x6;
+  ret x7
+
+== stage_reset_reuse ==
+def length (x0 : tobj) (x1 : scalar) :=
+  case x0 of
+  nil =>
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x4 : scalar := 1;
+    let x5 : scalar := add x1 x4;
+    let x6 : scalar := length x3 x5;
+    ret x6
+def headlen (x0 : tobj) :=
+  case x0 of
+  nil =>
+    let x1 : scalar := ctor_0[nil];
+    ret x1
+  cons =>
+    let x2 : tobj := proj[1] x0;
+    let x3 : scalar := 0;
+    let x4 : scalar := length x0 x3;
+    let x5 : obj := ctor_1[cons] x4 x2;
+    ret x5
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : tobj := headlen x6;
+  ret x7
+
+== stage_borrow ==
+def length (x0 : @& tobj) (x1 : scalar) :=
+  case x0 of
+  nil =>
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x4 : scalar := 1;
+    let x5 : scalar := add x1 x4;
+    let x6 : scalar := length x3 x5;
+    ret x6
+def headlen (x0 : @& tobj) :=
+  case x0 of
+  nil =>
+    let x1 : scalar := ctor_0[nil];
+    ret x1
+  cons =>
+    let x2 : tobj := proj[1] x0;
+    let x3 : scalar := 0;
+    let x4 : scalar := length x0 x3;
+    let x5 : obj := ctor_1[cons] x4 x2;
+    ret x5
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : tobj := headlen x6;
+  ret x7
+
+== stage_rc ==
+def length (x0 : @& tobj) (x1 : scalar) :=
+  case x0 of
+  nil =>
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x4 : scalar := 1;
+    let x5 : scalar := add x1 x4;
+    let x6 : scalar := length x3 x5;
+    ret x6
+def headlen (x0 : @& tobj) :=
+  case x0 of
+  nil =>
+    let x1 : scalar := ctor_0[nil];
+    ret x1
+  cons =>
+    let x2 : tobj := proj[1] x0;
+    let x3 : scalar := 0;
+    let x4 : scalar := length x0 x3;
+    inc x2;
+    let x5 : obj := ctor_1[cons] x4 x2;
+    ret x5
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : tobj := headlen x6;
+  dec_ref x6;
+  ret x7
+
+== stage_expand ==
+def length (x0 : @& tobj) (x1 : scalar) :=
+  case x0 of
+  nil =>
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x4 : scalar := 1;
+    let x5 : scalar := add x1 x4;
+    let x6 : scalar := length x3 x5;
+    ret x6
+def headlen (x0 : @& tobj) :=
+  case x0 of
+  nil =>
+    let x1 : scalar := ctor_0[nil];
+    ret x1
+  cons =>
+    let x2 : tobj := proj[1] x0;
+    let x3 : scalar := 0;
+    let x4 : scalar := length x0 x3;
+    inc x2;
+    let x5 : obj := ctor_1[cons] x4 x2;
+    ret x5
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : tobj := headlen x6;
+  dec_ref x6;
+  ret x7
+
+== stage_run ==
+allocations 4, frees 4, incs 1, decs 1
+reset found the cell exclusive 0 times and shared 0 times
+objects alive at exit 0

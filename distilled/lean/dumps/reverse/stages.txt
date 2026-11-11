@@ -1,0 +1,141 @@
+== stage_source ==
+def rev (x0 : tobj) (x1 : tobj) :=
+  case x0 of
+  nil =>
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x4 : obj := ctor_1[cons] x2 x1;
+    let x5 : tobj := rev x3 x4;
+    ret x5
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : scalar := ctor_0[nil];
+  let x8 : tobj := rev x6 x7;
+  ret x8
+
+== stage_reset_reuse ==
+def rev (x0 : tobj) (x1 : tobj) :=
+  case x0 of
+  nil =>
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x6 : tobj := reset[2] x0;
+    let x4 : obj := reuse x6 in ctor_1[cons] x2 x1;
+    let x5 : tobj := rev x3 x4;
+    ret x5
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : scalar := ctor_0[nil];
+  let x8 : tobj := rev x6 x7;
+  ret x8
+
+== stage_borrow ==
+def rev (x0 : tobj) (x1 : tobj) :=
+  case x0 of
+  nil =>
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    let x6 : tobj := reset[2] x0;
+    let x4 : obj := reuse x6 in ctor_1[cons] x2 x1;
+    let x5 : tobj := rev x3 x4;
+    ret x5
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : scalar := ctor_0[nil];
+  let x8 : tobj := rev x6 x7;
+  ret x8
+
+== stage_rc ==
+def rev (x0 : tobj) (x1 : tobj) :=
+  case x0 of
+  nil =>
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    inc x3;
+    let x6 : tobj := reset[2] x0;
+    let x4 : obj := reuse x6 in ctor_1[cons] x2 x1;
+    let x5 : tobj := rev x3 x4;
+    ret x5
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : scalar := ctor_0[nil];
+  let x8 : tobj := rev x6 x7;
+  ret x8
+
+== stage_expand ==
+def rev (x0 : tobj) (x1 : tobj) :=
+  case x0 of
+  nil =>
+    ret x1
+  cons =>
+    let x2 : scalar := proj[0] x0;
+    let x3 : tobj := proj[1] x0;
+    block_1 (x6 : tobj, x7 : scalar) :=
+      block_0 (x4 : obj) :=
+        let x5 : tobj := rev x3 x4;
+        ret x5
+      case x7 of
+      false =>
+        set x6[1] := x1;
+        jmp block_0 x6
+      true =>
+        let x8 : obj := ctor_1[cons] x2 x1;
+        jmp block_0 x8
+    let x9 : scalar := isShared x0;
+    case x9 of
+    false =>
+      let x10 : tobj := proj[0] x0;
+      dec x10;
+      jmp block_1 x0 x9
+    true =>
+      inc x3;
+      dec x0;
+      jmp block_1 _ x9
+def main :=
+  let x0 : scalar := ctor_0[nil];
+  let x1 : scalar := 3;
+  let x2 : obj := ctor_1[cons] x1 x0;
+  let x3 : scalar := 2;
+  let x4 : obj := ctor_1[cons] x3 x2;
+  let x5 : scalar := 1;
+  let x6 : obj := ctor_1[cons] x5 x4;
+  let x7 : scalar := ctor_0[nil];
+  let x8 : tobj := rev x6 x7;
+  ret x8
+
+== stage_run ==
+allocations 3, frees 3, incs 0, decs 0
+reset found the cell exclusive 3 times and shared 0 times
+objects alive at exit 0
