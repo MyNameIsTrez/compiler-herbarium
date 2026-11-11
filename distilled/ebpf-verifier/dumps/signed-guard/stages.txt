@@ -1,0 +1,39 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: r2 = *(u8 *)(r1 + 0)
+ 2: r2 -= 8
+ 3: if r2 s< 0 goto +4
+ 4: if r2 s> 7 goto +3
+ 5: r4 = r1
+ 6: r4 += r2
+ 7: r0 = *(u8 *)(r4 + 0)
+ 8: exit
+
+== stage_cfg ==
+ 3: goes to 8 or on to 4
+ 4: goes to 8 or on to 5
+prune points: 4 5 8
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: r2 = *(u8 *)(r1 + 0)              ; R2=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+ 2: r2 -= 8                           ; R2=scalar(smin=-8,smax=247)
+ 3: if r2 s< 0 goto +4                ; push->8 R2=scalar(umax=247,smin=0,smax=247,var_off=(0; 0xff))
+ 4: state saved
+ 4: if r2 s> 7 goto +3                ; push->8 R2=scalar(umax=7,smin=0,smax=7,var_off=(0; 0x7))
+ 5: state saved
+ 5: r4 = r1                           ; R4=mem+0
+ 6: r4 += r2                          ; R4=mem(umax=7,smin=0,smax=7,var_off=(0; 0x7))
+    r2 is precise in the state saved at insn 5
+    r2 is precise in the state saved at insn 4
+ 7: r0 = *(u8 *)(r4 + 0)              ; R0=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+ 8: state saved
+ 8: exit                              ;
+from 4 to 8: R0=0 R1=mem+0 R2=scalar(umin=8,umax=247,smin=8,smax=247,var_off=(0; 0xff)) R10=fp+0
+ 8: state saved
+ 8: exit                              ;
+from 3 to 8: R0=0 R1=mem+0 R2=scalar(umin=18446744073709551608,smin=-8,smax=-1,var_off=(0xfffffffffffffff8; 0x7)) R10=fp+0
+ 8: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=8,umax=247,smin=8,smax=247,var_off=(0; 0xff)) R10=fp+0
+processed 11 instructions

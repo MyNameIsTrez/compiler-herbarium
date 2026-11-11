@@ -1,0 +1,35 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: r2 = *(u8 *)(r1 + 0)
+ 2: r2 &= 3
+ 3: r3 = 2
+ 4: r3 *= r2
+ 5: r5 = *(u8 *)(r1 + 1)
+ 6: r5 &= 3
+ 7: r5 |= 1
+ 8: r5 *= r3
+ 9: r4 = r1
+10: r4 += r3
+11: r0 = *(u8 *)(r4 + 0)
+12: exit
+
+== stage_cfg ==
+prune points:
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: r2 = *(u8 *)(r1 + 0)              ; R2=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+ 2: r2 &= 3                           ; R2=scalar(umax=3,smin=0,smax=3,var_off=(0; 0x3))
+ 3: r3 = 2                            ; R3=2
+ 4: r3 *= r2                          ; R3=scalar(umax=6,smin=0,smax=6,var_off=(0; 0x6))
+ 5: r5 = *(u8 *)(r1 + 1)              ; R5=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+ 6: r5 &= 3                           ; R5=scalar(umax=3,smin=0,smax=3,var_off=(0; 0x3))
+ 7: r5 |= 1                           ; R5=scalar(umin=1,umax=3,smin=1,smax=3,var_off=(0x1; 0x2))
+ 8: r5 *= r3                          ; R5=scalar(umax=18,smin=0,smax=18,var_off=(0; 0x1e))
+ 9: r4 = r1                           ; R4=mem+0
+10: r4 += r3                          ; R4=mem(umax=6,smin=0,smax=6,var_off=(0; 0x6))
+11: r0 = *(u8 *)(r4 + 0)              ; R0=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+12: exit                              ;
+processed 13 instructions

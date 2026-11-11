@@ -1,0 +1,17 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: r2 = 5
+ 2: r0 = *(u8 *)(r2 + 0)
+ 3: exit
+
+== stage_cfg ==
+prune points:
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: r2 = 5                            ; R2=5
+ 2: r0 = *(u8 *)(r2 + 0)              ;
+error: insn 2: r2 is a number, not a pointer
+processed 3 instructions

@@ -1,0 +1,44 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: r2 = *(u8 *)(r1 + 0)
+ 2: r2 &= 7
+ 3: *(u64 *)(r10 - 8) = r2
+ 4: r3 = *(u8 *)(r1 + 1)
+ 5: r3 &= 3
+ 6: *(u64 *)(r10 - 16) = r3
+ 7: if r3 > 1 goto +1
+ 8: r0 = 1
+ 9: r5 = *(u64 *)(r10 - 8)
+10: r4 = r1
+11: r4 += r5
+12: r0 = *(u8 *)(r4 + 0)
+13: exit
+
+== stage_cfg ==
+ 7: goes to 9 or on to 8
+prune points: 8 9
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: r2 = *(u8 *)(r1 + 0)              ; R2=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+ 2: r2 &= 7                           ; R2=scalar(umax=7,smin=0,smax=7,var_off=(0; 0x7))
+ 3: *(u64 *)(r10 - 8) = r2            ; fp-8=scalar(umax=7,smin=0,smax=7,var_off=(0; 0x7))
+ 4: r3 = *(u8 *)(r1 + 1)              ; R3=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+ 5: r3 &= 3                           ; R3=scalar(umax=3,smin=0,smax=3,var_off=(0; 0x3))
+ 6: *(u64 *)(r10 - 16) = r3           ; fp-16=scalar(umax=3,smin=0,smax=3,var_off=(0; 0x3))
+ 7: if r3 > 1 goto +1                 ; push->9 R3=scalar(umax=1,smin=0,smax=1,var_off=(0; 0x1))
+ 8: state saved
+ 8: r0 = 1                            ; R0=1
+ 9: state saved
+ 9: r5 = *(u64 *)(r10 - 8)            ; R5=scalar(umax=7,smin=0,smax=7,var_off=(0; 0x7))
+10: r4 = r1                           ; R4=mem+0
+11: r4 += r5                          ; R4=mem(umax=7,smin=0,smax=7,var_off=(0; 0x7))
+    fp-8 is precise in the state saved at insn 9
+    fp-8 is precise in the state saved at insn 8
+12: r0 = *(u8 *)(r4 + 0)              ; R0=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+13: exit                              ;
+from 7 to 9: R0=0 R1=mem+0 R2=scalar(umax=7,smin=0,smax=7,var_off=(0; 0x7)) R3=scalar(umin=2,umax=3,smin=2,smax=3,var_off=(0x2; 0x1)) R10=fp+0 fp-16=scalar(umax=3,smin=0,smax=3,var_off=(0; 0x3)) fp-8=scalar(umax=7,smin=0,smax=7,var_off=(0; 0x7))
+ 9: safe, covered by the state saved earlier: R0=1 R1=mem+0 R2=scalar(umax=7,smin=0,smax=7,var_off=(0; 0x7)) R3=scalar(umax=1,smin=0,smax=1,var_off=(0; 0x1)) R10=fp+0 fp-16=scalar(umax=3,smin=0,smax=3,var_off=(0; 0x3)) fp-8=Pscalar(umax=7,smin=0,smax=7,var_off=(0; 0x7))
+processed 15 instructions

@@ -1,0 +1,21 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: r2 = *(u32 *)(r1 + 0)
+ 2: r4 = r1
+ 3: r4 += r2
+ 4: r0 = *(u8 *)(r4 + 0)
+ 5: exit
+
+== stage_cfg ==
+prune points:
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: r2 = *(u32 *)(r1 + 0)             ; R2=scalar(umax=4294967295,smin=0,smax=4294967295,var_off=(0; 0xffffffff))
+ 2: r4 = r1                           ; R4=mem+0
+ 3: r4 += r2                          ; R4=mem(umax=4294967295,smin=0,smax=4294967295,var_off=(0; 0xffffffff))
+ 4: r0 = *(u8 *)(r4 + 0)              ;
+error: insn 4: the maximum of the index is unbounded
+processed 5 instructions

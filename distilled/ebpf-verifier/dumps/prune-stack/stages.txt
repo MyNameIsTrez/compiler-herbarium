@@ -1,0 +1,33 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: r2 = *(u8 *)(r1 + 0)
+ 2: if r2 > 7 goto +3
+ 3: r3 = 1
+ 4: *(u64 *)(r10 - 8) = r3
+ 5: goto +1
+ 6: r3 = 2
+ 7: exit
+
+== stage_cfg ==
+ 2: goes to 6 or on to 3
+ 5: goes to 7
+prune points: 3 6 7
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: r2 = *(u8 *)(r1 + 0)              ; R2=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+ 2: if r2 > 7 goto +3                 ; push->6 R2=scalar(umax=7,smin=0,smax=7,var_off=(0; 0x7))
+ 3: state saved
+ 3: r3 = 1                            ; R3=1
+ 4: *(u64 *)(r10 - 8) = r3            ; fp-8=1
+ 5: goto +1                           ;
+ 7: state saved
+ 7: exit                              ;
+from 2 to 6: R0=0 R1=mem+0 R2=scalar(umin=8,umax=255,smin=8,smax=255,var_off=(0; 0xff)) R10=fp+0
+ 6: state saved
+ 6: r3 = 2                            ; R3=2
+ 7: state saved
+ 7: exit                              ;
+processed 9 instructions

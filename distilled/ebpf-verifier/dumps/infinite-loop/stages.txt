@@ -1,0 +1,16 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: goto -1
+
+== stage_cfg ==
+ 1: goes to 1
+prune points: 1
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: state saved
+ 1: goto -1                           ;
+error: infinite loop detected at insn 1
+processed 3 instructions

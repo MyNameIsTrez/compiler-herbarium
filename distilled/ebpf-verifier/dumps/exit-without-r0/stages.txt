@@ -1,0 +1,12 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: exit
+
+== stage_cfg ==
+prune points:
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: exit                              ;
+error: insn 0: r0 is read before it is written
+processed 1 instructions

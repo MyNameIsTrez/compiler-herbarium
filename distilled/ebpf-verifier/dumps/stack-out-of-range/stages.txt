@@ -1,0 +1,17 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: r2 = 7
+ 2: *(u64 *)(r10 - 72) = r2
+ 3: exit
+
+== stage_cfg ==
+prune points:
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: r2 = 7                            ; R2=7
+ 2: *(u64 *)(r10 - 72) = r2           ;
+error: insn 2: a stack access needs a fixed offset, 8 bytes wide and aligned, from fp-64 to fp-8
+processed 3 instructions

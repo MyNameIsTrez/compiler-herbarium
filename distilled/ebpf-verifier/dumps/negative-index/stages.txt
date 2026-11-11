@@ -1,0 +1,28 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: r2 = *(u8 *)(r1 + 0)
+ 2: r2 -= 8
+ 3: if r2 s> 7 goto +3
+ 4: r4 = r1
+ 5: r4 += r2
+ 6: r0 = *(u8 *)(r4 + 0)
+ 7: exit
+
+== stage_cfg ==
+ 3: goes to 7 or on to 4
+prune points: 4 7
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: r2 = *(u8 *)(r1 + 0)              ; R2=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+ 2: r2 -= 8                           ; R2=scalar(smin=-8,smax=247)
+ 3: if r2 s> 7 goto +3                ; push->7 R2=scalar(smin=-8,smax=7)
+ 4: state saved
+ 4: r4 = r1                           ; R4=mem+0
+ 5: r4 += r2                          ; R4=mem(smin=-8,smax=7)
+    r2 is precise in the state saved at insn 4
+ 6: r0 = *(u8 *)(r4 + 0)              ;
+error: insn 6: the minimum of the index is -8, it can be negative
+processed 7 instructions

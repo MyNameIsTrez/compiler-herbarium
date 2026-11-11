@@ -133,8 +133,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n p" x="594" y="459">PyPy</text>
 <circle class="pl" cx="582" cy="483" r="6"/>
 <text class="n p" x="594" y="487">Julia</text>
-<circle class="pl" cx="442" cy="605" r="6"/>
-<text class="n p" x="454" y="609">eBPF verifier</text>
+<circle class="dn" cx="442" cy="605" r="6"/>
+<text class="n" x="454" y="609">ebpf-verifier</text>
 <circle class="pl" cx="722" cy="605" r="6"/>
 <text class="n p" x="734" y="609">egglog</text>
 <circle class="dn" cx="722" cy="629" r="6"/>

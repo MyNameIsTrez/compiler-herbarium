@@ -1,0 +1,23 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: r2 = 5
+ 2: r3 = 9
+ 3: if r2 < r3 goto +2
+ 4: r0 = *(u8 *)(r1 + 100)
+ 5: exit
+ 6: exit
+
+== stage_cfg ==
+ 3: goes to 6 or on to 4
+prune points: 4 6
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: r2 = 5                            ; R2=5
+ 2: r3 = 9                            ; R3=9
+ 3: if r2 < r3 goto +2                ;
+ 6: state saved
+ 6: exit                              ;
+processed 5 instructions

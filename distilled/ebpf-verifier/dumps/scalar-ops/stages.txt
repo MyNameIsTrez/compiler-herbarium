@@ -1,0 +1,45 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: r2 = *(u32 *)(r1 + 0)
+ 2: r3 = *(u8 *)(r1 + 4)
+ 3: r7 = *(u64 *)(r1 + 8)
+ 4: r4 = r2
+ 5: r4 *= r4
+ 6: r5 = r2
+ 7: r5 += r5
+ 8: r5 *= r5
+ 9: r6 = r3
+10: r6 <<= 3
+11: r6 >>= 1
+12: r2 <<= 32
+13: r2 <<= r3
+14: r4 |= r3
+15: r4 ^= r3
+16: r4 -= r3
+17: exit
+
+== stage_cfg ==
+prune points:
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: r2 = *(u32 *)(r1 + 0)             ; R2=scalar(umax=4294967295,smin=0,smax=4294967295,var_off=(0; 0xffffffff))
+ 2: r3 = *(u8 *)(r1 + 4)              ; R3=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+ 3: r7 = *(u64 *)(r1 + 8)             ; R7=scalar()
+ 4: r4 = r2                           ; R4=scalar(umax=4294967295,smin=0,smax=4294967295,var_off=(0; 0xffffffff))
+ 5: r4 *= r4                          ; R4=scalar(umax=18446744065119617025)
+ 6: r5 = r2                           ; R5=scalar(umax=4294967295,smin=0,smax=4294967295,var_off=(0; 0xffffffff))
+ 7: r5 += r5                          ; R5=scalar(umax=8589934590,smin=0,smax=8589934590,var_off=(0; 0x1ffffffff))
+ 8: r5 *= r5                          ; R5=scalar()
+ 9: r6 = r3                           ; R6=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+10: r6 <<= 3                          ; R6=scalar(umax=2040,smin=0,smax=2040,var_off=(0; 0x7f8))
+11: r6 >>= 1                          ; R6=scalar(umax=1020,smin=0,smax=1020,var_off=(0; 0x3fc))
+12: r2 <<= 32                         ; R2=scalar(smax=9223372032559808512,var_off=(0; 0xffffffff00000000))
+13: r2 <<= r3                         ; R2=scalar()
+14: r4 |= r3                          ; R4=scalar()
+15: r4 ^= r3                          ;
+16: r4 -= r3                          ;
+17: exit                              ;
+processed 18 instructions

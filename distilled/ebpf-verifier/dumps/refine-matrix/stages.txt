@@ -1,0 +1,103 @@
+== stage_source ==
+r1 points to 8 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: r2 = *(u8 *)(r1 + 0)
+ 2: r3 = r2
+ 3: r3 -= 128
+ 4: if r2 == 7 goto +13
+ 5: if r2 > 200 goto +12
+ 6: if r2 < 3 goto +11
+ 7: if r2 >= 190 goto +10
+ 8: if r2 <= 4 goto +9
+ 9: if r3 s> 100 goto +8
+10: if r3 s< -100 goto +7
+11: if r3 s>= 90 goto +6
+12: if r3 s<= -90 goto +5
+13: if r3 != 50 goto +4
+14: if r2 > r3 goto +3
+15: if r2 == r3 goto +2
+16: if r2 & 1 goto +1
+17: if r2 & 6 goto +0
+18: exit
+
+== stage_cfg ==
+ 4: goes to 18 or on to 5
+ 5: goes to 18 or on to 6
+ 6: goes to 18 or on to 7
+ 7: goes to 18 or on to 8
+ 8: goes to 18 or on to 9
+ 9: goes to 18 or on to 10
+10: goes to 18 or on to 11
+11: goes to 18 or on to 12
+12: goes to 18 or on to 13
+13: goes to 18 or on to 14
+14: goes to 18 or on to 15
+15: goes to 18 or on to 16
+16: goes to 18 or on to 17
+17: goes to 18 or on to 18
+prune points: 5 6 7 8 9 10 11 12 13 14 15 16 17 18
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: r2 = *(u8 *)(r1 + 0)              ; R2=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+ 2: r3 = r2                           ; R3=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+ 3: r3 -= 128                         ; R3=scalar(smin=-128,smax=127)
+ 4: if r2 == 7 goto +13               ; push->18
+ 5: state saved
+ 5: if r2 > 200 goto +12              ; push->18 R2=scalar(umax=200,smin=0,smax=200,var_off=(0; 0xff))
+ 6: state saved
+ 6: if r2 < 3 goto +11                ; push->18 R2=scalar(umin=3,umax=200,smin=3,smax=200,var_off=(0; 0xff))
+ 7: state saved
+ 7: if r2 >= 190 goto +10             ; push->18 R2=scalar(umin=3,umax=189,smin=3,smax=189,var_off=(0; 0xff))
+ 8: state saved
+ 8: if r2 <= 4 goto +9                ; push->18 R2=scalar(umin=5,umax=189,smin=5,smax=189,var_off=(0; 0xff))
+ 9: state saved
+ 9: if r3 s> 100 goto +8              ; push->18 R3=scalar(smin=-128,smax=100)
+10: state saved
+10: if r3 s< -100 goto +7             ; push->18 R3=scalar(smin=-100,smax=100)
+11: state saved
+11: if r3 s>= 90 goto +6              ; push->18 R3=scalar(smin=-100,smax=89)
+12: state saved
+12: if r3 s<= -90 goto +5             ; push->18 R3=scalar(smin=-89,smax=89)
+13: state saved
+13: if r3 != 50 goto +4               ; push->18 R3=50
+14: state saved
+14: if r2 > r3 goto +3                ; push->18 R2=scalar(umin=5,umax=50,smin=5,smax=50,var_off=(0; 0x3f))
+15: state saved
+15: if r2 == r3 goto +2               ; push->18 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x3f))
+16: state saved
+16: if r2 & 1 goto +1                 ; push->18 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x3e))
+17: state saved
+17: if r2 & 6 goto +0                 ; push->18 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38))
+18: state saved
+18: exit                              ;
+from 17 to 18: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x3e)) R3=50 R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 16 to 18: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0x1; 0x3e)) R3=50 R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 15 to 18: R0=0 R1=mem+0 R2=50 R3=50 R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 14 to 18: R0=0 R1=mem+0 R2=scalar(umin=51,umax=189,smin=51,smax=189,var_off=(0; 0xff)) R3=50 R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 13 to 18: R0=0 R1=mem+0 R2=scalar(umin=5,umax=189,smin=5,smax=189,var_off=(0; 0xff)) R3=scalar(smin=-89,smax=89) R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 12 to 18: R0=0 R1=mem+0 R2=scalar(umin=5,umax=189,smin=5,smax=189,var_off=(0; 0xff)) R3=scalar(umin=18446744073709551516,umax=18446744073709551526,smin=-100,smax=-90,var_off=(0xffffffffffffff80; 0x3f)) R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 11 to 18: R0=0 R1=mem+0 R2=scalar(umin=5,umax=189,smin=5,smax=189,var_off=(0; 0xff)) R3=scalar(umin=90,umax=100,smin=90,smax=100,var_off=(0x40; 0x3f)) R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 10 to 18: R0=0 R1=mem+0 R2=scalar(umin=5,umax=189,smin=5,smax=189,var_off=(0; 0xff)) R3=scalar(umin=18446744073709551488,umax=18446744073709551515,smin=-128,smax=-101,var_off=(0xffffffffffffff80; 0x1f)) R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 9 to 18: R0=0 R1=mem+0 R2=scalar(umin=5,umax=189,smin=5,smax=189,var_off=(0; 0xff)) R3=scalar(umin=101,umax=127,smin=101,smax=127,var_off=(0x60; 0x1f)) R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 8 to 18: R0=0 R1=mem+0 R2=scalar(umin=3,umax=4,smin=3,smax=4,var_off=(0; 0x7)) R3=scalar(smin=-128,smax=127) R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 7 to 18: R0=0 R1=mem+0 R2=scalar(umin=190,umax=200,smin=190,smax=200,var_off=(0x80; 0x7f)) R3=scalar(smin=-128,smax=127) R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 6 to 18: R0=0 R1=mem+0 R2=scalar(umax=2,smin=0,smax=2,var_off=(0; 0x3)) R3=scalar(smin=-128,smax=127) R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 5 to 18: R0=0 R1=mem+0 R2=scalar(umin=201,umax=255,smin=201,smax=255,var_off=(0xc0; 0x3f)) R3=scalar(smin=-128,smax=127) R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+from 4 to 18: R0=0 R1=mem+0 R2=7 R3=scalar(smin=-128,smax=127) R10=fp+0
+18: safe, covered by the state saved earlier: R0=0 R1=mem+0 R2=scalar(umin=5,umax=49,smin=5,smax=49,var_off=(0; 0x38)) R3=50 R10=fp+0
+processed 33 instructions

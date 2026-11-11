@@ -1,0 +1,23 @@
+== stage_source ==
+r1 points to 16 bytes of memory, r10 to the end of a 64 byte stack
+ 0: r0 = 0
+ 1: r2 = *(u8 *)(r1 + 0)
+ 2: r2 &= 31
+ 3: r4 = r1
+ 4: r4 += r2
+ 5: r0 = *(u8 *)(r4 + 0)
+ 6: exit
+
+== stage_cfg ==
+prune points:
+
+== stage_verify ==
+start: R1=mem+0 R10=fp+0
+ 0: r0 = 0                            ; R0=0
+ 1: r2 = *(u8 *)(r1 + 0)              ; R2=scalar(umax=255,smin=0,smax=255,var_off=(0; 0xff))
+ 2: r2 &= 31                          ; R2=scalar(umax=31,smin=0,smax=31,var_off=(0; 0x1f))
+ 3: r4 = r1                           ; R4=mem+0
+ 4: r4 += r2                          ; R4=mem(umax=31,smin=0,smax=31,var_off=(0; 0x1f))
+ 5: r0 = *(u8 *)(r4 + 0)              ;
+error: insn 5: the maximum offset 31 is outside the 16 byte memory
+processed 6 instructions
