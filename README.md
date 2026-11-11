@@ -1,6 +1,6 @@
 # compiler-herbarium
 
-A collection of heavily cut-down compilers and interpreters, each written from scratch to mimic the design of a well-known real one. Think of it as Rosetta Code for compiler architecture: one fixed task, many implementations, laid out so you can compare them side by side. It is also a taxonomy of compilers: the map below classifies every design by its pipeline and by when it makes machine code.
+A collection of heavily cut-down compilers and interpreters, each written from scratch to mimic the design of a well-known real one. Think of it as Rosetta Code for compiler architecture: one fixed task, many implementations, laid out so you can compare them side by side. It is also a taxonomy of compilers and interpreters: the map below classifies every design by its pipeline and by when it makes machine code.
 
 The repo is meant as a learning resource for people, and as a reference that LLMs can read when researching new ways to do compilation.
 
