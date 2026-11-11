@@ -34,7 +34,7 @@ Do not update it for edits that leave all of that alone, such as fixing a commen
 3. For a distilled entry, run `scripts/check-fidelity.sh <entry-dir>`.
 4. Run `scripts/check-cloc.sh --update` and commit the README if the Lines of C column changed.
 5. Run `scripts/check-sorted.sh` after adding or moving a table row.
-6. When an entry is added, or a lead is promoted to planned or dropped, update `docs/design-space.svg` and run `scripts/check-map.sh`. Planned distilled entries are dashed dots, finished distilled ones are filled dots, and `original/` entries are amber diamonds. Cross out a cell only after adding its reason to the "Cells of the design space map that will stay empty" table in `RESEARCH.md`.
+6. When an entry is added, or a lead is promoted to planned or dropped, update `design-space.svg` and run `scripts/check-map.sh`. Planned distilled entries are dashed dots, finished distilled ones are filled dots, and `original/` entries are amber diamonds. Cross out a cell only after adding its reason to the "Cells of the design space map that will stay empty" table in `RESEARCH.md`.
 
 ## RESEARCH.md
 
