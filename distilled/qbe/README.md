@@ -12,7 +12,7 @@ QBE is a small backend that aims for good code with few passes, each one simple.
 - **Registers go backwards too.** Blocks are done from the innermost loop outwards, each walked from its end. A use takes a register, a definition frees it, and a hint from a nearby copy pulls a temporary toward the register it is copied to or from. A value live across a call avoids the caller-saved registers, so `n` in `fact` lives in `rbx` across the recursive call and is copied back into `rdi` afterwards.
 - **Disagreements become parallel moves.** Where two blocks expect a temporary in different registers, or a PHI needs its argument in another register, the moves go on the edge. If the predecessor has several successors, the moves go in a new block named after the edge, such as `loop_end`.
 
-Every entry is checked against the five programs in `examples/`. The IL after each stage, the dominance frontiers, the register maps at the start and end of every block, the assembly and the bytes are in `dumps/<example>/stages.txt`, and the machine code is in `dumps/<example>/code.bin`.
+The entry is checked against the five programs in [`examples/`](examples/). The IL after each stage, the dominance frontiers, the register maps at the start and end of every block, the assembly and the bytes are in `dumps/<example>/stages.txt`, and the machine code is in `dumps/<example>/code.bin`.
 
 ## Stages
 

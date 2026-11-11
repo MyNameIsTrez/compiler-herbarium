@@ -13,7 +13,7 @@ Wren's bytecode has no add or compare instruction. An operator is a method named
 - **A fiber holds the stacks.** The value stack and the call frames belong to a fiber, and the loop keeps `frame`, `stack_start`, `ip` and `fn` in locals that it stores and reloads when a frame changes.
 - **Top-level variables are module variables.** `var fact = ...` is not a local, so the function body reads `fact` with `LOAD_MODULE_VAR` and needs no upvalue.
 
-Every entry is checked against the five programs in `examples/`. The Wren source of each, the method tables, each function's disassembly and the stack trace are in `dumps/<example>/stages.txt`.
+The entry is checked against the five programs in [`examples/`](examples/). The Wren source of each, the method tables, each function's disassembly and the stack trace are in `dumps/<example>/stages.txt`.
 
 ## Fidelity
 

@@ -11,7 +11,7 @@ A tracing JIT does not compile functions. It runs a bytecode interpreter, counts
 - **Assembling backwards.** The assembler walks the IR from the last instruction to the first and writes the code from the end of the buffer. A value gets a register at its last use, which is where the walk first meets it, and gives it back at its definition. The direction of the walk is the liveness analysis.
 - **Exits.** A failed guard jumps to a stub that saves the registers and calls a C function, which writes the snapshot's values back into the interpreter's frame and returns the pc to resume at.
 
-Every entry is checked against the five programs in `examples/`. Only `loop` has a loop that gets hot (the threshold is 3 here, 56 in LuaJIT), so only it makes a trace and a `code.bin`. The others run in the interpreter. The IR, snapshots, registers and bytes of the trace are in `dumps/loop/stages.txt`.
+The entry is checked against the five programs in [`examples/`](examples/). Only `loop` has a loop that gets hot (the threshold is 3 here, 56 in LuaJIT), so only it makes a trace and a `code.bin`. The others run in the interpreter. The IR, snapshots, registers and bytes of the trace are in `dumps/loop/stages.txt`.
 
 ## Stages
 

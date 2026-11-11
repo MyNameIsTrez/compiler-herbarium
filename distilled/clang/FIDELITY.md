@@ -39,6 +39,16 @@ Command: `clang -S -emit-llvm -O0 -Xclang -disable-O0-optnone fact.c`, then `opt
 - Matches: the IR of `fact` and of the loop has the same alloca, load, store and block structure as the `stage_irgen` dump, including the two stores to `retval` and a `return` block with one load. After `mem2reg`, `fact` has the same PHI `[ 1, %if.then ], [ %mul, %if.end ]`, and the loop has a PHI for each of `sum` and `i` in the loop header, with the same incoming values.
 - Differs: real clang prints numbered values (it drops the names) and adds `noundef`, `nsw` and `align 8`. The two PHIs of the loop are in the opposite order (real: `i`, then `sum`). For `llc` the stages after this one (SelectionDAG, PHI elimination, register allocation) were only compared by eye with `llc -print-after=phi-node-elimination` on `fact`: it shows the same virtual register copied from `$rdi`, the same `JCC_1`/`JMP_1` pair, and a call with a regmask. It runs on IR that was not promoted, so it has stack slots (`MOV64mr`) where this entry has registers, and it folds the compare and the decrement into `CMP64ri32` and `DEC64r`.
 
+## Regenerating expected.txt
+
+Every `examples/<name>/expected.txt` is the output of real Lua 5.4 on that example's `program.lua`, so it does not rest on this entry. Never edit one by hand. From the repository root:
+
+```
+for d in distilled/clang/examples/*/; do lua5.4 "$d/program.lua" > "$d/expected.txt"; done
+```
+
+`scripts/check-expected.sh` re-runs the oracle for every entry and fails if a file differs.
+
 ## Review
 
 | Date | Reviewer | References given to the reviewer | Result |

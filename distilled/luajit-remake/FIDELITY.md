@@ -34,6 +34,16 @@ The real stencils are produced by building the LuaJIT Remake repository with LLV
 - Matches: the structure of a stencil (bytes, holes, final fallthrough jump removed) and of the two-step patcher, as read in `deegen_stencil_creator.cpp`
 - Differs: see the deviations and the dropped column above
 
+## Regenerating expected.txt
+
+Every `examples/<name>/expected.txt` is the output of real Lua 5.4 on that example's `program.lua`, so it does not rest on this entry. Never edit one by hand. From the repository root:
+
+```
+for d in distilled/luajit-remake/examples/*/; do lua5.4 "$d/program.lua" > "$d/expected.txt"; done
+```
+
+`scripts/check-expected.sh` re-runs the oracle for every entry and fails if a file differs.
+
 ## Review
 
 | Date | Reviewer | References given to the reviewer | Result |

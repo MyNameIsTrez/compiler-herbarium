@@ -15,7 +15,7 @@ A superoptimizer does not translate a program. It is handed a function, the goal
 
 ## What it runs on
 
-Not the five programs in `examples/`. A superoptimizer's input is a function, so this entry is run on the kernels in [`kernels/`](../../kernels/): `./a.out <kernel>`. It prints, for every test vector, the output of the program it found, which must equal the kernel's `expected.txt`. The sequences found, with the search statistics, are in `dumps/<kernel>/stages.txt`. The entry generates no machine code: the sequences are in a toy instruction set that `run_program` interprets, as GSO's own test does.
+Not the five Lua programs. A superoptimizer's input is a function, so this entry's [`examples/`](examples/) are kernels, described in [`examples/README.md`](examples/README.md): `./a.out <kernel>`. It prints, for every test vector, the output of the program it found, which must equal the kernel's `expected.txt`. The sequences found, with the search statistics, are in `dumps/<kernel>/stages.txt`. The entry generates no machine code: the sequences are in a toy instruction set that `run_program` interprets, as GSO's own test does.
 
 ## Checked against the real tool
 

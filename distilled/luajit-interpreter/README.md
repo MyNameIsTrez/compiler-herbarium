@@ -14,7 +14,7 @@ LuaJIT's interpreter is not C. It is one block of x86-64 assembly written for a 
 
 This entry generates that interpreter as x86-64 machine code at startup, with a small assembler, and runs the examples on it. The interpreter is the code in `code.bin`: open it with `objdump -D -b binary -mi386:x86-64 -M intel`. For the `loop` example, the hot loop also gets a trace (made from templates, not an IR), so that the dispatch switching, `JLOOP` and the exit handler all run. The hot threshold is 2 here (56 in LuaJIT). In `call`, `fact` gets hot and is blacklisted.
 
-Every entry is checked against the five programs in `examples/`.
+The entry is checked against the five programs in [`examples/`](examples/).
 
 ## Stages
 

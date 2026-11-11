@@ -11,7 +11,7 @@ Real Lua compiles source into a `Proto` per function, which holds an array of 32
 - **Calls share the loop.** A call to a Lua function pushes a frame and keeps going in the same loop, and a return pops it. Results are moved to where the function was.
 - **Upvalues.** `fact` calls itself through an upvalue that points at a register of the main chunk. The `k` flag on the main chunk's `RETURN` closes it, which copies the value into the upvalue.
 
-Every entry is checked against the five programs in `examples/`. The stages, the trace of executed instructions and the encoded words are in `dumps/<example>/stages.txt`.
+The entry is checked against the five programs in [`examples/`](examples/). The stages, the trace of executed instructions and the encoded words are in `dumps/<example>/stages.txt`.
 
 ## Fidelity
 

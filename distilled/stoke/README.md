@@ -16,7 +16,7 @@ GSO ([`distilled/gso`](../gso/)) tries every sequence, so it can only reach a fe
 
 ## What it runs on
 
-The same [`kernels/`](../../kernels/) as `gso`: `./a.out <kernel>` prints, for every test vector, the output of the shortest correct program it found. The search it took to get there is in `dumps/<kernel>/stages.txt`: how many iterations each chain needed, how many cost evaluations stopped early, and for each move how many proposals were made, valid and accepted.
+The same kernels as `gso`, copied into [`examples/`](examples/): `./a.out <kernel>` prints, for every test vector, the output of the shortest correct program it found. The search it took to get there is in `dumps/<kernel>/stages.txt`: how many iterations each chain needed, how many cost evaluations stopped early, and for each move how many proposals were made, valid and accepted.
 
 The results of this entry and of the exhaustive search in `gso`, on the same toy ideas but not the same instruction set (this one is two-address with four registers and overwrites them, `gso` writes a new register each time):
 

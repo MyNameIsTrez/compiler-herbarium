@@ -37,6 +37,16 @@ Real clox was built from the same commit with `gcc -O1 c/*.c -lm`, in a scratch 
 - Matches: all five examples print exactly `expected.txt`. After the differences below are normalized away, the disassembly of every function and every line of the stack trace are identical to the stage dumps of this entry, for all five examples.
 - Differs: real clox prints a source line column in the disassembly (`0000    1 OP_CONSTANT`, then `|`), and names a function `== fact ==` where this entry writes `== <fn fact> ==`. `OP_CLOSURE` is followed in real clox by two bytes per upvalue (an `isLocal` flag and the index), so the offsets after it are one larger there. Real clox prints the program's output between the trace lines, and this entry sends it to stdout and the dump to stderr.
 
+## Regenerating expected.txt
+
+Every `examples/<name>/expected.txt` is the output of real Lua 5.4 on that example's `program.lua`, so it does not rest on this entry. Never edit one by hand. From the repository root:
+
+```
+for d in distilled/clox/examples/*/; do lua5.4 "$d/program.lua" > "$d/expected.txt"; done
+```
+
+`scripts/check-expected.sh` re-runs the oracle for every entry and fails if a file differs.
+
 ## Review
 
 | Date | Reviewer | References given to the reviewer | Result |

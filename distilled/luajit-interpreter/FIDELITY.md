@@ -33,9 +33,19 @@ Reference material used:
 
 ## Comparison with the real tool
 
-- Command: `LUA_PATH="$PWD/src/?.lua;;" ./src/luajit -bl examples/<name>/program.lua`, with LuaJIT built from the commit above. The listing does not show the function header (FUNCF), so its numbers start at 0001, which is index 1 of this entry's dump. Jump targets and slot numbers therefore compare directly.
+- Command: `LUA_PATH="$PWD/src/?.lua;;" ./src/luajit -bl distilled/luajit-interpreter/examples/<name>/program.lua`, with LuaJIT built from the commit above. The listing does not show the function header (FUNCF), so its numbers start at 0001, which is index 1 of this entry's dump. Jump targets and slot numbers therefore compare directly.
 - Matches: `branch` and `loop` match instruction for instruction, apart from the constant loads below. That includes the slot numbers, the A field of each JMP and LOOP, the targets (`JMP => 0010` and `LOOP => 0010` for the loop exit, `JMP => 0003` back to the start of the condition, which holds the `KSHORT 2 11`), the ISGE and JMP pair and the ADDVN constant. `hello` matches. In `call`, `fact` matches (`KSHORT 1 2`, `ISGE 0 1`, `JMP 1 => 0006`, `KSHORT 1 1`, `RET1 1 2`, then the recursive part with `SUBVN 3 0 0`, `CALL 1 2 2`, `MULVV 1 0 1`, `RET1 1 2`), except for the UGET.
 - Differs: GGET (`print`), UGET (`fact`) and FNEW load a function in LuaJIT and are KFUNC here. `arithmetic` is folded to `KSHORT 2 14` by LuaJIT. The main chunk of `call` has `CALL 3 0 2`, `CALLM 1 1 0` and `UCLO` in LuaJIT, and two plain calls here, because results are not passed on. These are listed under the stage mapping. The `-bl` listing was not run through the interpreter, so how it runs in LuaJIT's own VM is not compared.
+
+## Regenerating expected.txt
+
+Every `examples/<name>/expected.txt` is the output of real Lua 5.4 on that example's `program.lua`, so it does not rest on this entry. Never edit one by hand. From the repository root:
+
+```
+for d in distilled/luajit-interpreter/examples/*/; do lua5.4 "$d/program.lua" > "$d/expected.txt"; done
+```
+
+`scripts/check-expected.sh` re-runs the oracle for every entry and fails if a file differs.
 
 ## Review
 

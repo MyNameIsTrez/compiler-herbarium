@@ -14,7 +14,7 @@ The map shows where each design sits, and where nothing sits yet. Finished entri
 - *Memory management.* The reference counting of Lean 4 is part of its IR, but no axis shows it.
 - *Specialization and compile-time execution.* Julia's type specialization and Zig's comptime are not a point on the when-is-machine-code-made axis.
 - *Several IRs at once.* `gcc` and MLIR pass through more than one IR, and sit where their middle IR does.
-- *Tools about compilers.* Verifiers and superoptimizers of rewrite rules analyze the compiler, not a program, so they have no cell (see the declined table in [RESEARCH.md](RESEARCH.md)). A superoptimizer that is given a function and emits code for it is a compiler, but its input is not a program, so it has its own column, "search over candidate programs", and runs on [`kernels/`](kernels/) instead of `examples/`. What sits between the source and the code is a proposer of candidate programs and an oracle that judges them.
+- *Tools about compilers.* Verifiers and superoptimizers of rewrite rules analyze the compiler, not a program, so they have no cell (see the declined table in [RESEARCH.md](RESEARCH.md)). A superoptimizer that is given a function and emits code for it is a compiler, but its input is not a program, so it has its own column, "search over candidate programs", and its examples are functions (kernels) instead of programs. What sits between the source and the code is a proposer of candidate programs and an oracle that judges them.
 
 **One goal of this repository is to fill out this map.** Think of it as a bingo board: each cell is a combination of what sits between the source and execution and when machine code is made, and the aim is for every cell that a real compiler occupies to hold a distilled entry. A distilled entry comes first, because it is checked against real source. Where a cell is empty and a search finds no open-source compiler or interpreter that sits there, the repo adds an `original/` entry instead, shown as an amber diamond, so the board is covered by designs that are at least tried out. A few cells will stay empty because the cell cannot hold a design or holds only front-end work. They are crossed out on the map, and [RESEARCH.md](RESEARCH.md) gives the one-line reason for each.
 
@@ -43,7 +43,7 @@ The repo is a set of specimens and a workbench, not a benchmark and not a produc
 
 ## The idea
 
-Every entry compiles (or interprets) the same set of tiny programs, listed in [`examples/`](examples/). They go from hello world up to a recursive function. Each is defined by a short Lua program and its exact expected output, for example:
+Every entry has its own `examples/` directory with the tiny inputs it is run on. Most entries compile (or interpret) the same conventional five programs, from hello world up to a recursive function, each defined by a short Lua program and its exact expected output. The entries do not parse those programs, each hardcodes its own translation, and some entries take other inputs (a function to superoptimize, a set of facts), so the examples are not meant to be the same across entries. An example, as a Lua program:
 
 ```lua
 print("Hello, world!")
@@ -132,19 +132,19 @@ Each entry follows the same shape, so the same file names can be opened in diffe
 <entry>/
   main.c            the whole compiler: the hardcoded input, then one clearly marked section per stage
   README.md         what the design is, what this version leaves out
-  FIDELITY.md       how each stage maps to the real compiler (distilled entries only, see templates/FIDELITY.md)
+  FIDELITY.md       how each stage maps to the real compiler (distilled entries only, see FIDELITY.md at the repository root)
+  examples/<example>/         one input, with its expected.txt and the program.lua or goal.txt that defines it
   dumps/<example>/stages.txt  the intermediate form after each stage, for each example
   dumps/<example>/code.bin    the final machine code for each example, for entries that generate any
-  uses-kernels      empty marker file, for entries that run on kernels/ instead of examples/ (see kernels/README.md)
 ```
 
 Entries keep the same section order and the same `stage_*` function naming, so two `main.c` files can be diffed against each other.
 
 ## Building, running and checking
 
-Every entry builds with plain gcc and plain clang, with no flags, for example `gcc distilled/cpython/main.c`, and is then run as `./a.out <example> [code.bin]`, where `<example>` is the name of a directory in `examples/`:
+Every entry builds with plain gcc and plain clang, with no flags, for example `gcc distilled/cpython/main.c`, and is then run as `./a.out <example> [code.bin]`, where `<example>` is the name of a directory in the entry's own `examples/`:
 
-- stdout is the program's output, which must equal `examples/<example>/expected.txt`.
+- stdout is the program's output, which must equal `<entry>/examples/<example>/expected.txt`.
 - stderr is the intermediate form after each stage.
 - If a path is given, the final machine code is written there.
 
@@ -202,17 +202,9 @@ An original entry has no real counterpart to check against, so it is done when `
 
 ## Examples
 
-Hello world alone makes most designs look alike, because the differences show up with control flow and with values that live across instructions. The examples in [`examples/`](examples/) are a ladder, and every entry has to pass every rung:
+Hello world alone makes most designs look alike, because the differences show up with control flow and with values that live across instructions. Each entry therefore ships its own `examples/<name>/` directories, and an entry is done only when it passes all of them. An entry may add examples that exercise the part of the design it is about. [CONTRIBUTING.md](CONTRIBUTING.md) lists the five programs that most entries start from and where to copy them.
 
-| Example | What it adds |
-|---------|--------------|
-| `hello` | Printing a string |
-| `arithmetic` | Integer `+`, `-` and `*` with constants |
-| `branch` | Locals, a comparison and an `if` with an `else` |
-| `loop` | A `while` loop that updates locals |
-| `call` | A recursive function with an argument and a return value |
-
-Superoptimizers are the exception: their input is a function, so they run on [`kernels/`](kernels/) instead, see its README. A new example is added to every entry except those, the same way a Rosetta Code task is. See [`examples/README.md`](examples/README.md) for the exact subset of Lua that the programs use.
+Every `expected.txt` has a reproduction recipe: the entry's `FIDELITY.md` (or `README.md` for an original entry) has a "Regenerating expected.txt" section with the commands and the oracle that produces the file, such as real Lua 5.4 or gcc. `scripts/check-expected.sh` re-runs the recipes for Lua and kernel examples in CI.
 
 Examples are checked for correct output, not timed. Designs can still be compared with numbers that do not need a stopwatch, such as emitted instruction count, code size in bytes, or the number of IR nodes at each stage.
 

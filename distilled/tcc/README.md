@@ -12,7 +12,7 @@ TCC parses and generates code at the same time. The parser calls `vpushi`, `gen_
 - **Forward jumps are chains.** A jump to a place that does not exist yet is emitted with its rel32 field holding the previous such jump, and the offset of the field becomes the head of the chain. `gsym_addr` walks the chain and fills the real offsets in when the target is known. Strings placed after the code are referenced the same way.
 - **The prologue is written last.** Space for `push rbp; mov rbp, rsp; sub rsp, N` is left blank, and the epilogue fills it in once the size of the frame is known.
 
-Every entry is checked against the five programs in `examples/`, written as C here. The tokens, every value stack action with the instructions it emits, and the final bytes are in `dumps/<example>/stages.txt`. The machine code is in `dumps/<example>/code.bin`.
+The entry is checked against the five programs in [`examples/`](examples/), written as C here. The tokens, every value stack action with the instructions it emits, and the final bytes are in `dumps/<example>/stages.txt`. The machine code is in `dumps/<example>/code.bin`.
 
 ## Fidelity
 

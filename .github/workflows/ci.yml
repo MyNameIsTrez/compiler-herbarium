@@ -13,8 +13,10 @@ jobs:
         run: scripts/check-sorted.sh
       - name: Check that the design space map lists every entry
         run: scripts/check-map.sh
-      - name: Check that the kernels' expected output is up to date
-        run: scripts/gen-kernel.sh --check kernels/*/
+      - name: Install Lua
+        run: sudo apt-get install -y lua5.4
+      - name: Check that every expected.txt is reproduced by its oracle
+        run: scripts/check-expected.sh
 
   discover:
     runs-on: ubuntu-latest

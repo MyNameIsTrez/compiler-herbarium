@@ -30,9 +30,19 @@ Reference material used:
 
 ## Comparison with the real tool
 
-- Command: `luac5.4 -l -l -p examples/<example>/program.lua`
+- Command: `luac5.4 -l -l -p distilled/puc-lua/examples/<example>/program.lua`
 - Matches: for all five examples the instruction words equal those in `string.dump` of the real program, and the mnemonics and operands in `stage_list` equal the real listing. The trace in `stage_run` shows the same executed instruction sequence a real run follows, including `RETURN1` in the recursive `fact` and `RETURN` with `k` closing the upvalue of `fact` in the main chunk.
 - Differs: see the deviations. Real `luac` also prints line numbers and tables of constants, locals and upvalues.
+
+## Regenerating expected.txt
+
+Every `examples/<name>/expected.txt` is the output of real Lua 5.4 on that example's `program.lua`, so it does not rest on this entry. Never edit one by hand. From the repository root:
+
+```
+for d in distilled/puc-lua/examples/*/; do lua5.4 "$d/program.lua" > "$d/expected.txt"; done
+```
+
+`scripts/check-expected.sh` re-runs the oracle for every entry and fails if a file differs.
 
 ## Review
 

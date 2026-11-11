@@ -12,7 +12,7 @@ Real jlox runs the syntax tree directly, with no bytecode. This entry keeps the 
 - **Closures keep their environment.** `fun` stores the environment that is current at that moment in the function object. A call makes its environment as a child of that one, not of the caller's, so lexical scope holds.
 - **`return` is an exception.** `return` jumps out of however many nested blocks and loops it sits in, back to the call that is running. jlox throws a `Return` object for this, and this entry uses `longjmp`.
 
-Every entry is checked against the five programs in `examples/`. `fact` is a global in `call`, to show an unresolved name, and `branch` and `loop` wrap their locals in a block so that the resolver has scopes to count. The tree, each resolved distance and a trace of every variable access and call are in `dumps/<example>/stages.txt`.
+The entry is checked against the five programs in [`examples/`](examples/). `fact` is a global in `call`, to show an unresolved name, and `branch` and `loop` wrap their locals in a block so that the resolver has scopes to count. The tree, each resolved distance and a trace of every variable access and call are in `dumps/<example>/stages.txt`.
 
 ## Fidelity
 

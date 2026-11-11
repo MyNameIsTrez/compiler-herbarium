@@ -13,7 +13,7 @@ CPython is a compiler whose output is meant to be read by a fast interpreter, an
 - **The bytes are the real bytes.** The opcode numbers are CPython's, so each `code:` line in the dumps is the `co_code` of the real interpreter for the same program.
 - **A stack machine runs them.** A call leaves the callable, a NULL slot and the arguments on the stack, and recurses.
 
-Every entry is checked against the five programs in `examples/`, written here as Python. The AST, the scopes, every stage of the compiler and the trace of the run are in `dumps/<example>/stages.txt`. There is no `code.bin`, because the bytecode is for an interpreter, not for the CPU.
+The entry is checked against the five programs in [`examples/`](examples/), written here as Python. The AST, the scopes, every stage of the compiler and the trace of the run are in `dumps/<example>/stages.txt`. There is no `code.bin`, because the bytecode is for an interpreter, not for the CPU.
 
 ## Stages
 

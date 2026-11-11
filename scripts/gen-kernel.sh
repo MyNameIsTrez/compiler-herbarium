@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Write kernels/<kernel>/expected.txt, or check that it is up to date with --check.
+# Write <entry>/examples/<kernel>/expected.txt, or check that it is up to date with --check.
 #
 # Usage: scripts/gen-kernel.sh [--check] <kernel-dir>...
 #

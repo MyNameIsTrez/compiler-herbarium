@@ -13,7 +13,7 @@ GCC has three IRs, and each one is the right form for the work done on it.
 - **Registers come late.** `combine` first adds copies so that no pseudo is tied to a hard register, then merges a copy into its single user. IRA colors the conflict graph. A pseudo that is live across a call conflicts with every caller-saved register, so it ends in `rbx`, and the prologue pushes it.
 - **Text out, not bytes.** GCC writes assembly and lets `as` and `ld` finish. This entry's `stage_encode` stands in for them, so that the result can run in memory.
 
-Every entry is checked against the five programs in `examples/`. Every stage's output is in `dumps/<example>/stages.txt`, and the machine code is in `dumps/<example>/code.bin`.
+The entry is checked against the five programs in [`examples/`](examples/). Every stage's output is in `dumps/<example>/stages.txt`, and the machine code is in `dumps/<example>/code.bin`.
 
 ## Stages
 

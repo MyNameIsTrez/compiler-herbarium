@@ -12,7 +12,7 @@ Most entries here compute with data structures and loops. Polonius splits the wo
 
 The result is what the Rust community calls non-lexical lifetimes: a loan lasts as long as some live reference may still hold it, not as long as the scope of the variable. In `loop`, each `&sum` or `&mut i` that the lowering takes is live for one statement, so `i = i + 1` is accepted. The rejected program at the end of every dump copies a reference, uses the original, then assigns the borrowed variable: the loan outlives the original reference through the copy, and `errors` has one row.
 
-Every entry is checked against the five programs in `examples/`. The input facts, the rules, the rows each round and the verdict are in `dumps/<example>/stages.txt`. An accepted program is then run by a small interpreter, which is not part of Polonius, so that the output can be compared with `expected.txt`.
+The entry is checked against the five programs in [`examples/`](examples/). The input facts, the rules, the rows each round and the verdict are in `dumps/<example>/stages.txt`. An accepted program is then run by a small interpreter, which is not part of Polonius, so that the output can be compared with `expected.txt`.
 
 ## Fidelity
 

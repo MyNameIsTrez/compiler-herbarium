@@ -33,6 +33,16 @@ Reference material used (source tree, docs, papers). Pin every source repository
 - There is no garbage collector. Objects are kept in a list and freed at exit.
 - Classes have no superclass. In `wrenInitializeCore` the real `Object` and `Class` are wired together with `Object metaclass`, and every other class inherits their methods, such as `==(_)` and `toString`.
 
+## Regenerating expected.txt
+
+Every `examples/<name>/expected.txt` is the output of real Lua 5.4 on that example's `program.lua`, so it does not rest on this entry. Never edit one by hand. From the repository root:
+
+```
+for d in distilled/wren/examples/*/; do lua5.4 "$d/program.lua" > "$d/expected.txt"; done
+```
+
+`scripts/check-expected.sh` re-runs the oracle for every entry and fails if a file differs.
+
 ## Review
 
 | Date | Reviewer | References given to the reviewer | Result |

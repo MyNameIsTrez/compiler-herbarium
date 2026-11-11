@@ -34,3 +34,13 @@ Command: `chibicc -S -o x.s x.c`, built from the commit above, on C versions of 
 
 - Matches: all five examples give the same text, instruction for instruction. That includes the order of the functions (`main` before `fact`, since chibicc walks its list from the newest object), the frame offsets (`__alloca_size__` at -8 and the first parameter at -12), the `rep stosb` that clears each initialized local, the label numbers and the layout of `if` and of the loop.
 - Differs: `je` after `if` has two spaces in the real output, which does not matter to `as`. The directives and data listed above. Bytes were not compared: chibicc's output goes through `as` and this entry encodes its own text.
+
+## Regenerating expected.txt
+
+Every `examples/<name>/expected.txt` is the output of real Lua 5.4 on that example's `program.lua`, so it does not rest on this entry. Never edit one by hand. From the repository root:
+
+```
+for d in distilled/chibicc/examples/*/; do lua5.4 "$d/program.lua" > "$d/expected.txt"; done
+```
+
+`scripts/check-expected.sh` re-runs the oracle for every entry and fails if a file differs.

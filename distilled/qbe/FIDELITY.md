@@ -41,6 +41,16 @@ The five examples were written as QBE IL by hand (`reference/<example>.ssa`) and
 - Differs in allocation and layout (a real difference, not a dropped pass). In `fact` QBE copies `one` into `eax` at the start of the function (the block of the PHI for `r` hints it there), and restores it to `esi` before the call. This entry does the copy inside `base` and keeps `one` in `esi`. QBE moves `n` to `rbx` inside the `rec` block, this entry at the start of the function. Both are a consequence of the order in which blocks are allocated and of the dropped step 3 of `rega` and the hint swap, but this was not traced through the real code. QBE also lays out the loop body directly after the loop header (no `jmp` after `jge`), which this entry does not, because it lacks the loop-depth tie-break in the RPO.
 - Differs in the output form: QBE prints `endbr64`, `callq`, `.p2align 4` before a loop header, the data section and `.type`/`.size`, and only the labels that are jump targets. It also returns the value of `ret 0` with `movl $0, %eax` where the entry's void `main` has no such instruction.
 
+## Regenerating expected.txt
+
+Every `examples/<name>/expected.txt` is the output of real Lua 5.4 on that example's `program.lua`, so it does not rest on this entry. Never edit one by hand. From the repository root:
+
+```
+for d in distilled/qbe/examples/*/; do lua5.4 "$d/program.lua" > "$d/expected.txt"; done
+```
+
+`scripts/check-expected.sh` re-runs the oracle for every entry and fails if a file differs.
+
 ## Review
 
 | Date | Reviewer | References given to the reviewer | Result |

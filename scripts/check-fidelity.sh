@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Check that the stages in an entry's main.c and in its FIDELITY.md agree.
+# Check that the stages in an entry's main.c and in its FIDELITY.md agree, and that FIDELITY.md
+# says how the entry's expected.txt files are regenerated.
 #
 # Usage: scripts/check-fidelity.sh <entry-dir>
 #
@@ -45,6 +46,11 @@ while read -r name; do
     echo "FAIL $entry: $name is in FIDELITY.md but not in main.c" >&2
     status=1
 done < <(comm -13 "$work/in_c" "$work/in_doc")
+
+if ! grep -q '^## Regenerating expected.txt$' "$entry/FIDELITY.md"; then
+    echo "FAIL $entry: FIDELITY.md has no '## Regenerating expected.txt' section" >&2
+    status=1
+fi
 
 if [[ $status -eq 0 ]]; then
     echo "ok $entry: stages in main.c and FIDELITY.md agree"

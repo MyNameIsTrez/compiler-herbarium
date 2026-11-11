@@ -13,7 +13,7 @@ In LuaJIT Remake the stencils come out of LLVM: Deegen compiles the C++ implemen
 - **No jump to the next bytecode.** A stencil cannot know what follows it, so it ends with a jump to the next bytecode. The JIT places the next bytecode right after, so it cuts those five bytes off before copying.
 - **Two passes.** The layout is fixed first, so a jump can name a bytecode that comes later, and then the holes are filled.
 
-Every entry is checked against the five programs in `examples/`. The stages, the offset of every bytecode and the value patched into every hole are in `dumps/<example>/stages.txt`, and the JIT'ed code is in `dumps/<example>/code.bin`, with the host addresses zeroed.
+The entry is checked against the five programs in [`examples/`](examples/). The stages, the offset of every bytecode and the value patched into every hole are in `dumps/<example>/stages.txt`, and the JIT'ed code is in `dumps/<example>/code.bin`, with the host addresses zeroed.
 
 ## Stages
 

@@ -13,7 +13,7 @@ Most entries in this repo have an IR and a register allocator. chibicc has neith
 - **An initialized local is two nodes.** `int x = 3;` becomes `rep stosb` over the whole variable, then an assignment.
 - **Text out, not bytes.** chibicc writes assembly and lets `as` and `ld` finish. This entry's `stage_encode` stands in for them, so that the result can run in memory.
 
-Every entry is checked against the five programs in `examples/`. The AST, the frame layout, the assembly and the encoded bytes are in `dumps/<example>/stages.txt`, and the machine code is in `dumps/<example>/code.bin`.
+The entry is checked against the five programs in [`examples/`](examples/). The AST, the frame layout, the assembly and the encoded bytes are in `dumps/<example>/stages.txt`, and the machine code is in `dumps/<example>/code.bin`.
 
 ## Stages
 

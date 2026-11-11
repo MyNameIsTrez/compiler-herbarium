@@ -13,7 +13,7 @@ Haskell does not compute an argument until someone needs it. GHC's answer is to 
 
 `call` shows the stack growing with `fact` and the thunk of each `n - 1` being updated. `loop` shows a join point and a chain of thunks that is built lazily: every `sum + i` is a thunk that points at the previous one. Every use of a variable is a new `case`, so the second use of a thunk goes through its indirection. The examples are written that way by hand, not copied from GHC's output.
 
-Every entry is checked against the five programs in `examples/`. The program after each stage and a trace of the machine are in `dumps/<example>/stages.txt`.
+The entry is checked against the five programs in [`examples/`](examples/). The program after each stage and a trace of the machine are in `dumps/<example>/stages.txt`.
 
 ## Fidelity
 

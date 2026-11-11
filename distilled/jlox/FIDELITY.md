@@ -36,6 +36,16 @@ The real jlox was compiled with `javac` from the same commit (a scratch clone, s
 - Matches: all five examples print exactly `expected.txt`, and jlox prints nothing on stderr while it runs. The trees have the same shape as this entry's: for `call`, `(fun fact(n) (if (< n 2.0) (block (return 1.0)))(return (* n (call fact  (- n 1.0)))))`, and expression statements start with `;`, as here.
 - Differs: `AstPrinter` prints the whole tree on one line, writes numbers as `1.0` and variable declarations as `(var sum = 0.0)`, and shows parentheses as a `group` node, which the hand-built trees here leave out. The resolver distances and the run trace in this entry's dumps cannot be compared, because the real jlox does not print them. The distances were checked by reading `resolveLocal` only.
 
+## Regenerating expected.txt
+
+Every `examples/<name>/expected.txt` is the output of real Lua 5.4 on that example's `program.lua`, so it does not rest on this entry. Never edit one by hand. From the repository root:
+
+```
+for d in distilled/jlox/examples/*/; do lua5.4 "$d/program.lua" > "$d/expected.txt"; done
+```
+
+`scripts/check-expected.sh` re-runs the oracle for every entry and fails if a file differs.
+
 ## Review
 
 | Date | Reviewer | References given to the reviewer | Result |

@@ -46,6 +46,16 @@ Commands: `gcc -O0 -c -fdump-tree-gimple -fdump-tree-ssa x.c` and `gcc -O1 -c -f
 - Matches: the shape of the `gimple` dump for `fact` and the loop: the same labels and gotos, the shared return temporary `D.nnnn`, and `_1 = n + -1; _2 = fact (_1); D.nnnn = n * _2;`. The `ssa` dump has the same blocks from 2, the same PHIs at the loop header and at the join, `_9 = 1;` for the constant return, `# _3 = PHI <_9(3), _8(4)>`, the default definition with `(D)` and the descending visit order of the dominator children. For the loop, the first four version numbers equal the real ones. The slim RTL has the same instruction forms: `r101:SI=di:SI`, `flags:CCGC=cmp(...)`, `pc={(flags:CCGC>0)?L4:pc}`, `{r102:SI=r101:SI-0x1;clobber flags:CC;}`, `di:SI=r102:SI`, `ax:SI=call [`fact'] argc:0`, `r99:SI=ax:SI`, `ax:SI=r100:SI` and `use ax:SI`. Combine makes `r104=di` and `r105=ax` in the same way and reports the same merge of the copy into the multiply, with "original costs 4 + 12 = 16, replacement cost 12". IRA puts the parameter, which lives across the call, in `bx`, and the argument and result temporaries in `di` and `ax`.
 - Differs: the real dumps annotate edges (`[INV]`, probabilities) and print a condition over three lines. The real compiler folds the constant examples completely, and at `-O1` it shrinks the frame (`rbx` is pushed only on the recursive path, and the blocks are reordered). Output at `-O0` keeps a frame pointer. Version and pseudo numbers differ as listed above, and the real `main` returns an `int`. The comparison is of shapes and stage order, not of text, since only the `gimple` and `ssa` dumps come before the optimizing passes.
 
+## Regenerating expected.txt
+
+Every `examples/<name>/expected.txt` is the output of real Lua 5.4 on that example's `program.lua`, so it does not rest on this entry. Never edit one by hand. From the repository root:
+
+```
+for d in distilled/gcc/examples/*/; do lua5.4 "$d/program.lua" > "$d/expected.txt"; done
+```
+
+`scripts/check-expected.sh` re-runs the oracle for every entry and fails if a file differs.
+
 ## Review
 
 | Date | Reviewer | References given to the reviewer | Result |

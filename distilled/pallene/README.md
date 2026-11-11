@@ -15,7 +15,7 @@ Lua's collector finds live objects by scanning the Lua stack. A C function that 
 
 `hello` shows two variables alive at the same time, a slot reused, and a string freed. `call` shows the call as a collection point with nothing to save. The examples are written by hand as typed Pallene programs, so they print through `tostring` and `..` and give the analysis something to find.
 
-Every entry is checked against the five programs in `examples/`. The program after each stage is in `dumps/<example>/stages.txt`.
+The entry is checked against the five programs in [`examples/`](examples/). The program after each stage is in `dumps/<example>/stages.txt`.
 
 ## Stages
 

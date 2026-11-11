@@ -30,3 +30,19 @@ Bug reports are welcome as issues too. Please include the entry, the example and
 ## Where leads go
 
 Leads are recorded in [RESEARCH.md](RESEARCH.md). They then end up in `original/` as new experiments, or in `distilled/` as new toy versions of real compilers. See the [README](README.md) for what each directory holds and when an entry counts as done.
+
+## The usual starting examples
+
+Every entry has its own `examples/` directory. Most entries that compile or interpret programs start from these five, which go from a string to a recursive function. The reference copy is [`distilled/puc-lua/examples/`](distilled/puc-lua/examples/): copy it into a new entry and adapt what the entry needs. Each directory holds a `program.lua`, the definition, and an `expected.txt`, the output of real Lua 5.4.
+
+| Example | What it adds | Output |
+|---------|--------------|--------|
+| `hello` | Printing a string | `Hello, world!` |
+| `arithmetic` | Integer `+`, `-` and `*` with constants | `14` |
+| `branch` | Locals, a comparison and an `if` with an `else` | `5` |
+| `loop` | A `while` loop that updates locals | `55` |
+| `call` | A recursive function with an argument and a return value | `120` |
+
+The programs only use integers, `local` variables, `+`, `-`, `*`, `<`, `if`, `while`, local functions with one argument, `return` and `print`. `print` is only called with a string literal or a non-negative integer, so entries never need to print negative numbers. An entry does not parse them: it hardcodes its own translation.
+
+These are a convention, not a requirement. An entry may use other examples, for example the kernels of `distilled/gso/examples/`, or add examples for the part of the design it is about, as long as its "Regenerating expected.txt" section says how each `expected.txt` is produced.

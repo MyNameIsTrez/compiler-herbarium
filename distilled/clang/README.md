@@ -13,7 +13,7 @@ Clang does not try to produce good code in the front end. It emits the dumbest c
 - **x86 is two-address.** `A = B + C` is rewritten as `A = B; A += C`, which is why copies appear before every add.
 - **Registers come from live intervals.** Each virtual register gets a list of live segments. A coalescer removes the copies whose two sides never overlap. The basic allocator then takes intervals by weight and gives each the first register in the target's order that does not interfere, trying the registers its copies point at first. A call clobbers the caller-saved registers, so a value that lives across the recursive call in `fact` ends up in `rbx`.
 
-Every entry is checked against the five programs in `examples/`. The IR and machine IR after each stage, the DAG of each block, the intervals, the allocator's decisions and the encoded bytes are in `dumps/<example>/stages.txt`, and the machine code is in `dumps/<example>/code.bin`.
+The entry is checked against the five programs in [`examples/`](examples/). The IR and machine IR after each stage, the DAG of each block, the intervals, the allocator's decisions and the encoded bytes are in `dumps/<example>/stages.txt`, and the machine code is in `dumps/<example>/code.bin`.
 
 ## Stages
 

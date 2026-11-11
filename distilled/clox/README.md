@@ -12,7 +12,7 @@ Real clox scans, parses and generates code in one pass. A Pratt parser calls the
 - **Upvalues.** `fact` calls itself, so its body names a local of the enclosing function. The compiler marks that local as captured, and `OP_CLOSURE` is followed by the slot to capture. At run time the upvalue points at the live stack slot. When the scope ends, `OP_CLOSE_UPVALUE` (or `OP_RETURN`) copies the value into the upvalue and repoints it, so the closure outlives the frame.
 - **One loop for all calls.** A call pushes a frame and keeps running in the same loop.
 
-Every entry is checked against the five programs in `examples/`. The Lox tokens, each function's disassembly and the stack trace are in `dumps/<example>/stages.txt`.
+The entry is checked against the five programs in [`examples/`](examples/). The Lox tokens, each function's disassembly and the stack trace are in `dumps/<example>/stages.txt`.
 
 ## Fidelity
 

@@ -36,3 +36,13 @@ Command: `python -I -S` on the Python version of each example, with `dis.dis(cod
 - Matches: for all five examples the final instructions, the argument of every instruction, the cache entries, and therefore the whole `co_code` byte string are identical, for the module and for `fact`. `co_stacksize` and `co_names` also agree, and so do `co_consts`, including the kept slot 0 (`(2,)` for `fact`, `(0,)` for the loop, `(3,)` for the branch).
 - Differs: no line table and no exception table, so the code object is not complete.
 - Not compared: the intermediate forms. The real compiler has no switch to print the sequence, the blocks or the optimizer's passes. They are built from the source that was read.
+
+## Regenerating expected.txt
+
+Every `examples/<name>/expected.txt` is the output of real Lua 5.4 on that example's `program.lua`, so it does not rest on this entry. Never edit one by hand. From the repository root:
+
+```
+for d in distilled/cpython/examples/*/; do lua5.4 "$d/program.lua" > "$d/expected.txt"; done
+```
+
+`scripts/check-expected.sh` re-runs the oracle for every entry and fails if a file differs.

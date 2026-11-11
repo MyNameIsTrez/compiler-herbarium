@@ -13,7 +13,7 @@ Most compilers keep a list of instructions inside each basic block. Here the pro
 - **Global code motion picks blocks.** Only after selection does every floating node get a block, the one nearest its uses, so a value that one path needs is computed on that path.
 - **Registers come from graph coloring.** Values are grouped into live ranges (LRGs). A `Phi` and its inputs share one, and so do a two-address instruction and its first input. Each carries the set of registers it may use. Failure is repaired with copies and a new round, which is how `fact` ends up with its argument in `rbx` across the recursive call.
 
-Every entry is checked against the five programs in `examples/`. The graph after each stage, the register allocation rounds and the encoded bytes are in `dumps/<example>/stages.txt`, and the machine code is in `dumps/<example>/code.bin`.
+The entry is checked against the five programs in [`examples/`](examples/). The graph after each stage, the register allocation rounds and the encoded bytes are in `dumps/<example>/stages.txt`, and the machine code is in `dumps/<example>/code.bin`.
 
 ## Stages
 
