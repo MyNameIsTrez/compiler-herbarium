@@ -1,0 +1,27 @@
+== stage_source: Lua source of hello ==
+print("Hello, world!")
+== stage_build: the SSA of each function, 2 registers ==
+func main:
+  b0:
+    v0 = PRINTSTR "Hello, world!"
+    return
+== stage_live: the next use of each value at the end of each block ==
+func main: loop depth and the values live at the end of each block, with the distance to their next use
+  b0 (loop depth 0):
+== stage_regalloc: the greedy walk, the spills are not placed yet ==
+func main:
+  b0:
+    v0 = PRINTSTR "Hello, world!"
+    return
+  registers at the end of b0:
+== stage_spills: where each spill goes, and the stack slots ==
+func main:
+  b0:
+    v0 = PRINTSTR "Hello, world!"
+    return
+== stage_shuffle: the moves on the merge edges ==
+func main:
+  b0:
+    v0 = PRINTSTR "Hello, world!"
+    return
+== stage_run: the output of the program ==

@@ -97,6 +97,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n" x="594" y="323">qbe</text>
 <circle class="pl" cx="582" cy="347" r="6"/>
 <text class="n p" x="594" y="351">MLIR</text>
+<circle class="dn" cx="582" cy="375" r="6"/>
+<text class="n" x="594" y="379">go-ssa</text>
 <circle class="dn" cx="722" cy="291" r="6"/>
 <text class="n" x="734" y="295">sea-of-nodes</text>
 <circle class="pl" cx="722" cy="319" r="6"/>

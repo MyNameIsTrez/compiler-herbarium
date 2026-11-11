@@ -1,0 +1,121 @@
+== stage_source: Lua source of loop ==
+local sum = 0
+local i = 1
+while i < 11 do
+  sum = sum + i
+  i = i + 1
+end
+print(sum)
+== stage_build: the SSA of each function, 2 registers ==
+func main:
+  b0:
+    v0 = CONST 0
+    v1 = CONST 1
+    v2 = ADD v0, v1
+    goto b1
+  b1: (from b0, b2)
+    v3 = PHI v2, v9
+    v4 = PHI v0, v7
+    v5 = CONST 11
+    v6 = LESS v3, v5
+    if v6 goto b2 else b3
+  b2: (from b1)
+    v7 = ADD v3, v4
+    v8 = CONST 1
+    v9 = ADD v3, v8
+    goto b1
+  b3: (from b1)
+    v10 = PRINT v4
+    return
+== stage_live: the next use of each value at the end of each block ==
+func main: loop depth and the values live at the end of each block, with the distance to their next use
+  b0 (loop depth 0): v0(10) v2(10)
+  b1 (loop depth 1): v3(1) v4(1)
+  b2 (loop depth 1): v7(10) v9(10)
+  b3 (loop depth 0):
+== stage_regalloc: the greedy walk, the spills are not placed yet ==
+func main:
+  b0:
+    v11 = CONST 0  : R0
+    v12 = CONST 1  : R1
+    v2 = ADD v11, v12  : R0
+    goto b1
+  b1: (from b0, b2)
+    v3 = PHI v2, v9  : R0
+    v4 = PHI v0, v7  : R1
+    v13 = CONST 11  : R1
+    v6 = LESS v3, v13  : R1
+    if v6 goto b2 else b3
+  b2: (from b1)
+    v15 = LOAD v14  : R1
+    v7 = ADD v3, v15  : R0
+    v17 = LOAD v16  : R1
+    v18 = CONST 1  : R0
+    v9 = ADD v17, v18  : R1
+    goto b1
+  b3: (from b1)
+    v20 = LOAD v14  : R0
+    v10 = PRINT v20
+    return
+  registers at the end of b0: R0=v2
+  registers at the end of b1: R0=v3
+  registers at the end of b2: R1=v9
+  registers at the end of b3:
+== stage_spills: where each spill goes, and the stack slots ==
+func main:
+  b0:
+    v11 = CONST 0  : R0
+    v12 = CONST 1  : R1
+    v2 = ADD v11, v12  : R0
+    goto b1
+  b1: (from b0, b2)
+    v3 = PHI v2, v9  : R0
+    v4 = PHI v0, v7  : R1
+    v14 = STORE v4  : S0
+    v13 = CONST 11  : R1
+    v6 = LESS v3, v13  : R1
+    if v6 goto b2 else b3
+  b2: (from b1)
+    v16 = STORE v3  : S1
+    v15 = LOAD v14  : R1
+    v7 = ADD v3, v15  : R0
+    v19 = STORE v7  : S2
+    v17 = LOAD v16  : R1
+    v18 = CONST 1  : R0
+    v9 = ADD v17, v18  : R1
+    goto b1
+  b3: (from b1)
+    v20 = LOAD v14  : R0
+    v10 = PRINT v20
+    return
+== stage_shuffle: the moves on the merge edges ==
+func main:
+  b0:
+    v11 = CONST 0  : R0
+    v12 = CONST 1  : R1
+    v2 = ADD v11, v12  : R0
+    v21 = CONST 0  : R1
+    goto b1
+  b1: (from b0, b2)
+    v3 = PHI v2, v22  : R0
+    v4 = PHI v21, v23  : R1
+    v14 = STORE v4  : S0
+    v13 = CONST 11  : R1
+    v6 = LESS v3, v13  : R1
+    if v6 goto b2 else b3
+  b2: (from b1)
+    v16 = STORE v3  : S1
+    v15 = LOAD v14  : R1
+    v7 = ADD v3, v15  : R0
+    v19 = STORE v7  : S2
+    v17 = LOAD v16  : R1
+    v18 = CONST 1  : R0
+    v9 = ADD v17, v18  : R1
+    v22 = COPY v9  : R0
+    v23 = LOAD v19  : R1
+    goto b1
+  b3: (from b1)
+    v20 = LOAD v14  : R0
+    v10 = PRINT v20
+    return
+== stage_run: the output of the program ==

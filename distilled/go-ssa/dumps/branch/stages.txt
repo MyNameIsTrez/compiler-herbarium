@@ -1,0 +1,85 @@
+== stage_source: Lua source of branch ==
+local a = 3
+local b = 5
+if a < b then
+  print(b)
+else
+  print(a)
+end
+== stage_build: the SSA of each function, 2 registers ==
+func main:
+  b0:
+    v0 = CONST 3
+    v1 = CONST 5
+    v2 = LESS v0, v1
+    if v2 goto b1 else b2
+  b1: (from b0)
+    v3 = PRINT v1
+    goto b3
+  b2: (from b0)
+    v4 = PRINT v0
+    goto b3
+  b3: (from b1, b2)
+    return
+== stage_live: the next use of each value at the end of each block ==
+func main: loop depth and the values live at the end of each block, with the distance to their next use
+  b0 (loop depth 0): v0(10) v1(10)
+  b1 (loop depth 0):
+  b2 (loop depth 0):
+  b3 (loop depth 0):
+== stage_regalloc: the greedy walk, the spills are not placed yet ==
+func main:
+  b0:
+    v5 = CONST 3  : R0
+    v6 = CONST 5  : R1
+    v2 = LESS v5, v6  : R0
+    if v2 goto b1 else b2
+  b1: (from b0)
+    v7 = COPY v6  : R0
+    v3 = PRINT v7
+    goto b3
+  b2: (from b0)
+    v8 = CONST 3  : R0
+    v4 = PRINT v8
+    goto b3
+  b3: (from b1, b2)
+    return
+  registers at the end of b0: R1=v1
+  registers at the end of b1:
+  registers at the end of b2:
+  registers at the end of b3:
+== stage_spills: where each spill goes, and the stack slots ==
+func main:
+  b0:
+    v5 = CONST 3  : R0
+    v6 = CONST 5  : R1
+    v2 = LESS v5, v6  : R0
+    if v2 goto b1 else b2
+  b1: (from b0)
+    v7 = COPY v6  : R0
+    v3 = PRINT v7
+    goto b3
+  b2: (from b0)
+    v8 = CONST 3  : R0
+    v4 = PRINT v8
+    goto b3
+  b3: (from b1, b2)
+    return
+== stage_shuffle: the moves on the merge edges ==
+func main:
+  b0:
+    v5 = CONST 3  : R0
+    v6 = CONST 5  : R1
+    v2 = LESS v5, v6  : R0
+    if v2 goto b1 else b2
+  b1: (from b0)
+    v7 = COPY v6  : R0
+    v3 = PRINT v7
+    goto b3
+  b2: (from b0)
+    v8 = CONST 3  : R0
+    v4 = PRINT v8
+    goto b3
+  b3: (from b1, b2)
+    return
+== stage_run: the output of the program ==
