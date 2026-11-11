@@ -14,7 +14,7 @@ The map shows where each design sits, and where nothing sits yet. Finished entri
 - *Memory management.* The reference counting of Lean 4 is part of its IR, but no axis shows it.
 - *Specialization and compile-time execution.* Julia's type specialization and Zig's comptime are not a point on the when-is-machine-code-made axis.
 - *Several IRs at once.* `gcc` and MLIR pass through more than one IR, and sit where their middle IR does.
-- *Tools about compilers.* Verifiers and superoptimizers of rewrite rules analyze the compiler, not a program, so they have no cell (see the declined table in [RESEARCH.md](RESEARCH.md)).
+- *Tools about compilers.* Verifiers and superoptimizers of rewrite rules analyze the compiler, not a program, so they have no cell (see the declined table in [RESEARCH.md](RESEARCH.md)). A superoptimizer that is given a function and emits code for it is a compiler, but its input is not a program, so it sits provisionally in the cell of "nothing in between" and runs on [`kernels/`](kernels/) instead of `examples/`.
 
 **One goal of this repository is to fill out this map.** Think of it as a bingo board: each cell is a combination of what sits between the source and execution and when machine code is made, and the aim is for every cell that a real compiler occupies to hold a distilled entry. A distilled entry comes first, because it is checked against real source. Where a cell is empty and a search finds no open-source compiler or interpreter that sits there, the repo adds an `original/` entry instead, shown as an amber diamond, so the board is covered by designs that are at least tried out. A few cells will stay empty because the cell cannot hold a design or holds only front-end work. They are crossed out on the map, and [RESEARCH.md](RESEARCH.md) gives the one-line reason for each.
 
@@ -96,6 +96,7 @@ The JIT column says whether the real design compiles code to machine code while 
 | [`distilled/cpython`](distilled/cpython/) | 1158 | CPython | Interpreter | 🟡 | The compile pipeline from AST to a CFG of basic blocks to bytecode, and the eval loop. The entry has no JIT: real CPython has an optional, experimental one (hence 🟡), and none of its code was read or copied |
 | [`distilled/gcc`](distilled/gcc/) | 1750 | GCC | Compiler | ❌ | GENERIC to GIMPLE to SSA to RTL, with PHI placement, out-of-SSA partitions, combine and a graph-coloring register allocator with copy preferences |
 | [`distilled/ghc`](distilled/ghc/) | 689 | GHC (the STG language and its machine) | Compiler | ❌ | Lazy evaluation: closures that are functions, thunks or join points, thunks overwritten with their value by update frames, and a machine whose only stack frames are case continuations and updates |
+| [`distilled/gso`](distilled/gso/) | 360 | The GNU superoptimizer | Compiler | ❌ | Exhaustive iterative-deepening search for the shortest instruction sequence of a function, over an ISA with a carry flag, tested against the function as an oracle |
 | [`distilled/jlox`](distilled/jlox/) | 703 | The tree-walking interpreter of Crafting Interpreters | Interpreter | ❌ | A resolver that binds each variable use to a scope distance before the program runs, and a tree walker over a chain of environments with closures |
 | [`distilled/luajit`](distilled/luajit/) | 756 | LuaJIT | Interpreter | ✅ | A tracing JIT: a hot loop is recorded into SSA IR with guards and snapshots, unrolled by copy-substitution with PHIs, and assembled backwards with register allocation. Only the `loop` example makes a trace. |
 | [`distilled/luajit-interpreter`](distilled/luajit-interpreter/) | 948 | LuaJIT | Interpreter | ✅ | The assembler interpreter as x86-64 machine code generated at startup: pinned registers, dispatch at the end of every handler, tables as the mode switch, hot counters, a recording hook, and an exit handler. The hot loop of `loop` gets a template trace. |
@@ -130,6 +131,7 @@ Each entry follows the same shape, so the same file names can be opened in diffe
   FIDELITY.md       how each stage maps to the real compiler (distilled entries only, see templates/FIDELITY.md)
   dumps/<example>/stages.txt  the intermediate form after each stage, for each example
   dumps/<example>/code.bin    the final machine code for each example, for entries that generate any
+  uses-kernels      empty marker file, for entries that run on kernels/ instead of examples/ (see kernels/README.md)
 ```
 
 Entries keep the same section order and the same `stage_*` function naming, so two `main.c` files can be diffed against each other.
@@ -206,7 +208,7 @@ Hello world alone makes most designs look alike, because the differences show up
 | `loop` | A `while` loop that updates locals |
 | `call` | A recursive function with an argument and a return value |
 
-A new example is added to every entry, the same way a Rosetta Code task is. See [`examples/README.md`](examples/README.md) for the exact subset of Lua that the programs use.
+Superoptimizers are the exception: their input is a function, so they run on [`kernels/`](kernels/) instead, see its README. A new example is added to every entry except those, the same way a Rosetta Code task is. See [`examples/README.md`](examples/README.md) for the exact subset of Lua that the programs use.
 
 Examples are checked for correct output, not timed. Designs can still be compared with numbers that do not need a stopwatch, such as emitted instruction count, code size in bytes, or the number of IR nodes at each stage.
 

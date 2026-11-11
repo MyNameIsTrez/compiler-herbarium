@@ -34,9 +34,13 @@ cp "$entry/main.c" "$work/main.c"
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
 shopt -s nullglob
-examples=("$root"/examples/*/)
+inputs=examples
+if [[ -f $entry/uses-kernels ]]; then
+    inputs=kernels
+fi
+examples=("$root/$inputs"/*/)
 if [[ ${#examples[@]} -eq 0 ]]; then
-    echo "error: no examples found in $root/examples" >&2
+    echo "error: no examples found in $root/$inputs" >&2
     exit 2
 fi
 

@@ -1,0 +1,17 @@
+== stage_goal: ges0, 1 input(s), 22 test vectors ==
+  r = (signed_word) v0 >= 0
+  vectors: all combinations of 0, 1, 2, 0x7fffffff, 0x80000000, 0xffffffff, then 16 pseudo-random
+== stage_search: every sequence of length 1, 2, ... until one passes ==
+  first test: the vector with output 00000001
+  length 1: 10 instructions tried, 10 leaves, 1 matched the first test, 0 passed all
+  sequence 1:
+    r1 = sub #-1, r0
+    r2 = lshiftr r1, #31
+  sequence 2:
+    r1 = lshiftr r0, #31
+    r2 = xor r1, #1
+  length 2: 257 instructions tried, 247 leaves, 32 matched the first test, 2 passed all
+== stage_verify: the first sequence, on every vector and on a held-out set ==
+    r1 = sub #-1, r0
+    r2 = lshiftr r1, #31
+  held-out check: 1000 random vectors, 0 mismatches

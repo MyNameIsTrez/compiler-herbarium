@@ -20,3 +20,5 @@ Entries do not parse `program.lua`. Each entry hardcodes the program in its own 
 The programs only use integers, `local` variables, `+`, `-`, `*`, `<`, `if`, `while`, local functions with one argument, `return` and `print`. `print` is only called with a string literal or a non-negative integer, so entries never need to print negative numbers.
 
 New examples extend the ladder and must be added to every entry. They must keep to the same subset, or the subset grows with them.
+
+Superoptimizers run on [`kernels/`](../kernels/) instead of these examples.

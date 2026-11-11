@@ -1,0 +1,2 @@
+inputs 1
+(int32_t)a > 0 ? 1u : (int32_t)a < 0 ? 0xffffffffu : 0u

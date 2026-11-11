@@ -13,6 +13,8 @@ jobs:
         run: scripts/check-sorted.sh
       - name: Check that the design space map lists every entry
         run: scripts/check-map.sh
+      - name: Check that the kernels' expected output is up to date
+        run: scripts/gen-kernel.sh --check kernels/*/
 
   discover:
     runs-on: ubuntu-latest

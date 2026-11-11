@@ -8,7 +8,8 @@
 #   CC   C compiler, default gcc
 #   OPT  optimization flag, default -O2
 #
-# An entry is run as: ./entry <example> [code.bin]
+# An entry is run as: ./entry <example> [code.bin]   (<example> is a kernel for an entry that has
+#                                                    an empty uses-kernels file, see kernels/)
 #   stdout          must equal examples/<example>/expected.txt
 #   stderr          the intermediate form after each stage, committed as dumps/<example>/stages.txt
 #   code.bin        the final machine code, committed as dumps/<example>/code.bin, if the entry
@@ -56,9 +57,15 @@ fi
 
 status=0
 shopt -s nullglob
-examples=("$root"/examples/*/)
+# An entry that searches for code for a function, such as a superoptimizer, is given the kernels
+# in kernels/ instead of the programs in examples/, and says so with an empty uses-kernels file.
+inputs=examples
+if [[ -f $entry/uses-kernels ]]; then
+    inputs=kernels
+fi
+examples=("$root/$inputs"/*/)
 if [[ ${#examples[@]} -eq 0 ]]; then
-    echo "error: no examples found in $root/examples" >&2
+    echo "error: no examples found in $root/$inputs" >&2
     exit 2
 fi
 
