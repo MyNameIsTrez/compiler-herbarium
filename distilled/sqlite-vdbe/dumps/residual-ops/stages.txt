@@ -1,0 +1,100 @@
+== stage_schema: sizes in LogEst ==
+  table users        root=2 rows=200 rowWidth=48
+  table orders       root=3 rows=200 rowWidth=36
+  index orders_user  root=4 rows=200 rowsPerKey=33 width=30 entries: (1,1) (1,2) (2,4) (3,3)
+  index users_age    root=5 rows=200 rowsPerKey=33 width=30 entries: (25,2) (30,1) (30,3)
+== stage_query ==
+  SELECT amount FROM orders WHERE user = 1 AND amount >= 10 AND amount < 20 AND amount <= 15
+  term 0: orders.user = 1
+  term 1: orders.amount >= 10
+  term 2: orders.amount < 20
+  term 3: orders.amount <= 15
+  orders reads columns mask 6
+== stage_loops: each WhereLoop as it is offered (rRun and nOut in LogEst) ==
+  add      SCAN orders                                                    rRun=216 nOut=200 prereq=0
+  replace  SCAN orders                                                    rRun=216 nOut=200 prereq=0
+  with     SEARCH orders USING INDEX orders_user (user=?)                 rRun=62  nOut=33  prereq=0
+kept:
+  L0       SEARCH orders USING INDEX orders_user (user=?)                 rRun=62  nOut=33  prereq=0
+== stage_solve: the cheapest path for each set of tables ==
+round 0:
+  L0  cost=62 nrow=33
+plan:
+  SEARCH orders USING INDEX orders_user (user=?)
+== stage_codegen: nested loops, with every read on the table cursor ==
+  0   Init          0   17  0   -         0
+  1   OpenRead      0   3   0   3         0
+  2   OpenRead      1   4   0   k(2,,)    2
+  3   Integer       1   1   0   -         0
+  4   SeekGE        1   16  1   1         0
+  5   IdxGT         1   16  1   1         0
+  6   DeferredSeek  1   0   0   -         0
+  7   Column        0   2   2   -         0
+  8   Lt            3   15  2   BINARY-8  84
+  9   Column        0   2   2   -         0
+  10  Ge            4   15  2   BINARY-8  84
+  11  Column        0   2   2   -         0
+  12  Gt            5   15  2   BINARY-8  84
+  13  Column        0   2   6   -         0
+  14  ResultRow     6   1   0   -         0
+  15  Next          1   5   1   -         0
+  16  Halt          0   0   0   -         0
+  17  Transaction   0   0   4   0         1
+  18  Integer       10  3   0   -         0
+  19  Integer       20  4   0   -         0
+  20  Integer       15  5   0   -         0
+  21  Goto          0   1   0   -         0
+after the index rewrite:
+  0   Init          0   17  0   -         0
+  1   OpenRead      0   3   0   3         0
+  2   OpenRead      1   4   0   k(2,,)    2
+  3   Integer       1   1   0   -         0
+  4   SeekGE        1   16  1   1         0
+  5   IdxGT         1   16  1   1         0
+  6   DeferredSeek  1   0   0   -         0
+  7   Column        0   2   2   -         0
+  8   Lt            3   15  2   BINARY-8  84
+  9   Column        0   2   2   -         0
+  10  Ge            4   15  2   BINARY-8  84
+  11  Column        0   2   2   -         0
+  12  Gt            5   15  2   BINARY-8  84
+  13  Column        0   2   6   -         0
+  14  ResultRow     6   1   0   -         0
+  15  Next          1   5   1   -         0
+  16  Halt          0   0   0   -         0
+  17  Transaction   0   0   4   0         1
+  18  Integer       10  3   0   -         0
+  19  Integer       20  4   0   -         0
+  20  Integer       15  5   0   -         0
+  21  Goto          0   1   0   -         0
+== stage_run: instructions as they execute ==
+  0   Init
+  17  Transaction
+  18  Integer
+  19  Integer
+  20  Integer
+  21  Goto
+  1   OpenRead
+  2   OpenRead
+  3   Integer
+  4   SeekGE
+  5   IdxGT
+  6   DeferredSeek
+  7   Column
+  8   Lt
+  9   Column
+  10  Ge
+  11  Column
+  12  Gt
+  13  Column
+  14  ResultRow
+  15  Next
+  5   IdxGT
+  6   DeferredSeek
+  7   Column
+  8   Lt
+  9   Column
+  10  Ge
+  15  Next
+  5   IdxGT
+  16  Halt

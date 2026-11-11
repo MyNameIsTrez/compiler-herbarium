@@ -13,8 +13,8 @@ jobs:
         run: scripts/check-sorted.sh
       - name: Check that the design space map lists every entry
         run: scripts/check-map.sh
-      - name: Install Lua
-        run: sudo apt-get install -y lua5.4
+      - name: Install the oracles (Lua and SQLite)
+        run: sudo apt-get install -y lua5.4 sqlite3
       - name: Check that every expected.txt is reproduced by its oracle
         run: scripts/check-expected.sh
 

@@ -1,0 +1,62 @@
+== stage_schema: sizes in LogEst ==
+  table users        root=2 rows=200 rowWidth=48
+  table orders       root=3 rows=200 rowWidth=36
+  index orders_user  root=4 rows=200 rowsPerKey=33 width=30 entries: (1,1) (1,2) (2,4) (3,3)
+  index users_age    root=5 rows=200 rowsPerKey=33 width=30 entries: (25,2) (30,1) (30,3)
+== stage_query ==
+  SELECT id FROM users WHERE age = 30
+  term 0: users.age = 30
+  users reads columns mask 5
+== stage_loops: each WhereLoop as it is offered (rRun and nOut in LogEst) ==
+  add      SCAN users                                                     rRun=216 nOut=200 prereq=0
+  replace  SCAN users                                                     rRun=216 nOut=200 prereq=0
+  with     SCAN users USING COVERING INDEX users_age                      rRun=210 nOut=200 prereq=0
+  replace  SCAN users USING COVERING INDEX users_age                      rRun=210 nOut=200 prereq=0
+  with     SEARCH users USING COVERING INDEX users_age (age=?)            rRun=53  nOut=33  prereq=0
+kept:
+  L0       SEARCH users USING COVERING INDEX users_age (age=?)            rRun=53  nOut=33  prereq=0
+== stage_solve: the cheapest path for each set of tables ==
+round 0:
+  L0  cost=53 nrow=33
+plan:
+  SEARCH users USING COVERING INDEX users_age (age=?)
+== stage_codegen: nested loops, with every read on the table cursor ==
+  0   Init          0   9   0   -         0
+  1   OpenRead      1   5   0   k(2,,)    2
+  2   Integer       30  1   0   -         0
+  3   SeekGE        1   8   1   1         0
+  4   IdxGT         1   8   1   1         0
+  5   Rowid         0   2   0   -         0
+  6   ResultRow     2   1   0   -         0
+  7   Next          1   4   1   -         0
+  8   Halt          0   0   0   -         0
+  9   Transaction   0   0   4   0         1
+  10  Goto          0   1   0   -         0
+after the index rewrite:
+  0   Init          0   9   0   -         0
+  1   OpenRead      1   5   0   k(2,,)    2
+  2   Integer       30  1   0   -         0
+  3   SeekGE        1   8   1   1         0
+  4   IdxGT         1   8   1   1         0
+  5   IdxRowid      1   2   0   -         0
+  6   ResultRow     2   1   0   -         0
+  7   Next          1   4   1   -         0
+  8   Halt          0   0   0   -         0
+  9   Transaction   0   0   4   0         1
+  10  Goto          0   1   0   -         0
+== stage_run: instructions as they execute ==
+  0   Init
+  9   Transaction
+  10  Goto
+  1   OpenRead
+  2   Integer
+  3   SeekGE
+  4   IdxGT
+  5   IdxRowid
+  6   ResultRow
+  7   Next
+  4   IdxGT
+  5   IdxRowid
+  6   ResultRow
+  7   Next
+  8   Halt

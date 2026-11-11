@@ -109,6 +109,7 @@ The JIT column says whether the real design compiles code to machine code while 
 | [`distilled/puc-lua`](distilled/puc-lua/) | 491 | The reference Lua interpreter | Interpreter | ❌ | Register bytecode and the dispatch loop |
 | [`distilled/qbe`](distilled/qbe/) | 1630 | QBE | Compiler | ❌ | Pruned SSA from an IL with mutable temporaries, the ABI as register copies, backward instruction selection, and a backward register allocator with hints and parallel moves on edges |
 | [`distilled/sea-of-nodes`](distilled/sea-of-nodes/) | 1401 | Cliff Click's Sea of Nodes IR (see [SeaOfNodes/Simple](https://github.com/SeaOfNodes/Simple)) | Compiler | 🟡 | Graph IR with floating nodes, scheduling, instruction selection |
+| [`distilled/sqlite-vdbe`](distilled/sqlite-vdbe/) | 1008 | The query planner and virtual machine of SQLite | Interpreter | ❌ | A SELECT planned with a cost model in LogEst (which loop for each table, which table is outer), then compiled to register bytecode for a cursor machine, with a covering index and a deferred table seek |
 | [`distilled/stoke`](distilled/stoke/) | 506 | STOKE | Compiler | ❌ | Stochastic search over whole programs: random moves accepted by Metropolis-Hastings on a cost of wrong bits plus instruction count, with a cost function that stops early |
 | [`distilled/tcc`](distilled/tcc/) | 724 | The Tiny C Compiler | Compiler | ❌ | One-pass code generation from a lazy value stack: constants and locals loaded only when needed, comparisons kept in the CPU flags, forward jumps as chains patched later |
 | [`distilled/wren`](distilled/wren/) | 736 | The Wren virtual machine | Interpreter | ❌ | Every operator is a method call: names with their arity are interned in one symbol table, and a class finds a method by indexing an array with the symbol. Calling a function pushes a frame in the one loop |
@@ -134,7 +135,7 @@ Each entry follows the same shape, so the same file names can be opened in diffe
   main.c            the whole compiler: the hardcoded input, then one clearly marked section per stage
   README.md         what the design is, what this version leaves out
   FIDELITY.md       how each stage maps to the real compiler (distilled entries only, see FIDELITY.md at the repository root)
-  examples/<example>/         one input, with its expected.txt and the program.lua or goal.txt that defines it
+  examples/<example>/         one input, with its expected.txt and the program.lua, goal.txt or query.sql that defines it
   dumps/<example>/stages.txt  the intermediate form after each stage, for each example
   dumps/<example>/code.bin    the final machine code for each example, for entries that generate any
 ```

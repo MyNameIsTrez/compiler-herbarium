@@ -1,0 +1,66 @@
+== stage_schema: sizes in LogEst ==
+  table users        root=2 rows=200 rowWidth=48
+  table orders       root=3 rows=200 rowWidth=36
+  index orders_user  root=4 rows=200 rowsPerKey=33 width=30 entries: (1,1) (1,2) (2,4) (3,3)
+  index users_age    root=5 rows=200 rowsPerKey=33 width=30 entries: (25,2) (30,1) (30,3)
+== stage_query ==
+  SELECT id, name FROM users WHERE name = 'cy'
+  term 0: users.name = 'cy'
+  users reads columns mask 3
+== stage_loops: each WhereLoop as it is offered (rRun and nOut in LogEst) ==
+  add      SCAN users                                                     rRun=216 nOut=200 prereq=0
+kept:
+  L0       SCAN users                                                     rRun=216 nOut=200 prereq=0
+== stage_solve: the cheapest path for each set of tables ==
+round 0:
+  L0  cost=216 nrow=200
+plan:
+  SCAN users
+== stage_codegen: nested loops, with every read on the table cursor ==
+  0   Init          0   10  0   -         0
+  1   OpenRead      0   2   0   2         0
+  2   Rewind        0   9   0   -         0
+  3   Column        0   1   1   -         0
+  4   Ne            2   8   1   BINARY-8  82
+  5   Rowid         0   3   0   -         0
+  6   Column        0   1   4   -         0
+  7   ResultRow     3   2   0   -         0
+  8   Next          0   3   0   -         1
+  9   Halt          0   0   0   -         0
+  10  Transaction   0   0   4   0         1
+  11  String8       0   2   0   cy        0
+  12  Goto          0   1   0   -         0
+after the index rewrite:
+  0   Init          0   10  0   -         0
+  1   OpenRead      0   2   0   2         0
+  2   Rewind        0   9   0   -         0
+  3   Column        0   1   1   -         0
+  4   Ne            2   8   1   BINARY-8  82
+  5   Rowid         0   3   0   -         0
+  6   Column        0   1   4   -         0
+  7   ResultRow     3   2   0   -         0
+  8   Next          0   3   0   -         1
+  9   Halt          0   0   0   -         0
+  10  Transaction   0   0   4   0         1
+  11  String8       0   2   0   cy        0
+  12  Goto          0   1   0   -         0
+== stage_run: instructions as they execute ==
+  0   Init
+  10  Transaction
+  11  String8
+  12  Goto
+  1   OpenRead
+  2   Rewind
+  3   Column
+  4   Ne
+  8   Next
+  3   Column
+  4   Ne
+  8   Next
+  3   Column
+  4   Ne
+  5   Rowid
+  6   Column
+  7   ResultRow
+  8   Next
+  9   Halt

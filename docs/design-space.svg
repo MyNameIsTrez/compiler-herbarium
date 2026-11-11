@@ -75,8 +75,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n p" x="454" y="152">Wizard</text>
 <circle class="dn" cx="442" cy="166" r="6"/>
 <text class="n" x="454" y="170">wren</text>
-<circle class="pl" cx="442" cy="184" r="6"/>
-<text class="n p" x="454" y="188">SQLite VDBE</text>
+<circle class="dn" cx="442" cy="184" r="6"/>
+<text class="n" x="454" y="188">sqlite-vdbe</text>
 <circle class="pl" cx="442" cy="202" r="6"/>
 <text class="n p" x="454" y="206">WAM (Prolog)</text>
 <circle class="pl" cx="442" cy="220" r="6"/>
