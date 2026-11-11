@@ -65,16 +65,22 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n" x="314" y="159">jlox</text>
 <circle class="pl" cx="162" cy="455" r="6"/>
 <text class="n p" x="174" y="459">Winch</text>
-<circle class="dn" cx="442" cy="103" r="6"/>
-<text class="n" x="454" y="107">puc-lua</text>
-<circle class="dn" cx="442" cy="127" r="6"/>
-<text class="n" x="454" y="131">cpython</text>
-<circle class="dn" cx="442" cy="151" r="6"/>
-<text class="n" x="454" y="155">clox</text>
-<circle class="pl" cx="442" cy="175" r="6"/>
-<text class="n p" x="454" y="179">Wizard</text>
-<circle class="dn" cx="442" cy="199" r="6"/>
-<text class="n" x="454" y="203">wren</text>
+<circle class="dn" cx="442" cy="94" r="6"/>
+<text class="n" x="454" y="98">puc-lua</text>
+<circle class="dn" cx="442" cy="112" r="6"/>
+<text class="n" x="454" y="116">cpython</text>
+<circle class="dn" cx="442" cy="130" r="6"/>
+<text class="n" x="454" y="134">clox</text>
+<circle class="pl" cx="442" cy="148" r="6"/>
+<text class="n p" x="454" y="152">Wizard</text>
+<circle class="dn" cx="442" cy="166" r="6"/>
+<text class="n" x="454" y="170">wren</text>
+<circle class="pl" cx="442" cy="184" r="6"/>
+<text class="n p" x="454" y="188">SQLite VDBE</text>
+<circle class="pl" cx="442" cy="202" r="6"/>
+<text class="n p" x="454" y="206">WAM (Prolog)</text>
+<circle class="pl" cx="442" cy="220" r="6"/>
+<text class="n p" x="454" y="224">Regex engines</text>
 <circle class="pl" cx="442" cy="291" r="6"/>
 <text class="n p" x="454" y="295">Zig</text>
 <polygon class="or" points="162,283 170,291 162,299 154,291"/>
@@ -125,6 +131,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n p" x="594" y="459">PyPy</text>
 <circle class="pl" cx="582" cy="483" r="6"/>
 <text class="n p" x="594" y="487">Julia</text>
+<circle class="pl" cx="442" cy="605" r="6"/>
+<text class="n p" x="454" y="609">eBPF verifier</text>
 <circle class="pl" cx="722" cy="605" r="6"/>
 <text class="n p" x="734" y="609">egglog</text>
 <circle class="dn" cx="722" cy="629" r="6"/>
