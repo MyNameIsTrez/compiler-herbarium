@@ -78,7 +78,7 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <circle class="dn" cx="442" cy="184" r="6"/>
 <text class="n" x="454" y="188">sqlite-vdbe</text>
 <circle class="pl" cx="442" cy="202" r="6"/>
-<text class="n p" x="454" y="206">WAM (Prolog)</text>
+<text class="n p" x="454" y="206">WAM</text>
 <circle class="pl" cx="442" cy="220" r="6"/>
 <text class="n p" x="454" y="224">Regex engines</text>
 <circle class="pl" cx="442" cy="291" r="6"/>
