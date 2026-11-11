@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1130 770" width="1130" height="770" role="img" aria-labelledby="t d">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1270 770" width="1270" height="770" role="img" aria-labelledby="t d">
 <title id="t">The design space of the compilers and interpreters in compiler-herbarium</title>
-<desc id="d">A map of every entry. The horizontal axis is what sits between the source and execution, from nothing to tree, bytecode, SSA, graph, functional term and relations. The vertical axis is when machine code is made. Blue filled dots are finished distilled entries, dashed hollow dots are planned ones, and amber diamonds are original entries, and thin lines join related designs.</desc>
+<desc id="d">A map of every entry. The horizontal axis is what sits between the source and execution, from nothing to tree, bytecode, SSA, graph, functional term, relations and a search over candidate programs. The vertical axis is when machine code is made. Blue filled dots are finished distilled entries, dashed hollow dots are planned ones, and amber diamonds are original entries, and thin lines join related designs.</desc>
 <style>
 :root{--bg:#fff;--fg:#1f2328;--mut:#656d76;--grid:#d0d7de;--acc:#0969da;--band:#f6f8fa;--org:#bf8700}
 @media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--mut:#8b949e;--grid:#30363d;--acc:#58a6ff;--band:#161b22;--org:#d29922}}
@@ -20,12 +20,12 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 .band{fill:var(--band)}
 .g{stroke:var(--grid);stroke-width:1}
 </style>
-<rect class="bg" width="1130" height="770"/>
-<text class="ax" x="635" y="16" text-anchor="middle">What sits between the source and execution</text>
-<rect class="band" x="10" y="80" width="1110" height="150"/>
+<rect class="bg" width="1270" height="770"/>
+<text class="ax" x="705" y="16" text-anchor="middle">What sits between the source and execution</text>
+<rect class="band" x="10" y="80" width="1250" height="150"/>
 <text class="rh" x="18" y="152">Interprets</text><text class="rh" x="18" y="169">(no machine code)</text>
 <text class="rh" x="18" y="302">Compiles ahead</text><text class="rh" x="18" y="319">of time</text>
-<rect class="band" x="10" y="380" width="1110" height="150"/>
+<rect class="band" x="10" y="380" width="1250" height="150"/>
 <text class="rh" x="18" y="452">Compiles while</text><text class="rh" x="18" y="469">running (JIT)</text>
 <text class="rh" x="18" y="602">Analysis only</text><text class="rh" x="18" y="619">(no program out)</text>
 <text class="h" x="220" y="42">Nothing in</text>
@@ -41,6 +41,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="h" x="920" y="58">(ANF, CPS, STG)</text>
 <text class="h" x="1060" y="42">Facts, relations,</text>
 <text class="h" x="1060" y="58">schedules</text>
+<text class="h" x="1200" y="42">Search over</text>
+<text class="h" x="1200" y="58">candidate programs</text>
 <line class="g" x1="150" y1="70" x2="150" y2="680"/>
 <line class="g" x1="290" y1="70" x2="290" y2="680"/>
 <line class="g" x1="430" y1="70" x2="430" y2="680"/>
@@ -49,7 +51,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <line class="g" x1="850" y1="70" x2="850" y2="680"/>
 <line class="g" x1="990" y1="70" x2="990" y2="680"/>
 <line class="g" x1="1130" y1="70" x2="1130" y2="680"/>
-<line class="g" x1="10" y1="70" x2="1120" y2="70"/>
+<line class="g" x1="1270" y1="70" x2="1270" y2="680"/>
+<line class="g" x1="10" y1="70" x2="1260" y2="70"/>
 <line class="x" x1="180" y1="560" x2="260" y2="650"/><line class="x" x1="260" y1="560" x2="180" y2="650"/>
 <line class="x" x1="320" y1="560" x2="400" y2="650"/><line class="x" x1="400" y1="560" x2="320" y2="650"/>
 <line class="l" x1="582" y1="427" x2="442" y2="441"/>
@@ -78,8 +81,10 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n" x="174" y="295">naive</text>
 <circle class="dn" cx="162" cy="319" r="6"/>
 <text class="n" x="174" y="323">tcc</text>
-<circle class="dn" cx="162" cy="347" r="6"/>
-<text class="n" x="174" y="351">gso</text>
+<circle class="dn" cx="1142" cy="291" r="6"/>
+<text class="n" x="1154" y="295">gso</text>
+<circle class="dn" cx="1142" cy="319" r="6"/>
+<text class="n" x="1154" y="323">stoke</text>
 <circle class="dn" cx="302" cy="305" r="6"/>
 <text class="n" x="314" y="309">chibicc</text>
 <circle class="dn" cx="582" cy="239" r="6"/>

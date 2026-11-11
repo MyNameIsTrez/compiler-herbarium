@@ -1,0 +1,75 @@
+== stage_goal: maxu, 2 input(s), 52 test vectors ==
+  r = (unsigned_word) v0 > (unsigned_word) v1 ? v0 : v1
+  vectors: all combinations of 0, 1, 2, 0x7fffffff, 0x80000000, 0xffffffff, then 16 pseudo-random
+== stage_search: 4 chains, each synthesis from 6 nops, then optimization ==
+  chain 1, attempt 1
+  synthesis (cost = wrong bits): start at cost 427
+    iteration 65290: correct with 6 instructions
+  synthesis (cost = wrong bits): 65291 iterations, 60412 cost evaluations, 41208 cut short, lowest cost 0
+    instruction proposed    13113, valid    13113, accepted     3330
+    opcode      proposed    13076, valid    13076, accepted     5253
+    operand     proposed    13036, valid    12517, accepted     4973
+    swap        proposed    26066, valid    21705, accepted     5584
+  optimization (cost = wrong bits + instructions): start at cost 6
+    iteration 3127: correct with 5 instructions
+    iteration 200491: correct with 4 instructions
+  optimization (cost = wrong bits + instructions): 1500000 iterations, 1385994 cost evaluations, 1057532 cut short, lowest cost 4
+    instruction proposed   299863, valid   299863, accepted    48579
+    opcode      proposed   300183, valid   300183, accepted   109572
+    operand     proposed   300048, valid   285738, accepted    94629
+    swap        proposed   599906, valid   500209, accepted    75681
+  chain 2, attempt 2
+  synthesis (cost = wrong bits): start at cost 427
+    iteration 98496: correct with 6 instructions
+  synthesis (cost = wrong bits): 98497 iterations, 90600 cost evaluations, 25941 cut short, lowest cost 0
+    instruction proposed    19676, valid    19676, accepted    11589
+    opcode      proposed    19775, valid    19775, accepted    14975
+    operand     proposed    19729, valid    18273, accepted    12537
+    swap        proposed    39317, valid    32875, accepted    25334
+  optimization (cost = wrong bits + instructions): start at cost 6
+    iteration 1347: correct with 5 instructions
+    iteration 1835: correct with 4 instructions
+  optimization (cost = wrong bits + instructions): 1500000 iterations, 1383037 cost evaluations, 1026805 cut short, lowest cost 4
+    instruction proposed   300175, valid   300175, accepted    55328
+    opcode      proposed   299284, valid   299284, accepted   118038
+    operand     proposed   300696, valid   283501, accepted    98318
+    swap        proposed   599845, valid   500076, accepted    84547
+  chain 3, attempt 3
+  synthesis (cost = wrong bits): start at cost 427
+    iteration 100699: correct with 6 instructions
+  synthesis (cost = wrong bits): 100700 iterations, 93013 cost evaluations, 48972 cut short, lowest cost 0
+    instruction proposed    20155, valid    20155, accepted     7665
+    opcode      proposed    20477, valid    20477, accepted    11145
+    operand     proposed    20008, valid    18993, accepted     9578
+    swap        proposed    40060, valid    33387, accepted    15514
+  optimization (cost = wrong bits + instructions): start at cost 6
+    iteration 665: correct with 5 instructions
+    iteration 175740: correct with 4 instructions
+  optimization (cost = wrong bits + instructions): 1500000 iterations, 1390101 cost evaluations, 1117362 cut short, lowest cost 4
+    instruction proposed   299809, valid   299809, accepted    34858
+    opcode      proposed   300001, valid   300001, accepted    96017
+    operand     proposed   299980, valid   289618, accepted    89657
+    swap        proposed   600210, valid   500672, accepted    52206
+  chain 4, attempt 4
+  synthesis (cost = wrong bits): start at cost 427
+    iteration 49373: correct with 6 instructions
+  synthesis (cost = wrong bits): 49374 iterations, 45746 cost evaluations, 25602 cut short, lowest cost 0
+    instruction proposed     9892, valid     9892, accepted     3353
+    opcode      proposed     9896, valid     9896, accepted     5094
+    operand     proposed     9997, valid     9560, accepted     4485
+    swap        proposed    19589, valid    16397, accepted     7168
+  optimization (cost = wrong bits + instructions): start at cost 6
+    iteration 558: correct with 5 instructions
+    iteration 812846: correct with 4 instructions
+  optimization (cost = wrong bits + instructions): 1500000 iterations, 1387834 cost evaluations, 1093822 cut short, lowest cost 4
+    instruction proposed   299915, valid   299915, accepted    39754
+    opcode      proposed   300038, valid   300038, accepted    98410
+    operand     proposed   299744, valid   287774, accepted    92091
+    swap        proposed   600303, valid   500106, accepted    63755
+== stage_verify: the best correct program, on every vector and on a held-out set ==
+  4 instructions
+    sub r1, r0
+    adc r3, #-1
+    and r1, r3
+    add r0, r1
+  held-out check: 1000 random vectors, 0 mismatches
