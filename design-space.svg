@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1270 770" width="1270" height="770" role="img" aria-labelledby="t d">
 <title id="t">The design space of the compilers and interpreters in compiler-herbarium</title>
-<desc id="d">A map of every entry. The horizontal axis is what sits between the source and execution, from nothing to tree, bytecode, SSA, graph, functional term, relations and a search over candidate programs. The vertical axis is how the program is run: interpreted, compiled ahead of time, compiled while running (JIT), or only analyzed. Blue filled dots are finished distilled entries, dashed hollow dots are planned ones, and amber diamonds are original entries, and thin lines join related designs.</desc>
+<desc id="d">A map of every entry. The horizontal axis is what sits between the source and execution, from nothing to tree, bytecode, SSA, graph, functional term, relations and a search over candidate programs. The vertical axis is how the program is run: interpreted, compiled ahead of time, compiled while running (JIT), or only analyzed. Blue filled dots are finished distilled entries, dashed hollow dots are planned ones, and amber diamonds are original entries.</desc>
 <style>
 :root{--bg:#fff;--fg:#1f2328;--mut:#656d76;--grid:#d0d7de;--acc:#0969da;--band:#f6f8fa;--org:#bf8700}
 @media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--mut:#8b949e;--grid:#30363d;--acc:#58a6ff;--band:#161b22;--org:#d29922}}
@@ -10,7 +10,6 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 .ax{font-size:11px;fill:var(--mut);letter-spacing:.06em;text-transform:uppercase}
 .n{font-size:12px;paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
 .p{font-style:italic;fill:var(--mut)}
-.l{stroke:var(--mut);stroke-width:1;stroke-dasharray:2 3;opacity:.8}
 .dn{fill:var(--acc)}
 .or{fill:var(--org)}
 .rb{fill:none;stroke:var(--mut);stroke-width:1}
@@ -55,12 +54,6 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <line class="g" x1="10" y1="70" x2="1260" y2="70"/>
 <line class="x" x1="180" y1="560" x2="260" y2="650"/><line class="x" x1="260" y1="560" x2="180" y2="650"/>
 <line class="x" x1="320" y1="560" x2="400" y2="650"/><line class="x" x1="400" y1="560" x2="320" y2="650"/>
-<line class="l" x1="582" y1="427" x2="442" y2="441"/>
-<line class="l" x1="582" y1="427" x2="582" y2="455"/>
-<line class="l" x1="722" y1="291" x2="722" y2="319"/>
-<line class="l" x1="722" y1="319" x2="722" y2="605"/>
-<line class="l" x1="1002" y1="319" x2="1002" y2="605"/>
-<line class="l" x1="162" y1="291" x2="162" y2="319"/>
 <circle class="dn" cx="302" cy="155" r="6"/>
 <text class="n" x="314" y="159">jlox</text>
 <circle class="pl" cx="162" cy="455" r="6"/>
@@ -144,7 +137,6 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <circle class="dn" cx="30" cy="718" r="6"/><text class="n" x="42" y="722">finished distilled entry</text>
 <circle class="pl" cx="170" cy="718" r="6"/><text class="n p" x="182" y="722">planned distilled entry (a lead in RESEARCH.md)</text>
 <polygon class="or" points="470,710 478,718 470,726 462,718"/><text class="n" x="486" y="722">original entry (not one existing design)</text>
-<line class="l" x1="790" y1="718" x2="830" y2="718"/><text class="n" x="840" y="722">related design</text>
 <rect class="rb" x="960" y="710" width="16" height="16"/><line class="x" x1="963" y1="713" x2="973" y2="723"/><line class="x" x1="973" y1="713" x2="963" y2="723"/><text class="n" x="984" y="722">will stay empty</text>
 <text class="n" x="30" y="748" style="fill:var(--mut)">Where a design sits is a judgement call. Plain empty cells are gaps no entry covers yet, and crossed cells will stay empty (see RESEARCH.md).</text>
 </svg>
