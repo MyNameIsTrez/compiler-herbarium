@@ -1,0 +1,84 @@
+== stage_source: Lua source of branch ==
+local a = 3
+local b = 5
+if a < b then
+  print(b)
+else
+  print(a)
+end
+== stage_build: the typed tree, as Go ==
+var sink any
+
+func println1(x any) {
+    print(x)
+}
+
+func Println(a []any) {
+    sink = a[0]
+    i := 0
+    for i < len(a) {
+        println1(a[i])
+        i = i + 1
+    }
+}
+
+func main() {
+    a := any(3)
+    b := any(5)
+    if a.(int) < b.(int) {
+        Println([]any{b})
+    } else {
+        Println([]any{a})
+    }
+}
+== stage_escape: batches of functions, callees first ==
+-- batch 1: println1 --
+graph (each line is an assignment `dst = src`; & is an address taken):
+walks (each location is a root; a location that escapes is walked again):
+  walk from {heap}
+  walk from x
+results:
+  println1: x does not escape
+-- batch 2: Println --
+graph (each line is an assignment `dst = src`; & is an address taken):
+  {heap} = *a
+walks (each location is a root; a location that escapes is walked again):
+  walk from {heap}
+    parameter a leaks to {heap} with derefs=1
+  walk from a
+  walk from i
+results:
+  Println: leaking param content: a
+-- batch 3: main --
+graph (each line is an assignment `dst = src`; & is an address taken):
+  {heap} = {storage for []any{...}}
+  {heap} = {storage for []any{...}}
+  a = &{storage for 3}
+  b = &{storage for 5}
+  {storage for []any{...}} = b
+  {storage for []any{...}} = a
+walks (each location is a root; a location that escapes is walked again):
+  walk from {heap}
+    {storage for 3} escapes to the heap
+    {storage for 5} escapes to the heap
+  walk from a
+  walk from b
+  walk from {storage for 3}
+  walk from {storage for 5}
+  walk from {storage for []any{...}}
+  walk from {storage for []any{...}}
+results:
+  3 escapes to heap
+  5 escapes to heap
+  []any{...} does not escape
+  []any{...} does not escape
+== stage_run: every allocation, where the analysis put it ==
+  alloc 3: heap
+  alloc a: stack
+  alloc 5: heap
+  alloc b: stack
+  alloc []any{...}: stack
+  alloc a: stack
+  alloc i: stack
+  alloc x: stack
+heap allocations: 2, deepest stack: 7 cells

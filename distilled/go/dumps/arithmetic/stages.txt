@@ -1,0 +1,58 @@
+== stage_source: Lua source of arithmetic ==
+print((2 + 3) * 4 - 6)
+== stage_build: the typed tree, as Go ==
+var sink any
+
+func println1(x any) {
+    print(x)
+}
+
+func Println(a []any) {
+    sink = a[0]
+    i := 0
+    for i < len(a) {
+        println1(a[i])
+        i = i + 1
+    }
+}
+
+func main() {
+    Println([]any{any((2 + 3) * 4 - 6)})
+}
+== stage_escape: batches of functions, callees first ==
+-- batch 1: println1 --
+graph (each line is an assignment `dst = src`; & is an address taken):
+walks (each location is a root; a location that escapes is walked again):
+  walk from {heap}
+  walk from x
+results:
+  println1: x does not escape
+-- batch 2: Println --
+graph (each line is an assignment `dst = src`; & is an address taken):
+  {heap} = *a
+walks (each location is a root; a location that escapes is walked again):
+  walk from {heap}
+    parameter a leaks to {heap} with derefs=1
+  walk from a
+  walk from i
+results:
+  Println: leaking param content: a
+-- batch 3: main --
+graph (each line is an assignment `dst = src`; & is an address taken):
+  {heap} = {storage for []any{...}}
+  {storage for []any{...}} = &{storage for (2 + 3) * 4 - 6}
+walks (each location is a root; a location that escapes is walked again):
+  walk from {heap}
+    {storage for (2 + 3) * 4 - 6} escapes to the heap
+  walk from {storage for []any{...}}
+  walk from {storage for (2 + 3) * 4 - 6}
+results:
+  []any{...} does not escape
+  (2 + 3) * 4 - 6 escapes to heap
+== stage_run: every allocation, where the analysis put it ==
+  alloc (2 + 3) * 4 - 6: heap
+  alloc []any{...}: stack
+  alloc a: stack
+  alloc i: stack
+  alloc x: stack
+heap allocations: 1, deepest stack: 5 cells

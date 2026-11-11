@@ -1,0 +1,108 @@
+== stage_source: Lua source of call ==
+local function fact(n)
+  if n < 2 then
+    return 1
+  end
+  return n * fact(n - 1)
+end
+print(fact(5))
+== stage_build: the typed tree, as Go ==
+var sink any
+
+func println1(x any) {
+    print(x)
+}
+
+func Println(a []any) {
+    sink = a[0]
+    i := 0
+    for i < len(a) {
+        println1(a[i])
+        i = i + 1
+    }
+}
+
+func main() {
+    var fact func(any) any
+    fact = func(n any) any {...}
+    Println([]any{fact(any(5))})
+}
+
+func main.func1(n any) any {
+    if n.(int) < 2 {
+        return any(1)
+    }
+    return any(n.(int) * fact(any(n.(int) - 1)).(int))
+}
+== stage_escape: batches of functions, callees first ==
+-- batch 1: println1 --
+graph (each line is an assignment `dst = src`; & is an address taken):
+walks (each location is a root; a location that escapes is walked again):
+  walk from {heap}
+  walk from x
+results:
+  println1: x does not escape
+-- batch 2: Println --
+graph (each line is an assignment `dst = src`; & is an address taken):
+  {heap} = *a
+walks (each location is a root; a location that escapes is walked again):
+  walk from {heap}
+    parameter a leaks to {heap} with derefs=1
+  walk from a
+  walk from i
+results:
+  Println: leaking param content: a
+-- batch 3: main main.func1 --
+graph (each line is an assignment `dst = src`; & is an address taken):
+  {heap} = {storage for []any{...}}
+  fact = &{storage for func literal}
+  n = &{storage for n.(int) - 1}
+  n = &{storage for 5}
+  ~r0 = &{storage for 1}
+  ~r0 = &{storage for n.(int) * fact(n.(int) - 1).(int)}
+  {storage for func literal} = &fact
+  {storage for []any{...}} = ~r0
+walks (each location is a root; a location that escapes is walked again):
+  walk from {heap}
+    {storage for 1} escapes to the heap
+    {storage for n.(int) * fact(n.(int) - 1).(int)} escapes to the heap
+  walk from fact
+  walk from n
+  walk from ~r0
+  walk from {storage for func literal}
+  walk from {storage for 1}
+  walk from {storage for n.(int) * fact(n.(int) - 1).(int)}
+  walk from {storage for n.(int) - 1}
+  walk from {storage for []any{...}}
+  walk from {storage for 5}
+results:
+  main.func1: n does not escape
+  func literal does not escape
+  1 escapes to heap
+  n.(int) * fact(n.(int) - 1).(int) escapes to heap
+  n.(int) - 1 does not escape
+  []any{...} does not escape
+  5 does not escape
+== stage_run: every allocation, where the analysis put it ==
+  alloc fact: stack
+  alloc func literal: stack
+  alloc 5: stack
+  alloc n: stack
+  alloc n.(int) - 1: stack
+  alloc n: stack
+  alloc n.(int) - 1: stack
+  alloc n: stack
+  alloc n.(int) - 1: stack
+  alloc n: stack
+  alloc n.(int) - 1: stack
+  alloc n: stack
+  alloc 1: heap
+  alloc n.(int) * fact(n.(int) - 1).(int): heap
+  alloc n.(int) * fact(n.(int) - 1).(int): heap
+  alloc n.(int) * fact(n.(int) - 1).(int): heap
+  alloc n.(int) * fact(n.(int) - 1).(int): heap
+  alloc []any{...}: stack
+  alloc a: stack
+  alloc i: stack
+  alloc x: stack
+heap allocations: 5, deepest stack: 18 cells

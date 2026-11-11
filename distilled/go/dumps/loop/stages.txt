@@ -1,0 +1,107 @@
+== stage_source: Lua source of loop ==
+local sum = 0
+local i = 1
+while i < 11 do
+  sum = sum + i
+  i = i + 1
+end
+print(sum)
+== stage_build: the typed tree, as Go ==
+var sink any
+
+func println1(x any) {
+    print(x)
+}
+
+func Println(a []any) {
+    sink = a[0]
+    i := 0
+    for i < len(a) {
+        println1(a[i])
+        i = i + 1
+    }
+}
+
+func main() {
+    sum := any(0)
+    i := any(1)
+    for i.(int) < 11 {
+        sum = any(sum.(int) + i.(int))
+        i = any(i.(int) + 1)
+    }
+    Println([]any{sum})
+}
+== stage_escape: batches of functions, callees first ==
+-- batch 1: println1 --
+graph (each line is an assignment `dst = src`; & is an address taken):
+walks (each location is a root; a location that escapes is walked again):
+  walk from {heap}
+  walk from x
+results:
+  println1: x does not escape
+-- batch 2: Println --
+graph (each line is an assignment `dst = src`; & is an address taken):
+  {heap} = *a
+walks (each location is a root; a location that escapes is walked again):
+  walk from {heap}
+    parameter a leaks to {heap} with derefs=1
+  walk from a
+  walk from i
+results:
+  Println: leaking param content: a
+-- batch 3: main --
+graph (each line is an assignment `dst = src`; & is an address taken):
+  {heap} = {storage for []any{...}}
+  sum = &{storage for 0}
+  sum = &{storage for sum.(int) + i.(int)}
+  i = &{storage for 1}
+  i = &{storage for i.(int) + 1}
+  {storage for []any{...}} = sum
+walks (each location is a root; a location that escapes is walked again):
+  walk from {heap}
+    {storage for 0} escapes to the heap
+    {storage for sum.(int) + i.(int)} escapes to the heap
+  walk from sum
+  walk from i
+    {storage for i.(int) + 1} escapes to the heap
+  walk from {storage for 0}
+  walk from {storage for 1}
+  walk from {storage for sum.(int) + i.(int)}
+  walk from {storage for i.(int) + 1}
+  walk from {storage for []any{...}}
+results:
+  0 escapes to heap
+  1 does not escape
+  sum.(int) + i.(int) escapes to heap
+  i.(int) + 1 escapes to heap
+  []any{...} does not escape
+== stage_run: every allocation, where the analysis put it ==
+  alloc 0: heap
+  alloc sum: stack
+  alloc 1: stack
+  alloc i: stack
+  alloc sum.(int) + i.(int): heap
+  alloc i.(int) + 1: heap
+  alloc sum.(int) + i.(int): heap
+  alloc i.(int) + 1: heap
+  alloc sum.(int) + i.(int): heap
+  alloc i.(int) + 1: heap
+  alloc sum.(int) + i.(int): heap
+  alloc i.(int) + 1: heap
+  alloc sum.(int) + i.(int): heap
+  alloc i.(int) + 1: heap
+  alloc sum.(int) + i.(int): heap
+  alloc i.(int) + 1: heap
+  alloc sum.(int) + i.(int): heap
+  alloc i.(int) + 1: heap
+  alloc sum.(int) + i.(int): heap
+  alloc i.(int) + 1: heap
+  alloc sum.(int) + i.(int): heap
+  alloc i.(int) + 1: heap
+  alloc sum.(int) + i.(int): heap
+  alloc i.(int) + 1: heap
+  alloc []any{...}: stack
+  alloc a: stack
+  alloc i: stack
+  alloc x: stack
+heap allocations: 21, deepest stack: 9 cells
