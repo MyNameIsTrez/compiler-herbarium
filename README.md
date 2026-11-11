@@ -70,7 +70,7 @@ This repo is Linux only. Entries may rely on Linux system calls and Linux-specif
 
 ## What earns an entry
 
-An entry is a compiler design, not a language. It needs at least one of these:
+An entry is a compiler design, not a language. The test behind every rule below is whether reading the entry could help someone write a better compiler or interpreter: faster output, faster compilation, fewer bugs or more features. It needs at least one of these:
 
 - a distinct IR or program representation (Sea of Nodes, a CFG of basic blocks, a typed AST walked directly),
 - a distinct execution model (a trace JIT, copy-and-patch, a stack machine with no register allocator), or
