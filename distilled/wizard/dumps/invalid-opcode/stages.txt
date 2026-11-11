@@ -1,0 +1,9 @@
+== stage_input ==
+sig 0: () -> ()
+func 0: sig 0, 3 bytes: 00 fe 0b
+main: func 0, 0 arguments
+
+== stage_validate ==
+func 0:
+    1  unknown
+invalid: unknown opcode

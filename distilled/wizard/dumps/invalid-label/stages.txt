@@ -1,0 +1,8 @@
+== stage_input ==
+sig 0: () -> ()
+func 0: sig 0, 4 bytes: 00 0c 03 0b
+main: func 0, 0 arguments
+
+== stage_validate ==
+func 0:
+invalid: unknown label

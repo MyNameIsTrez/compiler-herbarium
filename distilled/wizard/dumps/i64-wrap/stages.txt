@@ -1,0 +1,17 @@
+== stage_input ==
+sig 0: () -> (i32)
+func 0: sig 0, 12 bytes: 00 42 80 80 80 80 10 42 07 7c a7 0b
+main: func 0, 0 arguments
+
+== stage_validate ==
+func 0:
+    1  i64.const     4294967296             [i64]
+    7  i64.const     7                      [i64 i64]
+    9  i64.add                              [i64]
+   10  i32.wrap_i64                         [i32]
+   11  end                                  [i32]
+  side table:
+
+== stage_run ==
+  call func 0, depth 1
+  return func 0, depth 1

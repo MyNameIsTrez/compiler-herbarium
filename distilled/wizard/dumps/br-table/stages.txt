@@ -1,0 +1,52 @@
+== stage_input ==
+sig 0: (i32) -> (i32)
+sig 1: () -> (i32)
+func 0: sig 0, 26 bytes: 00 02 40 02 40 02 40 20 00 0e 02 00 01 02 0b 41 0a 0f 0b 41 14 0f 0b 41 1e 0b
+func 1: sig 1, 16 bytes: 00 41 00 10 00 41 01 10 00 6a 41 05 10 00 6a 0b
+main: func 1, 0 arguments
+
+== stage_validate ==
+func 0:
+    1  block         params 0 results 0     []
+    3  block         params 0 results 0     []
+    5  block         params 0 results 0     []
+    7  local.get     0                      [i32]
+    9  br_table      2 labels and a default []  entries 0..3
+   14  end                                  []
+   15  i32.const     10                     [i32]
+   17  return                               []
+   18  end                                  []
+   19  i32.const     20                     [i32]
+   21  return                               []
+   22  end                                  []
+   23  i32.const     30                     [i32]
+   25  end                                  [i32]
+  side table:
+     0: dpc +2, dstp +0, valcount 0, popcount 0
+     1: dpc +4, dstp +3, valcount 0, popcount 0
+     2: dpc +7, dstp +2, valcount 0, popcount 0
+     3: dpc +10, dstp +1, valcount 0, popcount 0
+func 1:
+    1  i32.const     0                      [i32]
+    3  call          0                      [i32]
+    5  i32.const     1                      [i32 i32]
+    7  call          0                      [i32 i32]
+    9  i32.add                              [i32]
+   10  i32.const     5                      [i32 i32]
+   12  call          0                      [i32 i32]
+   14  i32.add                              [i32]
+   15  end                                  [i32]
+  side table:
+
+== stage_run ==
+  call func 1, depth 1
+  call func 0, depth 2
+  br_table pc 10 -> 14, stp 1 -> 4, keep 0, drop 0
+  return func 0, depth 2
+  call func 0, depth 2
+  br_table pc 11 -> 18, stp 2 -> 4, keep 0, drop 0
+  return func 0, depth 2
+  call func 0, depth 2
+  br_table pc 12 -> 22, stp 3 -> 4, keep 0, drop 0
+  return func 0, depth 2
+  return func 1, depth 1

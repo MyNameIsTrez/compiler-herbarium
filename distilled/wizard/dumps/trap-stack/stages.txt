@@ -1,0 +1,29 @@
+== stage_input ==
+sig 0: () -> (i32)
+func 0: sig 0, 4 bytes: 00 10 00 0b
+main: func 0, 0 arguments
+
+== stage_validate ==
+func 0:
+    1  call          0                      [i32]
+    3  end                                  [i32]
+  side table:
+
+== stage_run ==
+  call func 0, depth 1
+  call func 0, depth 2
+  call func 0, depth 3
+  call func 0, depth 4
+  call func 0, depth 5
+  call func 0, depth 6
+  call func 0, depth 7
+  call func 0, depth 8
+  call func 0, depth 9
+  call func 0, depth 10
+  call func 0, depth 11
+  call func 0, depth 12
+  call func 0, depth 13
+  call func 0, depth 14
+  call func 0, depth 15
+  call func 0, depth 16
+trap: call stack exhausted

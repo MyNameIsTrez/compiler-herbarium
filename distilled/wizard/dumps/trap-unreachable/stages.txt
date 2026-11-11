@@ -1,0 +1,14 @@
+== stage_input ==
+sig 0: () -> (i32)
+func 0: sig 0, 3 bytes: 00 00 0b
+main: func 0, 0 arguments
+
+== stage_validate ==
+func 0:
+    1  unreachable                          []
+    2  end                                  [i32]
+  side table:
+
+== stage_run ==
+  call func 0, depth 1
+trap: unreachable executed

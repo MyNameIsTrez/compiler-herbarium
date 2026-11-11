@@ -1,0 +1,10 @@
+== stage_input ==
+sig 0: () -> (i32)
+func 0: sig 0, 7 bytes: 00 42 01 41 02 6a 0b
+main: func 0, 0 arguments
+
+== stage_validate ==
+func 0:
+    1  i64.const     1                      [i64]
+    3  i32.const     2                      [i64 i32]
+invalid: type mismatch

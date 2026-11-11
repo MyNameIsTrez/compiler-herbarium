@@ -1,0 +1,31 @@
+== stage_input ==
+sig 0: (i32) -> (i32)
+func 0: sig 0, 28 bytes: 01 02 7f 20 00 03 00 20 01 41 01 6a 21 01 41 01 6b 22 02 20 02 0d 00 0b 1a 20 01 0b
+main: func 0, 1 arguments
+
+== stage_validate ==
+func 0:
+    3  local.get     0                      [i32]
+    5  loop          params 1 results 1     [i32]
+    7  local.get     1                      [i32 i32]
+    9  i32.const     1                      [i32 i32 i32]
+   11  i32.add                              [i32 i32]
+   12  local.set     1                      [i32]
+   14  i32.const     1                      [i32 i32]
+   16  i32.sub                              [i32]
+   17  local.tee     2                      [i32]
+   19  local.get     2                      [i32 i32]
+   21  br_if         0                      [i32]  entries 0..0
+   23  end                                  [i32]
+   24  drop                                 []
+   25  local.get     1                      [i32]
+   27  end                                  [i32]
+  side table:
+     0: dpc -16, dstp +0, valcount 1, popcount 0
+
+== stage_run ==
+  call func 0, depth 1
+  br_if    pc 21 -> 5, stp 0 -> 0, keep 1, drop 0
+  br_if    pc 21 -> 5, stp 0 -> 0, keep 1, drop 0
+  br_if    not taken, stp 0 -> 1
+  return func 0, depth 1

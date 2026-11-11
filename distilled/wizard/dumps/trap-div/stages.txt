@@ -1,0 +1,16 @@
+== stage_input ==
+sig 0: () -> (i32)
+func 0: sig 0, 7 bytes: 00 41 01 41 00 6e 0b
+main: func 0, 0 arguments
+
+== stage_validate ==
+func 0:
+    1  i32.const     1                      [i32]
+    3  i32.const     0                      [i32 i32]
+    5  i32.div_u                            [i32]
+    6  end                                  [i32]
+  side table:
+
+== stage_run ==
+  call func 0, depth 1
+trap: integer divide by zero

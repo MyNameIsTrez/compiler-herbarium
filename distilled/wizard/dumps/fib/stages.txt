@@ -1,0 +1,91 @@
+== stage_input ==
+sig 0: (i32) -> (i32)
+sig 1: () -> (i32)
+func 0: sig 0, 28 bytes: 00 20 00 41 02 48 04 7f 20 00 05 20 00 41 01 6b 10 00 20 00 41 02 6b 10 00 6a 0b 0b
+func 1: sig 1, 6 bytes: 00 41 05 10 00 0b
+main: func 1, 0 arguments
+
+== stage_validate ==
+func 0:
+    1  local.get     0                      [i32]
+    3  i32.const     2                      [i32 i32]
+    5  i32.lt_s                             [i32]
+    6  if            params 0 results 1     []  entries 0..0
+    8  local.get     0                      [i32]
+   10  else                                 []  entries 1..1
+   11  local.get     0                      [i32]
+   13  i32.const     1                      [i32 i32]
+   15  i32.sub                              [i32]
+   16  call          0                      [i32]
+   18  local.get     0                      [i32 i32]
+   20  i32.const     2                      [i32 i32 i32]
+   22  i32.sub                              [i32 i32]
+   23  call          0                      [i32 i32]
+   25  i32.add                              [i32]
+   26  end                                  [i32]
+   27  end                                  [i32]
+  side table:
+     0: dpc +5, dstp +2, valcount 0, popcount 0
+     1: dpc +16, dstp +1, valcount 0, popcount 0
+func 1:
+    1  i32.const     5                      [i32]
+    3  call          0                      [i32]
+    5  end                                  [i32]
+  side table:
+
+== stage_run ==
+  call func 1, depth 1
+  call func 0, depth 2
+  if       pc 6 -> 11, stp 0 -> 2, keep 0, drop 0
+  call func 0, depth 3
+  if       pc 6 -> 11, stp 0 -> 2, keep 0, drop 0
+  call func 0, depth 4
+  if       pc 6 -> 11, stp 0 -> 2, keep 0, drop 0
+  call func 0, depth 5
+  if       pc 6 -> 11, stp 0 -> 2, keep 0, drop 0
+  call func 0, depth 6
+  if       not taken, stp 0 -> 1
+  else     pc 10 -> 26, stp 1 -> 2, keep 0, drop 0
+  return func 0, depth 6
+  call func 0, depth 6
+  if       not taken, stp 0 -> 1
+  else     pc 10 -> 26, stp 1 -> 2, keep 0, drop 0
+  return func 0, depth 6
+  return func 0, depth 5
+  call func 0, depth 5
+  if       not taken, stp 0 -> 1
+  else     pc 10 -> 26, stp 1 -> 2, keep 0, drop 0
+  return func 0, depth 5
+  return func 0, depth 4
+  call func 0, depth 4
+  if       pc 6 -> 11, stp 0 -> 2, keep 0, drop 0
+  call func 0, depth 5
+  if       not taken, stp 0 -> 1
+  else     pc 10 -> 26, stp 1 -> 2, keep 0, drop 0
+  return func 0, depth 5
+  call func 0, depth 5
+  if       not taken, stp 0 -> 1
+  else     pc 10 -> 26, stp 1 -> 2, keep 0, drop 0
+  return func 0, depth 5
+  return func 0, depth 4
+  return func 0, depth 3
+  call func 0, depth 3
+  if       pc 6 -> 11, stp 0 -> 2, keep 0, drop 0
+  call func 0, depth 4
+  if       pc 6 -> 11, stp 0 -> 2, keep 0, drop 0
+  call func 0, depth 5
+  if       not taken, stp 0 -> 1
+  else     pc 10 -> 26, stp 1 -> 2, keep 0, drop 0
+  return func 0, depth 5
+  call func 0, depth 5
+  if       not taken, stp 0 -> 1
+  else     pc 10 -> 26, stp 1 -> 2, keep 0, drop 0
+  return func 0, depth 5
+  return func 0, depth 4
+  call func 0, depth 4
+  if       not taken, stp 0 -> 1
+  else     pc 10 -> 26, stp 1 -> 2, keep 0, drop 0
+  return func 0, depth 4
+  return func 0, depth 3
+  return func 0, depth 2
+  return func 1, depth 1

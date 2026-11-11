@@ -1,0 +1,20 @@
+== stage_input ==
+sig 0: (i32 i32) -> (i32)
+func 0: sig 0, 13 bytes: 00 20 00 20 01 6a 41 03 6c 41 02 6e 0b
+main: func 0, 2 arguments
+
+== stage_validate ==
+func 0:
+    1  local.get     0                      [i32]
+    3  local.get     1                      [i32 i32]
+    5  i32.add                              [i32]
+    6  i32.const     3                      [i32 i32]
+    8  i32.mul                              [i32]
+    9  i32.const     2                      [i32 i32]
+   11  i32.div_u                            [i32]
+   12  end                                  [i32]
+  side table:
+
+== stage_run ==
+  call func 0, depth 1
+  return func 0, depth 1

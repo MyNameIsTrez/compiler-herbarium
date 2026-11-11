@@ -113,6 +113,7 @@ The JIT column says whether the real design compiles code to machine code while 
 | [`distilled/sqlite-vdbe`](distilled/sqlite-vdbe/) | 1008 | The query planner and virtual machine of SQLite | Interpreter | ❌ | A SELECT planned with a cost model in LogEst (which loop for each table, which table is outer), then compiled to register bytecode for a cursor machine, with a covering index and a deferred table seek |
 | [`distilled/stoke`](distilled/stoke/) | 506 | STOKE | Compiler | ❌ | Stochastic search over whole programs: random moves accepted by Metropolis-Hastings on a cost of wrong bits plus instruction count, with a cost function that stops early |
 | [`distilled/tcc`](distilled/tcc/) | 724 | The Tiny C Compiler | Compiler | ❌ | One-pass code generation from a lazy value stack: constants and locals loaded only when needed, comparisons kept in the CPU flags, forward jumps as chains patched later |
+| [`distilled/wizard`](distilled/wizard/) | 1007 | The side table and in-place interpreter of the Wizard WebAssembly engine | Interpreter | ❌ | A validator that walks structured control flow with a stack of open blocks writes one entry per branch (pc delta, side table delta, values to keep and to drop), so the interpreter runs the original bytes with a pc and a side table pointer and never scans for an `end` |
 | [`distilled/wren`](distilled/wren/) | 736 | The Wren virtual machine | Interpreter | ❌ | Every operator is a method call: names with their arity are interned in one symbol table, and a class finds a method by indexing an array with the symbol. Calling a function pushes a frame in the one loop |
 
 Every row is a finished entry. Designs that are planned or still being investigated are leads in [RESEARCH.md](RESEARCH.md), and a lead gets a row here only when its entry passes every example.
@@ -136,7 +137,7 @@ Each entry follows the same shape, so the same file names can be opened in diffe
   main.c            the whole compiler: the hardcoded input, then one clearly marked section per stage
   README.md         what the design is, what this version leaves out
   FIDELITY.md       how each stage maps to the real compiler (distilled entries only, see FIDELITY.md at the repository root)
-  examples/<example>/         one input, with its expected.txt and the program.lua, goal.txt or query.sql that defines it
+  examples/<example>/         one input, with its expected.txt and the program.lua, goal.txt, query.sql or program.js that defines it
   dumps/<example>/stages.txt  the intermediate form after each stage, for each example
   dumps/<example>/code.bin    the final machine code for each example, for entries that generate any
 ```
