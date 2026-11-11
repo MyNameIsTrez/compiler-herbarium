@@ -1,0 +1,215 @@
+== stage_source: Wren source of call ==
+var fact = Fn.new {|n|
+  if (n < 2) return 1
+  return n * fact.call(n - 1)
+}
+System.print(fact.call(5))
+== stage_core: method symbols, and each class's method array ==
+symbol 0: new(_)
+symbol 1: call(_)
+symbol 2: print(_)
+symbol 3: +(_)
+symbol 4: -(_)
+symbol 5: *(_)
+symbol 6: <(_)
+Num:
+  [0] -
+  [1] -
+  [2] -
+  [3] primitive
+  [4] primitive
+  [5] primitive
+  [6] primitive
+Fn:
+  [0] -
+  [1] function call
+  [2] -
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+Fn metaclass:
+  [0] primitive
+  [1] -
+  [2] -
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+System metaclass:
+  [0] -
+  [1] -
+  [2] primitive
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+== stage_compile: bytecode, each function printed when it is finished ==
+== <fn> ==
+0000 LOAD_LOCAL_1    
+0001 CONSTANT         0 '2'
+0004 CALL_1           6 '<(_)'
+0007 JUMP_IF          4 -> 14
+0010 CONSTANT         1 '1'
+0013 RETURN          
+0014 LOAD_LOCAL_1    
+0015 LOAD_MODULE_VAR  2 'fact'
+0018 LOAD_LOCAL_1    
+0019 CONSTANT         1 '1'
+0022 CALL_1           4 '-(_)'
+0025 CALL_1           1 'call(_)'
+0028 CALL_1           5 '*(_)'
+0031 RETURN          
+0032 NULL            
+0033 RETURN          
+0034 END             
+== <module> ==
+0000 LOAD_MODULE_VAR  1 'Fn'
+0003 CLOSURE          0 <<fn>>
+0006 CALL_1           0 'new(_)'
+0009 STORE_MODULE_VAR 2 'fact'
+0012 POP             
+0013 LOAD_MODULE_VAR  0 'System'
+0016 LOAD_MODULE_VAR  2 'fact'
+0019 CONSTANT         1 '5'
+0022 CALL_1           1 'call(_)'
+0025 CALL_1           2 'print(_)'
+0028 POP             
+0029 END_MODULE      
+0030 RETURN          
+0031 END             
+== stage_run: value stack, then the instruction about to run ==
+          [ <fn> ]
+0000 LOAD_MODULE_VAR  1 'Fn'
+          [ <fn> ][ Fn ]
+0003 CLOSURE          0 <<fn>>
+          [ <fn> ][ Fn ][ <fn> ]
+0006 CALL_1           0 'new(_)'
+          [ <fn> ][ <fn> ]
+0009 STORE_MODULE_VAR 2 'fact'
+          [ <fn> ][ <fn> ]
+0012 POP             
+          [ <fn> ]
+0013 LOAD_MODULE_VAR  0 'System'
+          [ <fn> ][ System ]
+0016 LOAD_MODULE_VAR  2 'fact'
+          [ <fn> ][ System ][ <fn> ]
+0019 CONSTANT         1 '5'
+          [ <fn> ][ System ][ <fn> ][ 5 ]
+0022 CALL_1           1 'call(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ]
+0000 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ]
+0001 CONSTANT         0 '2'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ 2 ]
+0004 CALL_1           6 '<(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ false ]
+0007 JUMP_IF          4 -> 14
+          [ <fn> ][ System ][ <fn> ][ 5 ]
+0014 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ]
+0015 LOAD_MODULE_VAR  2 'fact'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ]
+0018 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 5 ]
+0019 CONSTANT         1 '1'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 5 ][ 1 ]
+0022 CALL_1           4 '-(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ]
+0025 CALL_1           1 'call(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ]
+0000 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ]
+0001 CONSTANT         0 '2'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ 2 ]
+0004 CALL_1           6 '<(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ false ]
+0007 JUMP_IF          4 -> 14
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ]
+0014 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ]
+0015 LOAD_MODULE_VAR  2 'fact'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ]
+0018 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 4 ]
+0019 CONSTANT         1 '1'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 4 ][ 1 ]
+0022 CALL_1           4 '-(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ]
+0025 CALL_1           1 'call(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ]
+0000 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ]
+0001 CONSTANT         0 '2'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ 2 ]
+0004 CALL_1           6 '<(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ false ]
+0007 JUMP_IF          4 -> 14
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ]
+0014 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ]
+0015 LOAD_MODULE_VAR  2 'fact'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ]
+0018 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 3 ]
+0019 CONSTANT         1 '1'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 3 ][ 1 ]
+0022 CALL_1           4 '-(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ]
+0025 CALL_1           1 'call(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ]
+0000 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ]
+0001 CONSTANT         0 '2'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ][ 2 ]
+0004 CALL_1           6 '<(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ false ]
+0007 JUMP_IF          4 -> 14
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ]
+0014 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ]
+0015 LOAD_MODULE_VAR  2 'fact'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ][ <fn> ]
+0018 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ][ <fn> ][ 2 ]
+0019 CONSTANT         1 '1'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ][ <fn> ][ 2 ][ 1 ]
+0022 CALL_1           4 '-(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ][ <fn> ][ 1 ]
+0025 CALL_1           1 'call(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ][ <fn> ][ 1 ]
+0000 LOAD_LOCAL_1    
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ][ <fn> ][ 1 ][ 1 ]
+0001 CONSTANT         0 '2'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ][ <fn> ][ 1 ][ 1 ][ 2 ]
+0004 CALL_1           6 '<(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ][ <fn> ][ 1 ][ true ]
+0007 JUMP_IF          4 -> 14
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ][ <fn> ][ 1 ]
+0010 CONSTANT         1 '1'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ][ <fn> ][ 1 ][ 1 ]
+0013 RETURN          
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ][ 1 ]
+0028 CALL_1           5 '*(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ <fn> ][ 2 ][ 2 ]
+0031 RETURN          
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 3 ][ 2 ]
+0028 CALL_1           5 '*(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ <fn> ][ 3 ][ 6 ]
+0031 RETURN          
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 4 ][ 6 ]
+0028 CALL_1           5 '*(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ <fn> ][ 4 ][ 24 ]
+0031 RETURN          
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 5 ][ 24 ]
+0028 CALL_1           5 '*(_)'
+          [ <fn> ][ System ][ <fn> ][ 5 ][ 120 ]
+0031 RETURN          
+          [ <fn> ][ System ][ 120 ]
+0025 CALL_1           2 'print(_)'
+          [ <fn> ][ 120 ]
+0028 POP             
+          [ <fn> ]
+0029 END_MODULE      
+          [ <fn> ][ null ]
+0030 RETURN          

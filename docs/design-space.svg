@@ -73,8 +73,8 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:var(--
 <text class="n" x="454" y="155">clox</text>
 <circle class="pl" cx="442" cy="175" r="6"/>
 <text class="n p" x="454" y="179">Wizard</text>
-<circle class="pl" cx="442" cy="199" r="6"/>
-<text class="n p" x="454" y="203">Wren</text>
+<circle class="dn" cx="442" cy="199" r="6"/>
+<text class="n" x="454" y="203">wren</text>
 <circle class="pl" cx="442" cy="291" r="6"/>
 <text class="n p" x="454" y="295">Zig</text>
 <polygon class="or" points="162,283 170,291 162,299 154,291"/>

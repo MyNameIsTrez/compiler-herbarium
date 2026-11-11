@@ -1,0 +1,411 @@
+== stage_source: Wren source of loop ==
+var sum = 0
+var i = 1
+while (i < 11) {
+  sum = sum + i
+  i = i + 1
+}
+System.print(sum)
+== stage_core: method symbols, and each class's method array ==
+symbol 0: new(_)
+symbol 1: call(_)
+symbol 2: print(_)
+symbol 3: +(_)
+symbol 4: -(_)
+symbol 5: *(_)
+symbol 6: <(_)
+Num:
+  [0] -
+  [1] -
+  [2] -
+  [3] primitive
+  [4] primitive
+  [5] primitive
+  [6] primitive
+Fn:
+  [0] -
+  [1] function call
+  [2] -
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+Fn metaclass:
+  [0] primitive
+  [1] -
+  [2] -
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+System metaclass:
+  [0] -
+  [1] -
+  [2] primitive
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+== stage_compile: bytecode, each function printed when it is finished ==
+== <module> ==
+0000 CONSTANT         0 '0'
+0003 STORE_MODULE_VAR 2 'sum'
+0006 POP             
+0007 CONSTANT         1 '1'
+0010 STORE_MODULE_VAR 3 'i'
+0013 POP             
+0014 LOAD_MODULE_VAR  3 'i'
+0017 CONSTANT         2 '11'
+0020 CALL_1           6 '<(_)'
+0023 JUMP_IF          29 -> 55
+0026 LOAD_MODULE_VAR  2 'sum'
+0029 LOAD_MODULE_VAR  3 'i'
+0032 CALL_1           3 '+(_)'
+0035 STORE_MODULE_VAR 2 'sum'
+0038 POP             
+0039 LOAD_MODULE_VAR  3 'i'
+0042 CONSTANT         1 '1'
+0045 CALL_1           3 '+(_)'
+0048 STORE_MODULE_VAR 3 'i'
+0051 POP             
+0052 LOOP             41 -> 14
+0055 LOAD_MODULE_VAR  0 'System'
+0058 LOAD_MODULE_VAR  2 'sum'
+0061 CALL_1           2 'print(_)'
+0064 POP             
+0065 END_MODULE      
+0066 RETURN          
+0067 END             
+== stage_run: value stack, then the instruction about to run ==
+          [ <fn> ]
+0000 CONSTANT         0 '0'
+          [ <fn> ][ 0 ]
+0003 STORE_MODULE_VAR 2 'sum'
+          [ <fn> ][ 0 ]
+0006 POP             
+          [ <fn> ]
+0007 CONSTANT         1 '1'
+          [ <fn> ][ 1 ]
+0010 STORE_MODULE_VAR 3 'i'
+          [ <fn> ][ 1 ]
+0013 POP             
+          [ <fn> ]
+0014 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 1 ]
+0017 CONSTANT         2 '11'
+          [ <fn> ][ 1 ][ 11 ]
+0020 CALL_1           6 '<(_)'
+          [ <fn> ][ true ]
+0023 JUMP_IF          29 -> 55
+          [ <fn> ]
+0026 LOAD_MODULE_VAR  2 'sum'
+          [ <fn> ][ 0 ]
+0029 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 0 ][ 1 ]
+0032 CALL_1           3 '+(_)'
+          [ <fn> ][ 1 ]
+0035 STORE_MODULE_VAR 2 'sum'
+          [ <fn> ][ 1 ]
+0038 POP             
+          [ <fn> ]
+0039 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 1 ]
+0042 CONSTANT         1 '1'
+          [ <fn> ][ 1 ][ 1 ]
+0045 CALL_1           3 '+(_)'
+          [ <fn> ][ 2 ]
+0048 STORE_MODULE_VAR 3 'i'
+          [ <fn> ][ 2 ]
+0051 POP             
+          [ <fn> ]
+0052 LOOP             41 -> 14
+          [ <fn> ]
+0014 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 2 ]
+0017 CONSTANT         2 '11'
+          [ <fn> ][ 2 ][ 11 ]
+0020 CALL_1           6 '<(_)'
+          [ <fn> ][ true ]
+0023 JUMP_IF          29 -> 55
+          [ <fn> ]
+0026 LOAD_MODULE_VAR  2 'sum'
+          [ <fn> ][ 1 ]
+0029 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 1 ][ 2 ]
+0032 CALL_1           3 '+(_)'
+          [ <fn> ][ 3 ]
+0035 STORE_MODULE_VAR 2 'sum'
+          [ <fn> ][ 3 ]
+0038 POP             
+          [ <fn> ]
+0039 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 2 ]
+0042 CONSTANT         1 '1'
+          [ <fn> ][ 2 ][ 1 ]
+0045 CALL_1           3 '+(_)'
+          [ <fn> ][ 3 ]
+0048 STORE_MODULE_VAR 3 'i'
+          [ <fn> ][ 3 ]
+0051 POP             
+          [ <fn> ]
+0052 LOOP             41 -> 14
+          [ <fn> ]
+0014 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 3 ]
+0017 CONSTANT         2 '11'
+          [ <fn> ][ 3 ][ 11 ]
+0020 CALL_1           6 '<(_)'
+          [ <fn> ][ true ]
+0023 JUMP_IF          29 -> 55
+          [ <fn> ]
+0026 LOAD_MODULE_VAR  2 'sum'
+          [ <fn> ][ 3 ]
+0029 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 3 ][ 3 ]
+0032 CALL_1           3 '+(_)'
+          [ <fn> ][ 6 ]
+0035 STORE_MODULE_VAR 2 'sum'
+          [ <fn> ][ 6 ]
+0038 POP             
+          [ <fn> ]
+0039 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 3 ]
+0042 CONSTANT         1 '1'
+          [ <fn> ][ 3 ][ 1 ]
+0045 CALL_1           3 '+(_)'
+          [ <fn> ][ 4 ]
+0048 STORE_MODULE_VAR 3 'i'
+          [ <fn> ][ 4 ]
+0051 POP             
+          [ <fn> ]
+0052 LOOP             41 -> 14
+          [ <fn> ]
+0014 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 4 ]
+0017 CONSTANT         2 '11'
+          [ <fn> ][ 4 ][ 11 ]
+0020 CALL_1           6 '<(_)'
+          [ <fn> ][ true ]
+0023 JUMP_IF          29 -> 55
+          [ <fn> ]
+0026 LOAD_MODULE_VAR  2 'sum'
+          [ <fn> ][ 6 ]
+0029 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 6 ][ 4 ]
+0032 CALL_1           3 '+(_)'
+          [ <fn> ][ 10 ]
+0035 STORE_MODULE_VAR 2 'sum'
+          [ <fn> ][ 10 ]
+0038 POP             
+          [ <fn> ]
+0039 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 4 ]
+0042 CONSTANT         1 '1'
+          [ <fn> ][ 4 ][ 1 ]
+0045 CALL_1           3 '+(_)'
+          [ <fn> ][ 5 ]
+0048 STORE_MODULE_VAR 3 'i'
+          [ <fn> ][ 5 ]
+0051 POP             
+          [ <fn> ]
+0052 LOOP             41 -> 14
+          [ <fn> ]
+0014 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 5 ]
+0017 CONSTANT         2 '11'
+          [ <fn> ][ 5 ][ 11 ]
+0020 CALL_1           6 '<(_)'
+          [ <fn> ][ true ]
+0023 JUMP_IF          29 -> 55
+          [ <fn> ]
+0026 LOAD_MODULE_VAR  2 'sum'
+          [ <fn> ][ 10 ]
+0029 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 10 ][ 5 ]
+0032 CALL_1           3 '+(_)'
+          [ <fn> ][ 15 ]
+0035 STORE_MODULE_VAR 2 'sum'
+          [ <fn> ][ 15 ]
+0038 POP             
+          [ <fn> ]
+0039 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 5 ]
+0042 CONSTANT         1 '1'
+          [ <fn> ][ 5 ][ 1 ]
+0045 CALL_1           3 '+(_)'
+          [ <fn> ][ 6 ]
+0048 STORE_MODULE_VAR 3 'i'
+          [ <fn> ][ 6 ]
+0051 POP             
+          [ <fn> ]
+0052 LOOP             41 -> 14
+          [ <fn> ]
+0014 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 6 ]
+0017 CONSTANT         2 '11'
+          [ <fn> ][ 6 ][ 11 ]
+0020 CALL_1           6 '<(_)'
+          [ <fn> ][ true ]
+0023 JUMP_IF          29 -> 55
+          [ <fn> ]
+0026 LOAD_MODULE_VAR  2 'sum'
+          [ <fn> ][ 15 ]
+0029 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 15 ][ 6 ]
+0032 CALL_1           3 '+(_)'
+          [ <fn> ][ 21 ]
+0035 STORE_MODULE_VAR 2 'sum'
+          [ <fn> ][ 21 ]
+0038 POP             
+          [ <fn> ]
+0039 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 6 ]
+0042 CONSTANT         1 '1'
+          [ <fn> ][ 6 ][ 1 ]
+0045 CALL_1           3 '+(_)'
+          [ <fn> ][ 7 ]
+0048 STORE_MODULE_VAR 3 'i'
+          [ <fn> ][ 7 ]
+0051 POP             
+          [ <fn> ]
+0052 LOOP             41 -> 14
+          [ <fn> ]
+0014 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 7 ]
+0017 CONSTANT         2 '11'
+          [ <fn> ][ 7 ][ 11 ]
+0020 CALL_1           6 '<(_)'
+          [ <fn> ][ true ]
+0023 JUMP_IF          29 -> 55
+          [ <fn> ]
+0026 LOAD_MODULE_VAR  2 'sum'
+          [ <fn> ][ 21 ]
+0029 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 21 ][ 7 ]
+0032 CALL_1           3 '+(_)'
+          [ <fn> ][ 28 ]
+0035 STORE_MODULE_VAR 2 'sum'
+          [ <fn> ][ 28 ]
+0038 POP             
+          [ <fn> ]
+0039 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 7 ]
+0042 CONSTANT         1 '1'
+          [ <fn> ][ 7 ][ 1 ]
+0045 CALL_1           3 '+(_)'
+          [ <fn> ][ 8 ]
+0048 STORE_MODULE_VAR 3 'i'
+          [ <fn> ][ 8 ]
+0051 POP             
+          [ <fn> ]
+0052 LOOP             41 -> 14
+          [ <fn> ]
+0014 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 8 ]
+0017 CONSTANT         2 '11'
+          [ <fn> ][ 8 ][ 11 ]
+0020 CALL_1           6 '<(_)'
+          [ <fn> ][ true ]
+0023 JUMP_IF          29 -> 55
+          [ <fn> ]
+0026 LOAD_MODULE_VAR  2 'sum'
+          [ <fn> ][ 28 ]
+0029 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 28 ][ 8 ]
+0032 CALL_1           3 '+(_)'
+          [ <fn> ][ 36 ]
+0035 STORE_MODULE_VAR 2 'sum'
+          [ <fn> ][ 36 ]
+0038 POP             
+          [ <fn> ]
+0039 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 8 ]
+0042 CONSTANT         1 '1'
+          [ <fn> ][ 8 ][ 1 ]
+0045 CALL_1           3 '+(_)'
+          [ <fn> ][ 9 ]
+0048 STORE_MODULE_VAR 3 'i'
+          [ <fn> ][ 9 ]
+0051 POP             
+          [ <fn> ]
+0052 LOOP             41 -> 14
+          [ <fn> ]
+0014 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 9 ]
+0017 CONSTANT         2 '11'
+          [ <fn> ][ 9 ][ 11 ]
+0020 CALL_1           6 '<(_)'
+          [ <fn> ][ true ]
+0023 JUMP_IF          29 -> 55
+          [ <fn> ]
+0026 LOAD_MODULE_VAR  2 'sum'
+          [ <fn> ][ 36 ]
+0029 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 36 ][ 9 ]
+0032 CALL_1           3 '+(_)'
+          [ <fn> ][ 45 ]
+0035 STORE_MODULE_VAR 2 'sum'
+          [ <fn> ][ 45 ]
+0038 POP             
+          [ <fn> ]
+0039 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 9 ]
+0042 CONSTANT         1 '1'
+          [ <fn> ][ 9 ][ 1 ]
+0045 CALL_1           3 '+(_)'
+          [ <fn> ][ 10 ]
+0048 STORE_MODULE_VAR 3 'i'
+          [ <fn> ][ 10 ]
+0051 POP             
+          [ <fn> ]
+0052 LOOP             41 -> 14
+          [ <fn> ]
+0014 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 10 ]
+0017 CONSTANT         2 '11'
+          [ <fn> ][ 10 ][ 11 ]
+0020 CALL_1           6 '<(_)'
+          [ <fn> ][ true ]
+0023 JUMP_IF          29 -> 55
+          [ <fn> ]
+0026 LOAD_MODULE_VAR  2 'sum'
+          [ <fn> ][ 45 ]
+0029 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 45 ][ 10 ]
+0032 CALL_1           3 '+(_)'
+          [ <fn> ][ 55 ]
+0035 STORE_MODULE_VAR 2 'sum'
+          [ <fn> ][ 55 ]
+0038 POP             
+          [ <fn> ]
+0039 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 10 ]
+0042 CONSTANT         1 '1'
+          [ <fn> ][ 10 ][ 1 ]
+0045 CALL_1           3 '+(_)'
+          [ <fn> ][ 11 ]
+0048 STORE_MODULE_VAR 3 'i'
+          [ <fn> ][ 11 ]
+0051 POP             
+          [ <fn> ]
+0052 LOOP             41 -> 14
+          [ <fn> ]
+0014 LOAD_MODULE_VAR  3 'i'
+          [ <fn> ][ 11 ]
+0017 CONSTANT         2 '11'
+          [ <fn> ][ 11 ][ 11 ]
+0020 CALL_1           6 '<(_)'
+          [ <fn> ][ false ]
+0023 JUMP_IF          29 -> 55
+          [ <fn> ]
+0055 LOAD_MODULE_VAR  0 'System'
+          [ <fn> ][ System ]
+0058 LOAD_MODULE_VAR  2 'sum'
+          [ <fn> ][ System ][ 55 ]
+0061 CALL_1           2 'print(_)'
+          [ <fn> ][ 55 ]
+0064 POP             
+          [ <fn> ]
+0065 END_MODULE      
+          [ <fn> ][ null ]
+0066 RETURN          

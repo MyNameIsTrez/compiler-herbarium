@@ -1,0 +1,82 @@
+== stage_source: Wren source of arithmetic ==
+System.print((2 + 3) * 4 - 6)
+== stage_core: method symbols, and each class's method array ==
+symbol 0: new(_)
+symbol 1: call(_)
+symbol 2: print(_)
+symbol 3: +(_)
+symbol 4: -(_)
+symbol 5: *(_)
+symbol 6: <(_)
+Num:
+  [0] -
+  [1] -
+  [2] -
+  [3] primitive
+  [4] primitive
+  [5] primitive
+  [6] primitive
+Fn:
+  [0] -
+  [1] function call
+  [2] -
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+Fn metaclass:
+  [0] primitive
+  [1] -
+  [2] -
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+System metaclass:
+  [0] -
+  [1] -
+  [2] primitive
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+== stage_compile: bytecode, each function printed when it is finished ==
+== <module> ==
+0000 LOAD_MODULE_VAR  0 'System'
+0003 CONSTANT         0 '2'
+0006 CONSTANT         1 '3'
+0009 CALL_1           3 '+(_)'
+0012 CONSTANT         2 '4'
+0015 CALL_1           5 '*(_)'
+0018 CONSTANT         3 '6'
+0021 CALL_1           4 '-(_)'
+0024 CALL_1           2 'print(_)'
+0027 POP             
+0028 END_MODULE      
+0029 RETURN          
+0030 END             
+== stage_run: value stack, then the instruction about to run ==
+          [ <fn> ]
+0000 LOAD_MODULE_VAR  0 'System'
+          [ <fn> ][ System ]
+0003 CONSTANT         0 '2'
+          [ <fn> ][ System ][ 2 ]
+0006 CONSTANT         1 '3'
+          [ <fn> ][ System ][ 2 ][ 3 ]
+0009 CALL_1           3 '+(_)'
+          [ <fn> ][ System ][ 5 ]
+0012 CONSTANT         2 '4'
+          [ <fn> ][ System ][ 5 ][ 4 ]
+0015 CALL_1           5 '*(_)'
+          [ <fn> ][ System ][ 20 ]
+0018 CONSTANT         3 '6'
+          [ <fn> ][ System ][ 20 ][ 6 ]
+0021 CALL_1           4 '-(_)'
+          [ <fn> ][ System ][ 14 ]
+0024 CALL_1           2 'print(_)'
+          [ <fn> ][ 14 ]
+0027 POP             
+          [ <fn> ]
+0028 END_MODULE      
+          [ <fn> ][ null ]
+0029 RETURN          

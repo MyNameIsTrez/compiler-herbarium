@@ -1,0 +1,107 @@
+== stage_source: Wren source of branch ==
+var a = 3
+var b = 5
+if (a < b) {
+  System.print(b)
+} else {
+  System.print(a)
+}
+== stage_core: method symbols, and each class's method array ==
+symbol 0: new(_)
+symbol 1: call(_)
+symbol 2: print(_)
+symbol 3: +(_)
+symbol 4: -(_)
+symbol 5: *(_)
+symbol 6: <(_)
+Num:
+  [0] -
+  [1] -
+  [2] -
+  [3] primitive
+  [4] primitive
+  [5] primitive
+  [6] primitive
+Fn:
+  [0] -
+  [1] function call
+  [2] -
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+Fn metaclass:
+  [0] primitive
+  [1] -
+  [2] -
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+System metaclass:
+  [0] -
+  [1] -
+  [2] primitive
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+== stage_compile: bytecode, each function printed when it is finished ==
+== <module> ==
+0000 CONSTANT         0 '3'
+0003 STORE_MODULE_VAR 2 'a'
+0006 POP             
+0007 CONSTANT         1 '5'
+0010 STORE_MODULE_VAR 3 'b'
+0013 POP             
+0014 LOAD_MODULE_VAR  2 'a'
+0017 LOAD_MODULE_VAR  3 'b'
+0020 CALL_1           6 '<(_)'
+0023 JUMP_IF          13 -> 39
+0026 LOAD_MODULE_VAR  0 'System'
+0029 LOAD_MODULE_VAR  3 'b'
+0032 CALL_1           2 'print(_)'
+0035 POP             
+0036 JUMP             10 -> 49
+0039 LOAD_MODULE_VAR  0 'System'
+0042 LOAD_MODULE_VAR  2 'a'
+0045 CALL_1           2 'print(_)'
+0048 POP             
+0049 END_MODULE      
+0050 RETURN          
+0051 END             
+== stage_run: value stack, then the instruction about to run ==
+          [ <fn> ]
+0000 CONSTANT         0 '3'
+          [ <fn> ][ 3 ]
+0003 STORE_MODULE_VAR 2 'a'
+          [ <fn> ][ 3 ]
+0006 POP             
+          [ <fn> ]
+0007 CONSTANT         1 '5'
+          [ <fn> ][ 5 ]
+0010 STORE_MODULE_VAR 3 'b'
+          [ <fn> ][ 5 ]
+0013 POP             
+          [ <fn> ]
+0014 LOAD_MODULE_VAR  2 'a'
+          [ <fn> ][ 3 ]
+0017 LOAD_MODULE_VAR  3 'b'
+          [ <fn> ][ 3 ][ 5 ]
+0020 CALL_1           6 '<(_)'
+          [ <fn> ][ true ]
+0023 JUMP_IF          13 -> 39
+          [ <fn> ]
+0026 LOAD_MODULE_VAR  0 'System'
+          [ <fn> ][ System ]
+0029 LOAD_MODULE_VAR  3 'b'
+          [ <fn> ][ System ][ 5 ]
+0032 CALL_1           2 'print(_)'
+          [ <fn> ][ 5 ]
+0035 POP             
+          [ <fn> ]
+0036 JUMP             10 -> 49
+          [ <fn> ]
+0049 END_MODULE      
+          [ <fn> ][ null ]
+0050 RETURN          

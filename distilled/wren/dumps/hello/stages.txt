@@ -1,0 +1,64 @@
+== stage_source: Wren source of hello ==
+System.print("Hello, world!")
+== stage_core: method symbols, and each class's method array ==
+symbol 0: new(_)
+symbol 1: call(_)
+symbol 2: print(_)
+symbol 3: +(_)
+symbol 4: -(_)
+symbol 5: *(_)
+symbol 6: <(_)
+Num:
+  [0] -
+  [1] -
+  [2] -
+  [3] primitive
+  [4] primitive
+  [5] primitive
+  [6] primitive
+Fn:
+  [0] -
+  [1] function call
+  [2] -
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+Fn metaclass:
+  [0] primitive
+  [1] -
+  [2] -
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+System metaclass:
+  [0] -
+  [1] -
+  [2] primitive
+  [3] -
+  [4] -
+  [5] -
+  [6] -
+== stage_compile: bytecode, each function printed when it is finished ==
+== <module> ==
+0000 LOAD_MODULE_VAR  0 'System'
+0003 CONSTANT         0 'Hello, world!'
+0006 CALL_1           2 'print(_)'
+0009 POP             
+0010 END_MODULE      
+0011 RETURN          
+0012 END             
+== stage_run: value stack, then the instruction about to run ==
+          [ <fn> ]
+0000 LOAD_MODULE_VAR  0 'System'
+          [ <fn> ][ System ]
+0003 CONSTANT         0 'Hello, world!'
+          [ <fn> ][ System ][ Hello, world! ]
+0006 CALL_1           2 'print(_)'
+          [ <fn> ][ Hello, world! ]
+0009 POP             
+          [ <fn> ]
+0010 END_MODULE      
+          [ <fn> ][ null ]
+0011 RETURN          
